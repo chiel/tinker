@@ -1,0 +1,108 @@
+html, body, ol, ul
+  margin: 0
+  padding: 0
+  list-style: none
+
+body
+  font: 12px 'helvetica neue', arial, helvetica, sans-serif
+
+header
+  height: 40px
+  background: #ddd
+#layouts
+  overflow: hidden
+  float: left
+  padding: 8px
+  li
+    float: left
+    width: 24px
+    height: 24px
+    margin: 0 1px 0 0
+    cursor: pointer
+    background: #555
+  .active
+    background: #f00
+#tabs
+  overflow: hidden
+  float: left
+  margin: 0 9px 0 0
+  padding: 8px
+  li
+    float: left
+    width: 24px
+    height: 24px
+    margin: 0 1px 0 0
+    cursor: pointer
+    background: #555
+  .active
+    background: #f00
+
+section
+  position: absolute
+  top: 40px
+  left: 0
+  z-index: 1
+  background: #fff
+.inner
+  position: absolute
+  top: 8px
+  right: 8px
+  bottom: 8px
+  left: 8px
+  padding: 5px
+  border: 1px solid #555
+  background: rgba(0, 0, 0, .2)
+.handle
+  position: absolute
+  background: rgba(255, 0, 0, .5)
+  z-index: 3
+  cursor: move
+
+.theme-0
+  #html .inner
+    right: 4px
+    bottom: 4px
+  #css .inner
+    top: 4px
+    right: 4px
+  #js .inner
+    right: 4px
+    left: 4px
+  #result .inner
+    left: 4px
+
+.theme-1
+  #html .inner
+    right: 4px
+  #css .inner
+    right: 4px
+    left: 4px
+  #js .inner
+    right: 4px
+    left: 4px
+  #result .inner
+    left: 4px
+
+.theme-2
+  #html .inner
+    right: 4px
+    bottom: 4px
+  #css .inner
+    bottom: 4px
+    left: 4px
+  #js .inner
+    top: 4px
+    right: 4px
+  #result .inner
+    top: 4px
+    left: 4px
+
+.theme-3
+  #html .inner
+    right: 4px
+  #css .inner
+    right: 4px
+  #js .inner
+    right: 4px
+  #result .inner
+    left: 4px
