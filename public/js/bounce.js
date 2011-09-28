@@ -101,11 +101,32 @@ BNC.Layout = {
 			new Element('section#result').inject(document.body)
 		];
 		self.inners = [
-			new Element('div.inner', {text: 'html'}).inject(self.sections[0]),
-			new Element('div.inner', {text: 'css'}).inject(self.sections[1]),
-			new Element('div.inner', {text: 'js'}).inject(self.sections[2]),
-			new Element('div.inner', {text: 'result'}).inject(self.sections[3])
+			new Element('div.inner').inject(self.sections[0]),
+			new Element('div.inner').inject(self.sections[1]),
+			new Element('div.inner').inject(self.sections[2]),
+			new Element('div.inner').adopt(new Element('iframe')).inject(self.sections[3])
 		];
+		CodeMirror(self.inners[0], {
+			value: document.getElement('script[type=data/html]').get('html'),
+			tabMode: 'shift',
+			lineNumbers: true,
+			matchBrackets: true,
+			mode: 'text/html'
+		});
+		CodeMirror(self.inners[1], {
+			value: document.getElement('script[type=data/css]').get('text'),
+			tabMode: 'shift',
+			lineNumbers: true,
+			matchBrackets: true,
+			mode: 'text/css'
+		});
+		CodeMirror(self.inners[2], {
+			value: document.getElement('script[type=data/js]').get('text'),
+			tabMode: 'shift',
+			lineNumbers: true,
+			matchBrackets: true,
+			mode: 'text/javascript'
+		});
 		self.fx = new Fx.Elements(self.sections, {duration: 200});
 		self.activate(BNC.getConfig('layout', 0));
 	},

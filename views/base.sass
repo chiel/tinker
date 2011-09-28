@@ -2,13 +2,13 @@ html, body, ol, ul
   margin: 0
   padding: 0
   list-style: none
-
 body
   font: 12px 'helvetica neue', arial, helvetica, sans-serif
+  background: #ecebe7
 
 header
   height: 40px
-  background: #ddd
+  background: #c1c0be
 #layouts
   overflow: hidden
   float: left
@@ -38,25 +38,43 @@ header
     background: #f00
 
 section
+  overflow: hidden
   position: absolute
   top: 40px
   left: 0
   z-index: 1
-  background: #fff
 .inner
   position: absolute
   top: 8px
   right: 8px
   bottom: 8px
   left: 8px
-  padding: 5px
   border: 1px solid #555
-  background: rgba(0, 0, 0, .2)
+  background: #f1f0ee
+  // textarea
+    width: 100%
+    height: 100%
+    resize: none
+    margin: 0
+    padding: 0
+    //border: 0
+    font: 11px monaco, 'courier new', courier, monospace
+    background: #fff
+  // iframe
+    width: 100%
+    height: 100%
+    border: 0
 .handle
   position: absolute
-  background: rgba(255, 0, 0, .5)
+  background: rgba(0, 0, 0, .1)
   z-index: 3
   cursor: move
+
+.CodeMirror
+  overflow: hidden
+  height: 100%
+.CodeMirror-scroll
+  height: 100%
 
 .theme-0
   #html .inner
