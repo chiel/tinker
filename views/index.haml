@@ -2,20 +2,10 @@
 %html{:lang=>'en'}
   %head
     %meta{:charset=>'utf-8'}
-    %title Bounce - Social Code Collaboration
-    %link{:rel=>'stylesheet', :href=>'/css/codemirror.css'}
+    %title Bounce &mdash; Social Code Collaboration
     %link{:rel=>'stylesheet', :href=>'/css/base.css'}
-    %link{:rel=>'stylesheet', :href=>'/css/default.css'}
   %body
-    %script{:type=>'data/html'}= bouncie.html
-    %script{:type=>'data/css'}= bouncie.css
-    %script{:type=>'data/js'}= bouncie.js
-    %script{:type=>'data/libs'}
     %script{:src=>'/js/mootools.js'}
     %script{:src=>'/js/mootools-more.js'}
-    %script{:src=>'/js/codemirror.js'}
-    %script{:src=>'/js/syntax/xml.js'}
-    %script{:src=>'/js/syntax/css.js'}
-    %script{:src=>'/js/syntax/javascript.js'}
     %script{:src=>'/js/bounce.js'}
-    %script BNC.init({theme: 'default'});
+    %script Bounce({theme: 'light'});

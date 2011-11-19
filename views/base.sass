@@ -2,6 +2,13 @@ html, body, ol, ul
   margin: 0
   padding: 0
   list-style: none
+// :focus
+//   outline: none
+
+
+html, body
+  overflow: hidden
+  height: 100%
 body
   font: 12px 'helvetica neue', arial, helvetica, sans-serif
   background: #ecebe7
@@ -9,10 +16,10 @@ body
 header
   height: 40px
   background: #c1c0be
-#layouts
-  overflow: hidden
-  float: left
-  padding: 8px
+  ul
+    overflow: hidden
+    float: left
+    padding: 8px
   li
     float: left
     width: 24px
@@ -22,6 +29,7 @@ header
     background: #555
   .active
     background: #f00
+
 #tabs
   overflow: hidden
   float: left
@@ -37,6 +45,32 @@ header
   .active
     background: #f00
 
+#settings
+  position: absolute
+  top: 0
+  left: 0
+  z-index: 3
+  width: 300px
+  height: 200px
+  border: 2px solid rgba(0, 0, 0, .5)
+  border-radius: 4px
+  background: rgba(255, 255, 255, .8)
+
+footer
+  position: absolute
+  bottom: 0
+  width: 100%
+  height: 40px
+  background: #c1c0be
+
+#body
+  overflow: hidden
+  position: absolute
+  top: 40px
+  bottom: 40px
+  left: 0
+  width: 100%
+
 section
   overflow: hidden
   position: absolute
@@ -49,78 +83,54 @@ section
   right: 8px
   bottom: 8px
   left: 8px
+.frame
+  position: absolute
+  top: 0
+  right: 0
+  bottom: 0
+  left: 0
   border: 1px solid #555
   background: #f1f0ee
-  // textarea
+  &.focus
+    border: 1px solid red
+  textarea
     width: 100%
     height: 100%
     resize: none
     margin: 0
-    padding: 0
-    //border: 0
+    padding: 4px
+    border: 0
+    box-sizing: border-box
     font: 11px monaco, 'courier new', courier, monospace
-    background: #fff
-  // iframe
+    background: transparent
+  iframe
     width: 100%
     height: 100%
     border: 0
+
 .handle
   position: absolute
-  background: rgba(0, 0, 0, .1)
   z-index: 3
+  width: 8px
+  height: 8px
+  background: rgba(0, 0, 0, .1)
   cursor: move
+  &.vert
+    background: rgba(255, 0, 0, .2)
+    cursor: ew-resize
+  &.horz
+    background: rgba(0, 0, 255, .2)
+    cursor: ns-resize
 
-.CodeMirror
-  overflow: hidden
-  height: 100%
-.CodeMirror-scroll
-  height: 100%
-
-.theme-0
-  #html .inner
+.layout-0
+  #panel0 .inner
     right: 4px
     bottom: 4px
-  #css .inner
+  #panel1 .inner
     top: 4px
     right: 4px
-  #js .inner
+  #panel2 .inner
     right: 4px
     left: 4px
-  #result .inner
-    left: 4px
-
-.theme-1
-  #html .inner
-    right: 4px
-  #css .inner
-    right: 4px
-    left: 4px
-  #js .inner
-    right: 4px
-    left: 4px
-  #result .inner
-    left: 4px
-
-.theme-2
-  #html .inner
-    right: 4px
-    bottom: 4px
-  #css .inner
-    bottom: 4px
-    left: 4px
-  #js .inner
-    top: 4px
-    right: 4px
-  #result .inner
-    top: 4px
-    left: 4px
-
-.theme-3
-  #html .inner
-    right: 4px
-  #css .inner
-    right: 4px
-  #js .inner
-    right: 4px
-  #result .inner
+  #panel3 .inner
     left: 4px
