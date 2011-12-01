@@ -1,12 +1,11 @@
-# add bounce lib path
 $:.unshift File.expand_path('.') + '/lib'
+%w[yaml sinatra/base mysql2 haml sass controller client sandbox bouncie].each { |f| require f }
 
-%w[sinatra/base haml sass controller client sandbox bouncie].each { |f| require f }
+APP_CONFIG = YAML.load_file 'config.yml'
 
-# Local development url's, this should be in a config file
-map 'http://bounce.dev/' do
+map APP_CONFIG['urls']['client'] do
 	run Client
 end
-map 'http://bounce-sandbox.dev/' do
+map APP_CONFIG['urls']['sandbox'] do
 	run Sandbox
 end

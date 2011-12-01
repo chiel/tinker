@@ -5,7 +5,13 @@
     %title Bounce &mdash; Social Code Collaboration
     %link{:rel=>'stylesheet', :href=>'/css/base.css'}
   %body
+    %script{:type=>'bouncie/markup'}= bouncie.markup
+    %script{:type=>'bouncie/style'}= bouncie.style
+    %script{:type=>'bouncie/interaction'}= bouncie.interaction
     %script{:src=>'/js/mootools.js'}
     %script{:src=>'/js/mootools-more.js'}
-    %script{:src=>'/js/bounce.js'}
-    %script Bounce({theme: 'light'});
+    %script{:src=>'/js/bounce.core.js'}
+    %script{:src=>'/js/bounce.document.js'}
+    %script{:src=>'/js/bounce.layout.js'}
+    %script BNC.init({theme: 'light'});
+

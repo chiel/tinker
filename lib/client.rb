@@ -4,8 +4,8 @@ class Client < Controller
 		haml :index, :locals => {:bouncie => bouncie}
 	end
 
-	get %r{^/([A-Za-z0-9]+)$} do |hash|
-		bouncie = Bouncie.new hash
+	get %r{^/([A-Za-z0-9]+)(?:\/([0-9]+))?$} do |hash, revision|
+		bouncie = Bouncie.new hash, revision
 		haml :index, :locals => {:bouncie => bouncie}
 	end
 
