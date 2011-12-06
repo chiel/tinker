@@ -2,20 +2,26 @@ html, body, ol, ul
   margin: 0
   padding: 0
   list-style: none
-// :focus
-//   outline: none
-
 
 html, body
   overflow: hidden
   height: 100%
 body
   font: 12px 'helvetica neue', arial, helvetica, sans-serif
-  background: #ecebe7
+  background: #bcbcbc
 
 header
-  height: 40px
-  background: #c1c0be
+  height: 53px
+  background: #f2f2f2
+  background: -moz-linear-gradient(top, #f2f2f2 0%, #d1d1d1 100%)
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f2f2f2), color-stop(100%,#d1d1d1))
+  background: -webkit-linear-gradient(top, #f2f2f2 0%,#d1d1d1 100%)
+  background: -o-linear-gradient(top, #f2f2f2 0%,#d1d1d1 100%)
+  background: -ms-linear-gradient(top, #f2f2f2 0%,#d1d1d1 100%)
+  background: linear-gradient(top, #f2f2f2 0%,#d1d1d1 100%)
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f2f2', endColorstr='#d1d1d1',GradientType=0 )
+  box-shadow: rgba(0, 0, 0, .2) 0 1px 1px
+  border-bottom: 1px solid rgba(0, 0, 0, .4)
   ul
     overflow: hidden
     float: left
@@ -66,7 +72,7 @@ footer
 #body
   overflow: hidden
   position: absolute
-  top: 40px
+  top: 53px
   bottom: 40px
   left: 0
   width: 100%
@@ -79,18 +85,19 @@ section
   z-index: 1
 .inner
   position: absolute
-  top: 8px
-  right: 8px
-  bottom: 8px
-  left: 8px
+  top: 10px
+  right: 10px
+  bottom: 10px
+  left: 10px
 .frame
   position: absolute
   top: 0
   right: 0
   bottom: 0
   left: 0
-  border: 1px solid #555
-  background: #f1f0ee
+  border: 1px solid #9b9b9b
+  background: #fff
+  box-shadow: inset 0px 1px 0 #dedede
   &.focus
     border: 1px solid red
   textarea
@@ -103,6 +110,8 @@ section
     box-sizing: border-box
     font: 11px monaco, 'courier new', courier, monospace
     background: transparent
+    &:focus
+      outline: none
   iframe
     width: 100%
     height: 100%
@@ -111,26 +120,28 @@ section
 .handle
   position: absolute
   z-index: 3
-  width: 8px
-  height: 8px
+  width: 10px
+  height: 10px
   background: rgba(0, 0, 0, .1)
   cursor: move
   &.vert
-    background: rgba(255, 0, 0, .2)
+    background: rgba(255, 0, 0, .3)
+    background: url(../img/handle-vert.png) no-repeat center
     cursor: ew-resize
   &.horz
-    background: rgba(0, 0, 255, .2)
+    background: rgba(0, 0, 255, .3)
+    background: url(../img/handle-horz.png) no-repeat center
     cursor: ns-resize
 
 .layout-0
   #panel0 .inner
-    right: 4px
-    bottom: 4px
+    right: 5px
+    bottom: 5px
   #panel1 .inner
-    top: 4px
-    right: 4px
+    top: 5px
+    right: 5px
   #panel2 .inner
-    right: 4px
-    left: 4px
+    right: 5px
+    left: 5px
   #panel3 .inner
-    left: 4px
+    left: 5px

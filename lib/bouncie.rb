@@ -1,5 +1,3 @@
-require 'pp'
-
 class Bouncie
 
 	attr_reader :markup, :style, :interaction

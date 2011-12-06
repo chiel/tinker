@@ -9,7 +9,7 @@
  * Init function which fires an event
  */
 BNC.init = function(config) {
-	console.log('BNC.init(', config, ');');
+	// console.log('BNC.init(', config, ');');
 
 	BNC.Events.fireEvent('bnc.init', config);
 };
@@ -34,7 +34,7 @@ BNC.Core = {
 	 *
 	 */
 	init: function(config) {
-		console.log('BNC.Core.init(', config, ');');
+		// console.log('BNC.Core.init(', config, ');');
 	}
 };
 
