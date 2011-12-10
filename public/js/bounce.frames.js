@@ -5,6 +5,9 @@
 
 (function() {
 
+/**
+ * Shared functionality across editors
+ */
 BNC.Editor = {
 	/**
 	 *
@@ -46,7 +49,9 @@ BNC.MarkupEditor = Object.merge({}, BNC.Editor, {
 
 		var panel = BNC.Layout.getPanel(0);
 		if (panel) {
-			new Element('div.frame').adopt(new Element('textarea')).inject(panel.getInner());
+			this.frame = new Element('div.frame');
+			this.textarea = new Element('textarea').set('text', BNC.Bouncie.getMarkup());
+			this.frame.adopt(this.textarea).inject(panel.getInner());
 		}
 	}
 });
@@ -65,7 +70,9 @@ BNC.StyleEditor = Object.merge({}, BNC.Editor, {
 
 		var panel = BNC.Layout.getPanel(1);
 		if (panel) {
-			new Element('div.frame').adopt(new Element('textarea')).inject(panel.getInner());
+			this.frame = new Element('div.frame');
+			this.textarea = new Element('textarea').set('text', BNC.Bouncie.getStyle());
+			this.frame.adopt(this.textarea).inject(panel.getInner());
 		}
 	}
 });
@@ -84,7 +91,9 @@ BNC.InteractionEditor = Object.merge({}, BNC.Editor, {
 
 		var panel = BNC.Layout.getPanel(2);
 		if (panel) {
-			new Element('div.frame').adopt(new Element('textarea')).inject(panel.getInner());
+			this.frame = new Element('div.frame');
+			this.textarea = new Element('textarea').set('text', BNC.Bouncie.getInteraction());
+			this.frame.adopt(this.textarea).inject(panel.getInner());
 		}
 	}
 });
@@ -130,7 +139,7 @@ BNC.Result = {
 	},
 
 	/**
-	 *
+	 * Create an overlay over the iframe
 	 */
 	buildOverlay: function()
 	{
@@ -147,7 +156,7 @@ BNC.Result = {
 	},
 
 	/**
-	 *
+	 * Show the drag overlay to prevent mouse interference
 	 */
 	showOverlay: function()
 	{
@@ -158,7 +167,7 @@ BNC.Result = {
 	},
 
 	/**
-	 *
+	 * Hide the drag overlay
 	 */
 	hideOverlay: function()
 	{
@@ -169,5 +178,5 @@ BNC.Result = {
 };
 BNC.Result.wake();
 
-})(typeof BNC == 'undefined' ? (window.BNC = {}) : BNC)
+})(typeof BNC == 'undefined' ? (window.BNC = {}) : BNC);
 

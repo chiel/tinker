@@ -14,47 +14,52 @@ BNC.Layout = {
 	 */
 	curLayout: null,
 	/**
-	 *
+	 * Header element
 	 */
 	header: null,
 	/**
-	 *
+	 * Body element
 	 */
 	body: null,
 	/**
-	 *
+	 * Footer element
 	 */
 	footer: null,
 	/**
-	 *
+	 * Available panels
 	 */
 	panels: [],
 	/**
-	 *
+	 * Fx object to animate between layouts
 	 */
 	fx: null,
 
 	/**
 	 *
 	 */
-	wake: function() {
+	wake: function()
+	{
 		BNC.Events.addEvent('bnc.init', this.init.bind(this));
 	},
 
 	/**
 	 *
 	 */
-	init: function(config) {
+	init: function(config)
+	{
 		console.log('BNC.Layout.init(', config, ');');
 
 		this.build();
 	},
 
 	/**
-	 *
+	 * Build basic layout elements shared between layouts
 	 */
-	build: function() {
+	build: function()
+	{
 		console.log('BNC.Layout.build();');
+
+		document.body.setStyle('opacity', 0).set('morph', {duration: 250});
 
 		this.header = new Element('header').inject(document.body);
 		this.body = new Element('form#body').inject(document.body);
@@ -139,11 +144,13 @@ BNC.Layouts.push({
 	/**
 	 * Activate this layout
 	 */
-	activate: function() {
+	activate: function()
+	{
 		console.log('BNC.Layouts[0].activate();');
 
 		var dimensions = this.getDimensions();
 		BNC.Layout.fx.set(dimensions);
+		document.body.morph({opacity: [0, 1]});
 		this.build();
 		this.recalibrate();
 	},
@@ -151,12 +158,13 @@ BNC.Layouts.push({
 	/**
 	 * Deactivate this layout
 	 */
-	deactivate: function() {
+	deactivate: function()
+	{
 		console.log('BNC.Layouts[0].deactivate();');
 	},
 
 	/**
-	 * Build up additional element required for this layout
+	 * Build up any additional element required for this layout
 	 */
 	build: function()
 	{
@@ -427,5 +435,5 @@ BNC.Panel = new Class({
 
 });
 
-})(typeof BNC == 'undefined' ? (window.BNC = {}) : BNC)
+})(typeof BNC == 'undefined' ? (window.BNC = {}) : BNC);
 

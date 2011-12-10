@@ -8,7 +8,8 @@
 /**
  * Init function which fires an event
  */
-BNC.init = function(config) {
+BNC.init = function(config)
+{
 	// console.log('BNC.init(', config, ');');
 
 	BNC.Events.fireEvent('bnc.init', config);
@@ -26,19 +27,20 @@ BNC.Core = {
 	/**
 	 *
 	 */
-	wake: function() {
+	wake: function()
+	{
 		BNC.Events.addEvent('bnc.init', this.init.bind(this));
 	},
 
 	/**
 	 *
 	 */
-	init: function(config) {
+	init: function(config)
+	{
 		// console.log('BNC.Core.init(', config, ');');
 	}
 };
-
 BNC.Core.wake();
 
-})(typeof BNC == 'undefined' ? (window.BNC = {}) : BNC)
+})(typeof BNC == 'undefined' ? (window.BNC = {}) : BNC);
 
