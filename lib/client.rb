@@ -9,8 +9,19 @@ class Client < Controller
 		haml :index, :locals => {:bouncie => bouncie}
 	end
 
-	get '/save/?' do
-		'save here'
+	post %r{^/save(?:\/([A-Za-z0-9]+))?/?$} do |hash|
+		entry = {
+			:markup => params[:markup],
+			:style => params[:style],
+			:interaction => params[:interaction]
+		}
+
+		bouncie = Bouncie.new
+		if hash
+			bouncie.update hash, entry
+		else
+			bouncie.create entry
+		end
 	end
 
 	get '/css/base.css' do

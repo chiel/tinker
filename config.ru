@@ -1,5 +1,5 @@
 $:.unshift File.expand_path('.') + '/lib'
-%w[yaml sinatra/base mysql2 haml sass controller client sandbox bouncie].each { |f| require f }
+%w[yaml json sinatra/base mysql2 haml sass digest/sha1 controller client sandbox bouncie].each { |f| require f }
 
 APP_CONFIG = YAML.load_file 'config.yml'
 

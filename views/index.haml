@@ -5,14 +5,12 @@
     %title Bounce &mdash; Social Code Collaboration
     %link{:rel=>'stylesheet', :href=>'/css/base.css'}
   %body
-    %script{:type=>'bouncie/markup'}= bouncie.markup
-    %script{:type=>'bouncie/style'}= bouncie.style
-    %script{:type=>'bouncie/interaction'}= bouncie.interaction
+    %script{:type=>'bouncie/properties'}= bouncie.properties.to_json
+    %script{:type=>'bouncie/markup'}= CGI.escapeHTML bouncie.markup || ''
+    %script{:type=>'bouncie/style'}= CGI.escapeHTML bouncie.style || ''
+    %script{:type=>'bouncie/interaction'}= CGI.escapeHTML bouncie.interaction || ''
     %script{:src=>'/js/mootools.js'}
     %script{:src=>'/js/mootools-more.js'}
     %script{:src=>'/js/bounce.core.js'}
-    %script{:src=>'/js/bounce.bouncie.js'}
-    %script{:src=>'/js/bounce.layout.js'}
-    %script{:src=>'/js/bounce.frames.js'}
     %script BNC.init({theme: 'light'});
 
