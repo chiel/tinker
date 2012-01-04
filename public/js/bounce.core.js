@@ -3,6 +3,16 @@
  */
 "use strict";
 
+/**
+ * console.log wrapper
+ */
+window.log = function()
+{
+	if (this.console) {
+		console.log(Array.prototype.slice.call(arguments));
+	}
+};
+
 (function() {
 
 /**
@@ -10,7 +20,7 @@
  */
 BNC.init = function(config)
 {
-	// console.log('BNC.init(', config, ');');
+	// log('BNC.init(', config, ');');
 
 	BNC.Events.fireEvent('bnc.init', config);
 };
@@ -41,7 +51,7 @@ BNC.Core = {
 	 */
 	init: function(config)
 	{
-		// console.log('BNC.Core.init(', config, ');');
+		// log('BNC.Core.init(', config, ');');
 	}
 };
 BNC.Core.wake();
@@ -78,7 +88,7 @@ BNC.Bouncie = {
 	 */
 	init: function(config)
 	{
-		// console.log('BNC.Bouncie.init(', config, ');');
+		// log('BNC.Bouncie.init(', config, ');');
 
 		this.properties = JSON.parse(document.getElement('script[type=bouncie/properties]').get('html'));
 		this.markup = document.getElement('script[type=bouncie/markup]').get('html');
@@ -93,7 +103,7 @@ BNC.Bouncie = {
 	 */
 	build: function()
 	{
-		console.log('BNC.Bouncie.build();');
+		log('BNC.Bouncie.build();');
 
 		var self = this;
 		var buttons = '<li><a href="#execute" class="button">Execute</a></li>'
@@ -119,7 +129,7 @@ BNC.Bouncie = {
 	 */
 	getProperties: function()
 	{
-		// console.log('BNC.Bouncie.getProperties();');
+		// log('BNC.Bouncie.getProperties();');
 
 		return this.properties;
 	},
@@ -129,7 +139,7 @@ BNC.Bouncie = {
 	 */
 	getMarkup: function()
 	{
-		// console.log('BNC.Bouncie.getMarkup();');
+		// log('BNC.Bouncie.getMarkup();');
 
 		return this.markup;
 	},
@@ -139,7 +149,7 @@ BNC.Bouncie = {
 	 */
 	getStyle: function()
 	{
-		// console.log('BNC.Bouncie.getStyle();');
+		// log('BNC.Bouncie.getStyle();');
 
 		return this.style;
 	},
@@ -149,7 +159,7 @@ BNC.Bouncie = {
 	 */
 	getInteraction: function()
 	{
-		// console.log('BNC.Bouncie.getInteraction();');
+		// log('BNC.Bouncie.getInteraction();');
 
 		return this.interaction;
 	},
@@ -159,7 +169,7 @@ BNC.Bouncie = {
 	 */
 	execute: function()
 	{
-		console.log('BNC.Bouncie.execute();');
+		log('BNC.Bouncie.execute();');
 	},
 
 	/**
@@ -167,7 +177,7 @@ BNC.Bouncie = {
 	 */
 	save: function()
 	{
-		console.log('BNC.Bouncie.save();');
+		log('BNC.Bouncie.save();');
 
 
 		var url = '/save';
@@ -227,7 +237,7 @@ BNC.Layout = {
 	 */
 	init: function(config)
 	{
-		console.log('BNC.Layout.init(', config, ');');
+		log('BNC.Layout.init(', config, ');');
 
 		this.build();
 	},
@@ -237,7 +247,7 @@ BNC.Layout = {
 	 */
 	build: function()
 	{
-		console.log('BNC.Layout.build();');
+		log('BNC.Layout.build();');
 
 		document.body.setStyle('opacity', 0).set('morph', {duration: 250});
 
@@ -253,8 +263,8 @@ BNC.Layout = {
 
 		var els = this.panels.map(function(p) { return p.getOuter(); });
 		this.fx = new Fx.Elements(els, {duration: 200});
-		BNC.Events.fireEvent('bnc.layout.build');
 		this.activate();
+		BNC.Events.fireEvent('bnc.layout.build');
 	},
 
 	/**
@@ -262,7 +272,7 @@ BNC.Layout = {
 	 */
 	activate: function(index)
 	{
-		console.log('BNC.Layout.activate();');
+		log('BNC.Layout.activate();');
 
 		if (index !== this.curLayout) {
 			var init = this.curLayout === null;
@@ -330,7 +340,7 @@ BNC.Layouts.push({
 	 */
 	activate: function()
 	{
-		console.log('BNC.Layouts[0].activate();');
+		log('BNC.Layouts[0].activate();');
 
 		var dimensions = this.getDimensions();
 		BNC.Layout.fx.set(dimensions);
@@ -344,7 +354,7 @@ BNC.Layouts.push({
 	 */
 	deactivate: function()
 	{
-		console.log('BNC.Layouts[0].deactivate();');
+		log('BNC.Layouts[0].deactivate();');
 	},
 
 	/**
@@ -352,7 +362,7 @@ BNC.Layouts.push({
 	 */
 	build: function()
 	{
-		console.log('BNC.Layouts[0].build();');
+		log('BNC.Layouts[0].build();');
 
 		if (this.handles.length === 0) {
 			var self = this;
@@ -373,7 +383,7 @@ BNC.Layouts.push({
 	 */
 	recalibrate: function()
 	{
-		console.log('BNC.Layouts[0].recalibrate()');
+		log('BNC.Layouts[0].recalibrate()');
 
 		var p = BNC.Layout.panels,
 			p0 = p[0].getCoords(),
@@ -402,7 +412,7 @@ BNC.Layouts.push({
 	 */
 	getDimensions: function()
 	{
-		// console.log('BNC.Layouts[0].getDimensions();');
+		// log('BNC.Layouts[0].getDimensions();');
 
 		var rs = this.relativeSizes,
 			bSize = BNC.Layout.body.getSize(),
@@ -443,7 +453,7 @@ BNC.Layouts.push({
 	 */
 	dragStart: function(e, el)
 	{
-		// console.log('BNC.Layouts[0].dragStart(',e,el,')');
+		// log('BNC.Layouts[0].dragStart(',e,el,')');
 
 		e.stop();
 		var p = BNC.Layout.panels,
@@ -572,7 +582,7 @@ BNC.Panel = new Class({
 	 */
 	initialize: function(wrapper, index)
 	{
-		// console.log('BNC.Panel.initialize(', wrapper, index, ');');
+		// log('BNC.Panel.initialize(', wrapper, index, ');');
 
 		this.wrapper = wrapper;
 		this.outer = new Element('section#panel'+index).inject(this.wrapper);
@@ -584,7 +594,7 @@ BNC.Panel = new Class({
 	 */
 	getOuter: function()
 	{
-		// console.log('BNC.Panel.getOuter();', this.outer);
+		// log('BNC.Panel.getOuter();', this.outer);
 
 		return this.outer;
 	},
@@ -594,7 +604,7 @@ BNC.Panel = new Class({
 	 */
 	getInner: function()
 	{
-		console.log('BNC.Panel.getInner();');
+		log('BNC.Panel.getInner();');
 
 		return this.inner;
 	},
@@ -604,7 +614,7 @@ BNC.Panel = new Class({
 	 */
 	getCoords: function()
 	{
-		// console.log('BNC.Panel.getCoords();');
+		// log('BNC.Panel.getCoords();');
 
 		var pos = this.inner.getPosition(this.wrapper),
 			size = this.inner.getSize();
@@ -638,7 +648,7 @@ BNC.Editor = {
 	 */
 	init: function()
 	{
-		console.log('BNC.Editor.init();');
+		log('BNC.Editor.init();');
 
 		this.build();
 	},
@@ -648,7 +658,7 @@ BNC.Editor = {
 	 */
 	build: function()
 	{
-		console.log('BNC.Editor.build();');
+		log('BNC.Editor.build();');
 	}
 };
 
@@ -663,7 +673,7 @@ BNC.MarkupEditor = Object.merge({}, BNC.Editor, {
 	 */
 	build: function()
 	{
-		console.log('BNC.MarkupEditor.build();');
+		log('BNC.MarkupEditor.build();');
 
 		var panel = BNC.Layout.getPanel(0);
 		if (panel) {
@@ -689,7 +699,7 @@ BNC.StyleEditor = Object.merge({}, BNC.Editor, {
 	 */
 	build: function()
 	{
-		console.log('BNC.MarkupEditor.build();');
+		log('BNC.MarkupEditor.build();');
 
 		var panel = BNC.Layout.getPanel(1);
 		if (panel) {
@@ -715,7 +725,7 @@ BNC.InteractionEditor = Object.merge({}, BNC.Editor, {
 	 */
 	build: function()
 	{
-		console.log('BNC.MarkupEditor.build();');
+		log('BNC.MarkupEditor.build();');
 
 		var panel = BNC.Layout.getPanel(2);
 		if (panel) {
@@ -725,6 +735,11 @@ BNC.InteractionEditor = Object.merge({}, BNC.Editor, {
 				html: BNC.Bouncie.getInteraction()
 			});
 			this.frame.adopt(this.textarea).inject(panel.getInner());
+			this.codemirror = CodeMirror.fromTextArea(this.textarea, {
+				tabMode: 'shift',
+				lineNumbers: true,
+				matchBrackets: true
+			});
 		}
 	}
 });
@@ -749,7 +764,7 @@ BNC.Result = {
 	 */
 	init: function()
 	{
-		console.log('BNC.Result.init()');
+		log('BNC.Result.init()');
 
 		BNC.Events.addEvent('bnc.layout.dragStart', this.showOverlay.bind(this));
 		BNC.Events.addEvent('bnc.layout.dragEnd', this.hideOverlay.bind(this));
@@ -762,7 +777,7 @@ BNC.Result = {
 	 */
 	build: function()
 	{
-		console.log('BNC.Result.build();');
+		log('BNC.Result.build();');
 
 		var panel = BNC.Layout.getPanel(3);
 		if (panel) {
@@ -776,7 +791,7 @@ BNC.Result = {
 	 */
 	buildOverlay: function()
 	{
-		// console.log('BNC.Result.buildOverlay();');
+		// log('BNC.Result.buildOverlay();');
 
 		if (!this.overlay) {
 			this.overlay = new Element('div', {
@@ -793,7 +808,7 @@ BNC.Result = {
 	 */
 	showOverlay: function()
 	{
-		// console.log('BNC.Result.showOverlay();');
+		// log('BNC.Result.showOverlay();');
 
 		this.buildOverlay();
 		this.overlay.inject(this.wrapper);
@@ -804,7 +819,7 @@ BNC.Result = {
 	 */
 	hideOverlay: function()
 	{
-		// console.log('BNC.Result.hideOverlay();');
+		// log('BNC.Result.hideOverlay();');
 
 		this.overlay.dispose();
 	}

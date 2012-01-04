@@ -4,6 +4,7 @@
     %meta{:charset=>'utf-8'}
     %title Bounce &mdash; Social Code Collaboration
     %link{:rel=>'stylesheet', :href=>'/css/base.css'}
+    %link{:rel=>'stylesheet', :href=>'/css/codemirror.css'}
   %body
     %script{:type=>'bouncie/properties'}= bouncie.properties.to_json
     %script{:type=>'bouncie/markup'}= CGI.escapeHTML bouncie.markup || ''
@@ -11,6 +12,8 @@
     %script{:type=>'bouncie/interaction'}= CGI.escapeHTML bouncie.interaction || ''
     %script{:src=>'/js/mootools.js'}
     %script{:src=>'/js/mootools-more.js'}
+    %script{:src=>'/js/codemirror.js'}
+    %script{:src=>'/js/syntax/javascript.js'}
     %script{:src=>'/js/bounce.core.js'}
     %script BNC.init({theme: 'light'});
 
