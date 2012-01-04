@@ -179,6 +179,7 @@ BNC.Bouncie = {
 	{
 		log('BNC.Bouncie.save();');
 
+		BNC.Events.fireEvent('bnc.bouncie.save');
 
 		var url = '/save';
 		if (this.properties.hash) {
@@ -636,11 +637,22 @@ BNC.Panel = new Class({
  */
 BNC.Editor = {
 	/**
+	 * Options that are shared by all codemirror instances
+	 */
+	mirrorOptions: {
+		indentUnit: 4,
+		lineNumbers: true,
+		matchBrackets: true,
+		fixedGutter: true
+	},
+
+	/**
 	 *
 	 */
 	wake: function()
 	{
 		BNC.Events.addEvent('bnc.layout.build', this.init.bind(this));
+		BNC.Events.addEvent('bnc.bouncie.save', this.save.bind(this));
 	},
 
 	/**
@@ -659,6 +671,14 @@ BNC.Editor = {
 	build: function()
 	{
 		log('BNC.Editor.build();');
+	},
+
+	/**
+	 * Copy codemirror contents to it's textarea
+	 */
+	save: function()
+	{
+		this.codemirror.save();
 	}
 };
 
@@ -683,13 +703,8 @@ BNC.MarkupEditor = Object.merge({}, BNC.Editor, {
 				html: BNC.Bouncie.getMarkup()
 			});
 			this.frame.adopt(this.textarea).inject(panel.getInner());
-			this.codemirror = CodeMirror.fromTextArea(this.textarea, {
-				mode: 'text/html',
-				indentUnit: 4,
-				lineNumbers: true,
-				matchBrackets: true,
-				fixedGutter: true
-			});
+			var options = Object.append({mode: 'text/html'}, this.mirrorOptions);
+			this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
 		}
 	}
 });
@@ -716,13 +731,8 @@ BNC.StyleEditor = Object.merge({}, BNC.Editor, {
 				html: BNC.Bouncie.getStyle()
 			});
 			this.frame.adopt(this.textarea).inject(panel.getInner());
-			this.codemirror = CodeMirror.fromTextArea(this.textarea, {
-				mode: 'text/css',
-				indentUnit: 4,
-				lineNumbers: true,
-				matchBrackets: true,
-				fixedGutter: true
-			});
+			var options = Object.append({mode: 'text/css'}, this.mirrorOptions);
+			this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
 		}
 	}
 });
@@ -749,13 +759,8 @@ BNC.InteractionEditor = Object.merge({}, BNC.Editor, {
 				html: BNC.Bouncie.getInteraction()
 			});
 			this.frame.adopt(this.textarea).inject(panel.getInner());
-			this.codemirror = CodeMirror.fromTextArea(this.textarea, {
-				mode: 'text/javascript',
-				indentUnit: 4,
-				lineNumbers: true,
-				matchBrackets: true,
-				fixedGutter: true
-			});
+			var options = Object.append({mode: 'text/javascript'}, this.mirrorOptions);
+			this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
 		}
 	}
 });
