@@ -8,7 +8,7 @@
  */
 window.log = function()
 {
-	if (this.console) {
+	if (window.console) {
 		console.log(Array.prototype.slice.call(arguments));
 	}
 };
