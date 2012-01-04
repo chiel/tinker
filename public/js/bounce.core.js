@@ -683,6 +683,13 @@ BNC.MarkupEditor = Object.merge({}, BNC.Editor, {
 				html: BNC.Bouncie.getMarkup()
 			});
 			this.frame.adopt(this.textarea).inject(panel.getInner());
+			this.codemirror = CodeMirror.fromTextArea(this.textarea, {
+				mode: 'text/html',
+				indentUnit: 4,
+				lineNumbers: true,
+				matchBrackets: true,
+				fixedGutter: true
+			});
 		}
 	}
 });
@@ -709,6 +716,13 @@ BNC.StyleEditor = Object.merge({}, BNC.Editor, {
 				html: BNC.Bouncie.getStyle()
 			});
 			this.frame.adopt(this.textarea).inject(panel.getInner());
+			this.codemirror = CodeMirror.fromTextArea(this.textarea, {
+				mode: 'text/css',
+				indentUnit: 4,
+				lineNumbers: true,
+				matchBrackets: true,
+				fixedGutter: true
+			});
 		}
 	}
 });
@@ -736,9 +750,11 @@ BNC.InteractionEditor = Object.merge({}, BNC.Editor, {
 			});
 			this.frame.adopt(this.textarea).inject(panel.getInner());
 			this.codemirror = CodeMirror.fromTextArea(this.textarea, {
-				tabMode: 'shift',
+				mode: 'text/javascript',
+				indentUnit: 4,
 				lineNumbers: true,
-				matchBrackets: true
+				matchBrackets: true,
+				fixedGutter: true
 			});
 		}
 	}
