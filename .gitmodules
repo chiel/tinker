@@ -1,3 +1,6 @@
 [submodule "vendor/CodeMirror2"]
 	path = vendor/CodeMirror2
 	url = https://github.com/marijnh/CodeMirror2.git
+[submodule "vendor/normalize.css"]
+	path = vendor/normalize.css
+	url = https://github.com/necolas/normalize.css.git

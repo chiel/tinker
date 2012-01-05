@@ -108,7 +108,7 @@ BNC.Bouncie = {
 		var self = this;
 		var buttons = '<li><a href="#execute" class="button">Execute</a></li>'
 			+'<li><a href="#save" class="button primary">Save</a></li>';
-		new Element('ul', {
+		var el = new Element('ul', {
 			html: buttons,
 			events: {
 				click: function(e) {
@@ -121,7 +121,8 @@ BNC.Bouncie = {
 					}
 				}
 			}
-		}).inject(BNC.Layout.footer);
+		});
+		BNC.Layout.addToRegion(el, 'br');
 	},
 
 	/**
@@ -170,6 +171,9 @@ BNC.Bouncie = {
 	execute: function()
 	{
 		log('BNC.Bouncie.execute();');
+
+		BNC.Events.fireEvent('bnc.bouncie.save');
+		BNC.Layout.wrapper.submit();
 	},
 
 	/**
@@ -187,7 +191,7 @@ BNC.Bouncie = {
 		}
 		new Request({
 			url: url,
-			data: BNC.Layout.body,
+			data: BNC.Layout.wrapper,
 			method: 'post'
 		}).send();
 	}
@@ -204,6 +208,10 @@ BNC.Layout = {
 	 * The currently active layout
 	 */
 	curLayout: null,
+	/**
+	 * The form wrapping everything
+	 */
+	form: null,
 	/**
 	 * Header element
 	 */
@@ -252,9 +260,23 @@ BNC.Layout = {
 
 		document.body.setStyle('opacity', 0).set('morph', {duration: 250});
 
-		this.header = new Element('header').inject(document.body);
-		this.body = new Element('form#body').inject(document.body);
-		this.footer = new Element('footer').inject(document.body);
+		this.wrapper = new Element('form#wrapper', {
+			method: 'post',
+			action: 'http://bounce-sandbox.dev/',
+			target: 'sandbox'
+		}).inject(document.body);
+
+		this.header = new Element('header').inject(this.wrapper);
+		this.body = new Element('div#body').inject(this.wrapper);
+		this.footer = new Element('footer').inject(this.wrapper);
+
+		this.regions = {
+			tl: new Element('div.region.tl').inject(this.header),
+			tr: new Element('div.region.tr').inject(this.header),
+			bl: new Element('div.region.bl').inject(this.footer),
+			br: new Element('div.region.br').inject(this.footer)
+		};
+
 		this.panels = [
 			new BNC.Panel(this.body, 0),
 			new BNC.Panel(this.body, 1),
@@ -304,6 +326,21 @@ BNC.Layout = {
 			return this.panels[index];
 		}
 		return false;
+	},
+
+	/**
+	 * Add an element to a region
+	 */
+	addToRegion: function(node, region)
+	{
+		if (!this.regions[region]) {
+			return;
+		}
+		if (typeOf(node) !== 'element') {
+			return;
+		}
+
+		this.regions[region].adopt(node);
 	}
 };
 BNC.Layout.wake();
@@ -640,10 +677,13 @@ BNC.Editor = {
 	 * Options that are shared by all codemirror instances
 	 */
 	mirrorOptions: {
+		tabSize: 4,
 		indentUnit: 4,
+		indentWithTabs: true,
 		lineNumbers: true,
 		matchBrackets: true,
-		fixedGutter: true
+		fixedGutter: true,
+		theme: 'bounce-light'
 	},
 
 	/**
@@ -803,7 +843,9 @@ BNC.Result = {
 		var panel = BNC.Layout.getPanel(3);
 		if (panel) {
 			this.wrapper = panel.getInner();
-			new Element('div.frame').adopt(new Element('iframe')).inject(this.wrapper);
+			this.frame = new Element('div.frame');
+			this.iframe = new Element('iframe', {name: 'sandbox'});
+			this.frame.adopt(this.iframe).inject(this.wrapper);
 		}
 	},
 
