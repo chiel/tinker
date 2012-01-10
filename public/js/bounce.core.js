@@ -105,24 +105,52 @@ BNC.Bouncie = {
 	{
 		log('BNC.Bouncie.build();');
 
+		this.buildProperties();
+
 		var self = this;
-		var buttons = '<li><a href="#execute" class="button">Execute</a></li>'
-			+'<li><a href="#save" class="button primary">Save</a></li>';
-		var el = new Element('ul', {
-			html: buttons,
-			events: {
-				click: function(e) {
-					e.stop();
-					var href = e.target.get('href');
-					if (href === '#execute') {
-						self.execute();
-					} else if (href === '#save') {
-						self.save();
-					}
-				}
-			}
+		var buttons = $$(
+			new Element('a.button[href=#execute][text=Execute]'),
+			new Element('a.button[href=#save][text=Save]')
+		).map(function(el) {
+			return new Element('li').adopt(el);
 		});
+
+		var el = new Element('ul')
+		.addEvent('click', function(e) {
+			e.stop();
+			var href = e.target.get('href');
+			if (href === '#execute') {
+				self.execute();
+			} else if (href === '#save') {
+				self.save();
+			}
+		})
+		.adopt(buttons);
 		BNC.Layout.addToRegion(el, 'br');
+	},
+
+	/**
+	 *
+	 */
+	buildProperties: function()
+	{
+		log('BNC.Bouncie.buildProperties();');
+
+		var self = this;
+		var el = new Element('a.button[href=#properties][text=Properties]')
+		.addEvent('click', function(e) {
+			e.stop();
+			self.displayProperties();
+		});
+		BNC.Layout.addToRegion(el, 'tl');
+	},
+
+	/**
+	 *
+	 */
+	displayProperties: function()
+	{
+		log('BNC.Bouncie.displayProperties();');
 	},
 
 	/**
@@ -189,10 +217,22 @@ BNC.Bouncie = {
 		if (this.properties.hash) {
 			url += '/'+this.properties.hash;
 		}
-		new Request({
+		new Request.JSON({
 			url: url,
 			data: BNC.Layout.wrapper,
-			method: 'post'
+			method: 'post',
+			onSuccess: function(response) {
+				var url = '/'+response.hash;
+				if (response.revision) {
+					url += '/'+response.revision;
+				}
+				// Check for history api
+				if (!!(window.history && history.pushState)) {
+					history.pushState(null, null, url);
+				} else {
+					window.location = url;
+				}
+			}
 		}).send();
 	}
 };
@@ -350,7 +390,7 @@ BNC.Layout.wake();
 /**
  * A collection of existing layouts
  */
-BNC.Layouts = []
+BNC.Layouts = [];
 
 
 
@@ -379,6 +419,18 @@ BNC.Layouts.push({
 	activate: function()
 	{
 		log('BNC.Layouts[0].activate();');
+
+		var self = this;
+		window.addEvent('resize', function(e) {
+			var dimensions = self.getDimensions();
+			BNC.Layout.fx.set(dimensions);
+			self.recalibrate();
+		});
+
+		var relativeSizes = localStorage['layout0Sizes'];
+		if (relativeSizes) {
+			this.relativeSizes = JSON.parse(relativeSizes);
+		}
 
 		var dimensions = this.getDimensions();
 		BNC.Layout.fx.set(dimensions);
@@ -421,7 +473,7 @@ BNC.Layouts.push({
 	 */
 	recalibrate: function()
 	{
-		log('BNC.Layouts[0].recalibrate()');
+		// log('BNC.Layouts[0].recalibrate()');
 
 		var p = BNC.Layout.panels,
 			p0 = p[0].getCoords(),
@@ -568,21 +620,22 @@ BNC.Layouts.push({
 		var mouseup = function(e) {
 			BNC.Events.fireEvent('bnc.layout.dragEnd');
 
-		// 	// Store relative sizes of elements
-		// 	var bSize = BNC.Layout.body.getSize(),
-		// 		opw = bSize.x / 100,
-		// 		oph = bSize.y / 100,
-		// 		p0Size = p[0].getSize(),
-		// 		p1Size = p[1].getSize(),
-		// 		p2Size = p[2].getSize(),
-		// 		p3Size = p[3].getSize();
+			// Store relative sizes of elements
+			var bSize = BNC.Layout.body.getSize(),
+				opw = bSize.x / 100,
+				oph = bSize.y / 100,
+				p0Size = p[0].getOuter().getSize(),
+				p1Size = p[1].getOuter().getSize(),
+				p2Size = p[2].getOuter().getSize(),
+				p3Size = p[3].getOuter().getSize();
 
-		// 	self.relativeSizes = [
-		// 		{x: Math.round(p0Size.x/opw), y: Math.round(p0Size.y/oph)},
-		// 		{x: Math.round(p1Size.x/opw), y: 0},
-		// 		{x: Math.round(p2Size.x/opw), y: 100},
-		// 		{x: 0, y: 100}
-		// 	];
+			self.relativeSizes = [
+				{x: Math.round(p0Size.x/opw), y: Math.round(p0Size.y/oph)},
+				{x: Math.round(p1Size.x/opw), y: 0},
+				{x: Math.round(p2Size.x/opw), y: 100},
+				{x: 0, y: 100}
+			];
+			localStorage['layout0Sizes'] = JSON.stringify(self.relativeSizes);
 
 			document.removeEvents({
 				mousemove: mousemove,
