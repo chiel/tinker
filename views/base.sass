@@ -7,15 +7,47 @@ html, body
   overflow: hidden
   height: 100%
 body
-  font: 12px 'helvetica neue', arial, helvetica, sans-serif
+  font: 12px 'lucida grande', arial, helvetica, sans-serif
   background: #bcbcbc
+
+a
+  color: #666
+  text-decoration: none
+
+.buttons
+  overflow: hidden
+  padding: 15px 10px
+  li
+    float: left
+    margin: 0 0 0 10px
+    &:first-child
+      margin-left: 0
+
+.button
+  display: block
+  height: 22px
+  padding: 0 8px
+  border: 1px solid rgba(0, 0, 0, .3)
+  border-radius: 3px
+  box-shadow: rgba(255, 255, 255, .4) 0 1px 0, inset #fff 0 1px 0
+  background: -moz-linear-gradient(top,  rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.1) 100%)
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0.8)), color-stop(100%,rgba(255,255,255,0.1)))
+  background: -webkit-linear-gradient(top,  rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.1) 100%)
+  background: -o-linear-gradient(top,  rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.1) 100%)
+  background: -ms-linear-gradient(top,  rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.1) 100%)
+  background: linear-gradient(top,  rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.1) 100%)
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ccffffff', endColorstr='#1affffff',GradientType=0 )
+  font-size: 12px
+  line-height: 22px
+  text-shadow: rgba(255, 255, 255, .75) 0 1px 0
+  // text-shadow: #000 0 1px 0
 
 #wrapper
   width: 100%
   height: 100%
 
-header
-  height: 53px
+header, footer
+  height: 52px
   background: #f2f2f2
   background: -moz-linear-gradient(top, #f2f2f2 0%, #d1d1d1 100%)
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f2f2f2), color-stop(100%,#d1d1d1))
@@ -26,6 +58,11 @@ header
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f2f2', endColorstr='#d1d1d1',GradientType=0 )
   box-shadow: rgba(0, 0, 0, .2) 0 1px 1px
   border-bottom: 1px solid rgba(0, 0, 0, .4)
+
+footer
+  position: absolute
+  bottom: 0
+  width: 100%
 
 .region
   height: 100%
@@ -38,18 +75,11 @@ header
   &.br
     float: right
 
-footer
-  position: absolute
-  bottom: 0
-  width: 100%
-  height: 40px
-  background: #c1c0be
-
 #body
   overflow: hidden
   position: absolute
   top: 53px
-  bottom: 40px
+  bottom: 53px
   left: 0
   width: 100%
 

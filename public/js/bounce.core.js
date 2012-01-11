@@ -115,7 +115,7 @@ BNC.Bouncie = {
 			return new Element('li').adopt(el);
 		});
 
-		var el = new Element('ul')
+		var el = new Element('ul.buttons')
 		.addEvent('click', function(e) {
 			e.stop();
 			var href = e.target.get('href');
