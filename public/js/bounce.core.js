@@ -109,8 +109,8 @@ BNC.Bouncie = {
 
 		var self = this;
 		var buttons = $$(
-			new Element('a.button[href=#execute][text=Execute]'),
-			new Element('a.button[href=#save][text=Save]')
+			new Element('a.button.run[href=#run][text=Run]'),
+			new Element('a.button.save[href=#save][text=Save]')
 		).map(function(el) {
 			return new Element('li').adopt(el);
 		});
