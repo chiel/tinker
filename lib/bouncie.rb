@@ -32,6 +32,7 @@ class Bouncie
 	def create(entry)
 		hash = Digest::SHA1.hexdigest(Time.new.to_i.to_s)[0..4]
 		response = {}
+		pp APP_CONFIG
 		begin
 			client = Mysql2::Client.new(
 				:host => APP_CONFIG['db']['host'],

@@ -13,7 +13,18 @@ window.log = function()
 	}
 };
 
-(function() {
+/**
+ *
+ */
+Element.Properties.children = {
+	set: function(items) {
+		if (!Type.isEnumerable(items)) items = Array.from(items);
+		this.adopt(items);
+		return this;
+	}
+};
+
+!function() {
 
 /**
  * Init function which fires an event
@@ -107,6 +118,10 @@ BNC.Bouncie = {
 
 		this.buildProperties();
 
+		if (this.properties.hash) {
+			this.run();
+		}
+
 		var self = this;
 		var buttons = $$(
 			new Element('a.button.run[href=#run][text=Run]'),
@@ -119,8 +134,8 @@ BNC.Bouncie = {
 		.addEvent('click', function(e) {
 			e.stop();
 			var href = e.target.get('href');
-			if (href === '#execute') {
-				self.execute();
+			if (href === '#run') {
+				self.run();
 			} else if (href === '#save') {
 				self.save();
 			}
@@ -137,20 +152,75 @@ BNC.Bouncie = {
 		log('BNC.Bouncie.buildProperties();');
 
 		var self = this;
-		var el = new Element('a.button[href=#properties][text=Properties]')
-		.addEvent('click', function(e) {
-			e.stop();
-			self.displayProperties();
+		var buttons = $$(
+			new Element('a.button.settings[href=#settings][text=Settings]'),
+			new Element('a.button.assets[href=#assets][text=Assets]')
+		).map(function(el) {
+			return new Element('li').adopt(el);
 		});
-		BNC.Layout.addToRegion(el, 'tl');
-	},
+		BNC.Layout.addToRegion(new Element('ul.buttons', {children: buttons}), 'tl');
 
-	/**
-	 *
-	 */
-	displayProperties: function()
-	{
-		log('BNC.Bouncie.displayProperties();');
+		var input_doctype, input_framework, input_normalize;
+		var settingsContents = new Element('fieldset', {
+			children: new Element('ul', {
+				children: [
+					new Element('li', {
+						children: [
+							new Element('label[text=Doctype]'),
+							new Element('span.input', {
+								children: input_doctype = new Element('select[name=doctype]')
+							})
+						]
+					}),
+					new Element('li', {
+						children: [
+							new Element('label[text=Framework]'),
+							new Element('span.input', {
+								children: input_framework = new Element('select[name=framework]')
+							})
+						]
+					}),
+					new Element('li', {
+						children: [
+							new Element('label').set('text', 'Normalize.css'),
+							new Element('span.input', {
+								children: input_normalize = new Element('input[type=checkbox][checked]')
+							})
+						]
+					})
+				]
+			})
+		}).adopt();
+
+		input_doctype.adopt(
+			new Element('option', {text: 'HTML 5'}),
+			new Element('option', {text: 'HTML 4.01 Strict'}),
+			new Element('option', {text: 'HTML 4.01 Transitional'}),
+			new Element('option', {text: 'HTML 4.01 Frameset'}),
+			new Element('option', {text: 'XHTML 1.0 Strict'}),
+			new Element('option', {text: 'XHTML 1.0 Transitional'})
+		)
+		input_framework.adopt(
+			new Element('optgroup[label=Mootools]').adopt(
+				new Element('option', {text: '1.4.2'}),
+				new Element('option', {text: '1.4.1'}),
+				new Element('option', {text: '1.4'})
+			),
+			new Element('optgroup[label=jQuery]').adopt(
+				new Element('option', {text: '1.7'})
+			)
+		);
+
+		new BNC.Popover(settingsContents, {button: buttons[0]});
+
+		var assetContents = new Element('fieldset', {
+			children: new Element('ul', {
+				children: new Element('li', {
+					children: new Element('input')
+				})
+			})
+		})
+		new BNC.Popover(assetContents, {button: buttons[1]});
 	},
 
 	/**
@@ -194,11 +264,11 @@ BNC.Bouncie = {
 	},
 
 	/**
-	 * Execute the current bouncie in the result frame
+	 * Run the current bouncie in the result frame
 	 */
-	execute: function()
+	run: function()
 	{
-		log('BNC.Bouncie.execute();');
+		log('BNC.Bouncie.run();');
 
 		BNC.Events.fireEvent('bnc.bouncie.save');
 		BNC.Layout.wrapper.submit();
@@ -212,7 +282,9 @@ BNC.Bouncie = {
 		log('BNC.Bouncie.save();');
 
 		BNC.Events.fireEvent('bnc.bouncie.save');
+		BNC.Layout.wrapper.submit();
 
+		var self = this;
 		var url = '/save';
 		if (this.properties.hash) {
 			url += '/'+this.properties.hash;
@@ -222,9 +294,14 @@ BNC.Bouncie = {
 			data: BNC.Layout.wrapper,
 			method: 'post',
 			onSuccess: function(response) {
+				if (!response.hash) {
+					return;
+				}
+				self.properties.hash = response.hash;
 				var url = '/'+response.hash;
 				if (response.revision) {
 					url += '/'+response.revision;
+					self.properties.revision = response.revision;
 				}
 				// Check for history api
 				if (!!(window.history && history.pushState)) {
@@ -717,7 +794,6 @@ BNC.Panel = new Class({
 			y2: pos.y + size.y
 		};
 	}
-
 });
 
 
@@ -771,7 +847,9 @@ BNC.Editor = {
 	 */
 	save: function()
 	{
-		this.codemirror.save();
+		if (this.codemirror) {
+			this.codemirror.save();
+		}
 	}
 };
 
@@ -942,5 +1020,120 @@ BNC.Result = {
 };
 BNC.Result.wake();
 
-})(typeof BNC == 'undefined' ? (window.BNC = {}) : BNC);
+/**
+ *
+ */
+BNC.Popover = new Class({
+	/**
+	 *
+	 */
+	Implements: Options,
+	/**
+	 *
+	 */
+	options: {
+		button: null
+	},
+	/**
+	 *
+	 */
+	hidden: true,
+
+	/**
+	 *
+	 */
+	initialize: function(contents, options)
+	{
+		log('BNC.Popover.initialize(', contents, options, ');');
+
+		this.setOptions(options);
+		this.build(contents);
+	},
+
+	/**
+	 *
+	 */
+	build: function(contents)
+	{
+		log('BNC.Popover..build(', contents, ');');
+
+		var self = this,
+			offset = {x: 0, y: 0};
+
+		if (this.options.button) {
+			var pos = this.options.button.getPosition(),
+				size = this.options.button.getSize();
+			this.offset = {x: pos.x, y: pos.y + size.y};
+
+			this.options.button.addEvent('click', function(e) {
+				e.preventDefault();
+				self.toggle();
+			})
+		}
+
+		this.element = new Element('div.popover', {
+			children: [
+				new Element('div.popover-arrow'),
+				new Element('div.popover-content', {children: contents})
+			],
+			morph: {
+				duration: 150
+			},
+			styles: {
+				top: this.offset.y,
+				left: this.offset.x,
+				display: 'none'
+			}
+		}).inject(BNC.Layout.wrapper);
+	},
+
+	/**
+	 *
+	 */
+	show: function()
+	{
+		log('BNC.Popover.show();');
+
+		this.element.setStyles({
+			display: 'block',
+			top: this.offset.y - 3,
+			opacity: 0
+		}).morph({
+			top: this.offset.y,
+			opacity: 1
+		});
+		this.hidden = false;
+	},
+
+	/**
+	 *
+	 */
+	hide: function()
+	{
+		log('BNC.Popover.hide();');
+		this.element.morph({
+			top: this.offset.y - 3,
+			opacity: 0
+		}).get('morph').chain(function() {
+			this.subject.setStyle('display', 'none');
+		});
+		this.hidden = true;
+	},
+
+	/**
+	 *
+	 */
+	toggle: function()
+	{
+		log('BNC.Popover.toggle();');
+
+		if (this.hidden) {
+			this.show();
+		} else {
+			this.hide();
+		}
+	}
+});
+
+}(typeof BNC == 'undefined' ? (window.BNC = {}) : BNC);
 

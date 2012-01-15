@@ -5,5 +5,5 @@ urls:
 db:
   host: localhost
   user: root
-  pass: root
+  pass:
   name: bounce
