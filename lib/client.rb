@@ -6,7 +6,7 @@ class Client < Controller
 
 	get %r{^/([A-Za-z0-9]+)(?:\/([0-9]+))?$} do |hash, revision|
 		bouncie = Bouncie.new hash, revision
-		haml :index, :locals => {:bouncie => bouncie}
+		haml :index, :locals => {:bouncie => bouncie, :urls => APP_CONFIG['urls']}
 	end
 
 	post %r{^/save(?:\/([A-Za-z0-9]+))?/?$} do |hash|

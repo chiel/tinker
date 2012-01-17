@@ -7,6 +7,7 @@
     %link{:rel=>'stylesheet', :href=>'/css/base.css'}
     %link{:rel=>'stylesheet', :href=>'/css/codemirror.css'}
   %body
+    %script{:type=>'urls'}= urls.to_json
     %script{:type=>'bouncie/properties'}= bouncie.properties.to_json
     %script{:type=>'bouncie/markup'}= CGI.escapeHTML bouncie.markup || ''
     %script{:type=>'bouncie/style'}= CGI.escapeHTML bouncie.style || ''

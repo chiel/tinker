@@ -377,9 +377,11 @@ BNC.Layout = {
 
 		document.body.setStyle('opacity', 0).set('morph', {duration: 250});
 
+		var urls = JSON.parse(document.getElement('script[type=urls]').get('html'));
+
 		this.wrapper = new Element('form#wrapper', {
 			method: 'post',
-			action: 'http://bounce-sandbox.dev/',
+			action: urls.sandbox,
 			target: 'sandbox'
 		}).inject(document.body);
 
