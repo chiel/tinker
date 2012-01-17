@@ -1,7 +1,7 @@
 class Client < Controller
 	get '/' do
 		bouncie = Bouncie.new
-		haml :index, :locals => {:bouncie => bouncie}
+		haml :index, :locals => {:bouncie => bouncie, :urls => APP_CONFIG['urls']}
 	end
 
 	get %r{^/([A-Za-z0-9]+)(?:\/([0-9]+))?$} do |hash, revision|
