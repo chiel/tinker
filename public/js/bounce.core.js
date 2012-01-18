@@ -16,6 +16,33 @@ window.log = function()
 /**
  *
  */
+Element.Events.outerclick = {
+
+	onAdd: function(fn){
+		var el = this,
+			listener = el.retrieve('outerclick:listener');
+
+		if (listener) return;
+
+		listener = function(e){
+			var target = e.target;
+			if (target != el && !el.contains(target)) el.fireEvent('outerclick', e);
+		};
+		document.id(document.body).addEvent('click', listener);
+		el.store('outerclick:listener', listener);
+	},
+
+	onRemove: function(fn){
+		var el = this,
+			listener = el.retrieve('outerclick:listener');
+		if (!listener) return;
+		document.id(document.body).removeEvent('click', listener);
+	}
+};
+
+/**
+ *
+ */
 Element.Properties.children = {
 	set: function(items) {
 		if (!Type.isEnumerable(items)) items = Array.from(items);
@@ -211,7 +238,7 @@ BNC.Bouncie = {
 			)
 		);
 
-		new BNC.Popover(settingsContents, {button: buttons[0]});
+		new BNC.Popover(settingsContents, {button: buttons[0].getElement('a')});
 
 		var assetContents = new Element('fieldset', {
 			children: new Element('ul', {
@@ -220,7 +247,7 @@ BNC.Bouncie = {
 				})
 			})
 		})
-		new BNC.Popover(assetContents, {button: buttons[1]});
+		new BNC.Popover(assetContents, {button: buttons[1].getElement('a')});
 	},
 
 	/**
@@ -1085,6 +1112,15 @@ BNC.Popover = new Class({
 				top: this.offset.y,
 				left: this.offset.x,
 				display: 'none'
+			},
+			events: {
+				outerclick: function(e) {
+											console.log(self);
+					if (!self.hidden && e.target !== self.options.button) {
+						log('outerclick', self.options.button);
+						self.hide();
+					}
+				}
 			}
 		}).inject(BNC.Layout.wrapper);
 	},
