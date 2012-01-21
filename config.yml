@@ -1,9 +1,0 @@
-urls:
-  client: http://bounce.dev/
-  sandbox: http://bounce-sandbox.dev/
-
-db:
-  host: localhost
-  user: root
-  pass:
-  name: bounce

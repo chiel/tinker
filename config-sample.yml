@@ -1,0 +1,10 @@
+urls:
+  client: http://<client_url>/
+  sandbox: http://<sandbox_url>/
+
+db:
+  url: 'mysql2://<user>:<pass>@<host>/<name>'
+  host: <host>
+  user: <user>
+  pass: <pass>
+  name: <name>

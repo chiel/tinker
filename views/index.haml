@@ -7,11 +7,12 @@
     %link{:rel=>'stylesheet', :href=>'/css/base.css'}
     %link{:rel=>'stylesheet', :href=>'/css/codemirror.css'}
   %body
-    %script{:type=>'urls'}= urls.to_json
     %script{:type=>'bouncie/properties'}= bouncie.properties.to_json
     %script{:type=>'bouncie/markup'}= CGI.escapeHTML bouncie.markup || ''
     %script{:type=>'bouncie/style'}= CGI.escapeHTML bouncie.style || ''
     %script{:type=>'bouncie/interaction'}= CGI.escapeHTML bouncie.interaction || ''
+    %script{:type=>'urls'}= urls.to_json
+    %script{:type=>'frameworks'}= libraries.to_json
     %script{:src=>'/js/mootools.js'}
     %script{:src=>'/js/mootools-more.js'}
     %script{:src=>'/js/codemirror.js'}

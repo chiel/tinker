@@ -9,7 +9,7 @@
 window.log = function()
 {
 	if (window.console) {
-		console.log(Array.prototype.slice.call(arguments));
+		console.log.apply(console, Array.prototype.slice.call(arguments));
 	}
 };
 
@@ -79,7 +79,7 @@ BNC.Core = {
 	/**
 	 *
 	 */
-	wake: function()
+	prepare: function()
 	{
 		BNC.Events.addEvent('bnc.init', this.init.bind(this));
 	},
@@ -92,7 +92,7 @@ BNC.Core = {
 		// log('BNC.Core.init(', config, ');');
 	}
 };
-BNC.Core.wake();
+BNC.Core.prepare();
 
 
 
@@ -116,7 +116,7 @@ BNC.Bouncie = {
 	/**
 	 *
 	 */
-	wake: function()
+	prepare: function()
 	{
 		BNC.Events.addEvent('bnc.init', this.init.bind(this));
 	},
@@ -141,9 +141,7 @@ BNC.Bouncie = {
 	 */
 	build: function()
 	{
-		log('BNC.Bouncie.build();');
-
-		this.buildProperties();
+		// log('BNC.Bouncie.build();');
 
 		if (this.properties.hash) {
 			this.run();
@@ -157,97 +155,20 @@ BNC.Bouncie = {
 			return new Element('li').adopt(el);
 		});
 
-		var el = new Element('ul.buttons')
-		.addEvent('click', function(e) {
-			e.stop();
-			var href = e.target.get('href');
-			if (href === '#run') {
-				self.run();
-			} else if (href === '#save') {
-				self.save();
+		BNC.Layout.addToRegion(new Element('ul.buttons', {
+			children: buttons,
+			events: {
+				click: function(e) {
+					e.stop();
+					var href = e.target.get('href');
+					if (href === '#run') {
+						self.run();
+					} else if (href === '#save') {
+						self.save();
+					}
+				}
 			}
-		})
-		.adopt(buttons);
-		BNC.Layout.addToRegion(el, 'br');
-	},
-
-	/**
-	 *
-	 */
-	buildProperties: function()
-	{
-		log('BNC.Bouncie.buildProperties();');
-
-		var self = this;
-		var buttons = $$(
-			new Element('a.button.settings[href=#settings][text=Settings]'),
-			new Element('a.button.assets[href=#assets][text=Assets]')
-		).map(function(el) {
-			return new Element('li').adopt(el);
-		});
-		BNC.Layout.addToRegion(new Element('ul.buttons', {children: buttons}), 'tl');
-
-		var input_doctype, input_framework, input_normalize;
-		var settingsContents = new Element('fieldset', {
-			children: new Element('ul', {
-				children: [
-					new Element('li', {
-						children: [
-							new Element('label[text=Doctype]'),
-							new Element('span.input', {
-								children: input_doctype = new Element('select[name=doctype]')
-							})
-						]
-					}),
-					new Element('li', {
-						children: [
-							new Element('label[text=Framework]'),
-							new Element('span.input', {
-								children: input_framework = new Element('select[name=framework]')
-							})
-						]
-					}),
-					new Element('li', {
-						children: [
-							new Element('label').set('text', 'Normalize.css'),
-							new Element('span.input', {
-								children: input_normalize = new Element('input[type=checkbox][checked]')
-							})
-						]
-					})
-				]
-			})
-		}).adopt();
-
-		input_doctype.adopt(
-			new Element('option', {text: 'HTML 5'}),
-			new Element('option', {text: 'HTML 4.01 Strict'}),
-			new Element('option', {text: 'HTML 4.01 Transitional'}),
-			new Element('option', {text: 'HTML 4.01 Frameset'}),
-			new Element('option', {text: 'XHTML 1.0 Strict'}),
-			new Element('option', {text: 'XHTML 1.0 Transitional'})
-		)
-		input_framework.adopt(
-			new Element('optgroup[label=Mootools]').adopt(
-				new Element('option', {text: '1.4.2'}),
-				new Element('option', {text: '1.4.1'}),
-				new Element('option', {text: '1.4'})
-			),
-			new Element('optgroup[label=jQuery]').adopt(
-				new Element('option', {text: '1.7'})
-			)
-		);
-
-		new BNC.Popover(settingsContents, {button: buttons[0].getElement('a')});
-
-		var assetContents = new Element('fieldset', {
-			children: new Element('ul', {
-				children: new Element('li', {
-					children: new Element('input')
-				})
-			})
-		})
-		new BNC.Popover(assetContents, {button: buttons[1].getElement('a')});
+		}), 'br');
 	},
 
 	/**
@@ -340,7 +261,154 @@ BNC.Bouncie = {
 		}).send();
 	}
 };
-BNC.Bouncie.wake();
+BNC.Bouncie.prepare();
+
+
+
+/**
+ *
+ */
+BNC.Settings = {
+	/**
+	 *
+	 */
+	prepare: function()
+	{
+		BNC.Events.addEvent('bnc.init', this.init.bind(this));
+	},
+
+	/**
+	 *
+	 */
+	init: function()
+	{
+		log('BNC.Settings.init();');
+		this.frameworks = JSON.parse(document.getElement('script[type=frameworks]').get('html'));
+		console.log(this.frameworks);
+
+		BNC.Events.addEvent('bnc.layout.build', this.build.bind(this));
+	},
+
+	/**
+	 *
+	 */
+	build: function()
+	{
+		log('BNC.Settings.build();');
+
+		var settingsButton;
+		BNC.Layout.addToRegion(new Element('ul.buttons', {
+			children: new Element('li', {
+				children: settingsButton = new Element('a.button.settings[href=#settings][text=Settings]')
+			})
+		}), 'tl');
+
+		var input_doctype, input_framework, input_normalize;
+		var settingsContents = new Element('fieldset', {
+			children: new Element('ul', {
+				children: [
+					new Element('li', {
+						children: [
+							new Element('label[text=Doctype]'),
+							new Element('span.input', {
+								children: input_doctype = new Element('select[name=doctype]')
+							})
+						]
+					}),
+					new Element('li', {
+						children: [
+							new Element('label[text=Framework]'),
+							new Element('span.input', {
+								children: input_framework = new Element('select[name=framework]')
+							})
+						]
+					}),
+					new Element('li', {
+						children: [
+							new Element('label').set('text', 'Normalize.css'),
+							new Element('span.input', {
+								children: input_normalize = new Element('input[type=checkbox][checked]')
+							})
+						]
+					})
+				]
+			})
+		}).adopt();
+
+		input_doctype.adopt(
+			new Element('option', {text: 'HTML 5'}),
+			new Element('option', {text: 'HTML 4.01 Strict'}),
+			new Element('option', {text: 'HTML 4.01 Transitional'}),
+			new Element('option', {text: 'HTML 4.01 Frameset'}),
+			new Element('option', {text: 'XHTML 1.0 Strict'}),
+			new Element('option', {text: 'XHTML 1.0 Transitional'})
+		);
+
+		Array.each(this.frameworks, function(framework) {
+			var optgroup = new Element('optgroup', {label: framework.name, value: framework.id});
+			Array.each(framework.versions, function(version) {
+				var option = new Element('option', {text: framework.name+' '+version.name});
+				optgroup.adopt(option);
+			});
+			input_framework.adopt(optgroup);
+		});
+		input_framework.addEvent('change', function(e) {
+			console.log('chaaange');
+		});
+
+		new BNC.Popover(settingsContents, {button: settingsButton});
+	}
+};
+BNC.Settings.prepare();
+
+
+
+/**
+ *
+ */
+BNC.Assets = {
+	/**
+	 *
+	 */
+	prepare: function()
+	{
+		BNC.Events.addEvent('bnc.init', this.init.bind(this));
+	},
+
+	/**
+	 *
+	 */
+	init: function()
+	{
+		log('BNC.Assets.init();');
+
+		BNC.Events.addEvent('bnc.layout.build', this.build.bind(this));
+	},
+
+	/**
+	 *
+	 */
+	build: function()
+	{
+		log('BNC.Assets.build();');
+		var assetButton;
+		BNC.Layout.addToRegion(new Element('ul.buttons', {
+			children: new Element('li', {
+				children: assetButton = new Element('a.button.assets[href=#assets][text=Assets]')
+			})
+		}), 'tl');
+
+		var assetContents = new Element('fieldset', {
+			children: new Element('ul', {
+				children: new Element('li', {
+					children: new Element('input')
+				})
+			})
+		});
+		new BNC.Popover(assetContents, {button: assetButton});
+	}
+};
+BNC.Assets.prepare();
 
 
 
@@ -380,7 +448,7 @@ BNC.Layout = {
 	/**
 	 *
 	 */
-	wake: function()
+	prepare: function()
 	{
 		BNC.Events.addEvent('bnc.init', this.init.bind(this));
 	},
@@ -390,7 +458,7 @@ BNC.Layout = {
 	 */
 	init: function(config)
 	{
-		log('BNC.Layout.init(', config, ');');
+		// log('BNC.Layout.init(', config, ');');
 
 		this.build();
 	},
@@ -400,7 +468,7 @@ BNC.Layout = {
 	 */
 	build: function()
 	{
-		log('BNC.Layout.build();');
+		// log('BNC.Layout.build();');
 
 		document.body.setStyle('opacity', 0).set('morph', {duration: 250});
 
@@ -441,7 +509,7 @@ BNC.Layout = {
 	 */
 	activate: function(index)
 	{
-		log('BNC.Layout.activate();');
+		// log('BNC.Layout.activate();');
 
 		if (index !== this.curLayout) {
 			var init = this.curLayout === null;
@@ -489,7 +557,7 @@ BNC.Layout = {
 		this.regions[region].adopt(node);
 	}
 };
-BNC.Layout.wake();
+BNC.Layout.prepare();
 
 
 
@@ -524,7 +592,7 @@ BNC.Layouts.push({
 	 */
 	activate: function()
 	{
-		log('BNC.Layouts[0].activate();');
+		// log('BNC.Layouts[0].activate();');
 
 		var self = this;
 		window.addEvent('resize', function(e) {
@@ -550,7 +618,7 @@ BNC.Layouts.push({
 	 */
 	deactivate: function()
 	{
-		log('BNC.Layouts[0].deactivate();');
+		// log('BNC.Layouts[0].deactivate();');
 	},
 
 	/**
@@ -558,7 +626,7 @@ BNC.Layouts.push({
 	 */
 	build: function()
 	{
-		log('BNC.Layouts[0].build();');
+		// log('BNC.Layouts[0].build();');
 
 		if (this.handles.length === 0) {
 			var self = this;
@@ -801,7 +869,7 @@ BNC.Panel = new Class({
 	 */
 	getInner: function()
 	{
-		log('BNC.Panel.getInner();');
+		// log('BNC.Panel.getInner();');
 
 		return this.inner;
 	},
@@ -847,7 +915,7 @@ BNC.Editor = {
 	/**
 	 *
 	 */
-	wake: function()
+	prepare: function()
 	{
 		BNC.Events.addEvent('bnc.layout.build', this.init.bind(this));
 		BNC.Events.addEvent('bnc.bouncie.save', this.save.bind(this));
@@ -858,7 +926,7 @@ BNC.Editor = {
 	 */
 	init: function()
 	{
-		log('BNC.Editor.init();');
+		// log('BNC.Editor.init();');
 
 		this.build();
 	},
@@ -868,7 +936,7 @@ BNC.Editor = {
 	 */
 	build: function()
 	{
-		log('BNC.Editor.build();');
+		// log('BNC.Editor.build();');
 	},
 
 	/**
@@ -893,7 +961,7 @@ BNC.MarkupEditor = Object.merge({}, BNC.Editor, {
 	 */
 	build: function()
 	{
-		log('BNC.MarkupEditor.build();');
+		// log('BNC.MarkupEditor.build();');
 
 		var panel = BNC.Layout.getPanel(0);
 		if (panel) {
@@ -908,7 +976,7 @@ BNC.MarkupEditor = Object.merge({}, BNC.Editor, {
 		}
 	}
 });
-BNC.MarkupEditor.wake();
+BNC.MarkupEditor.prepare();
 
 
 
@@ -921,7 +989,7 @@ BNC.StyleEditor = Object.merge({}, BNC.Editor, {
 	 */
 	build: function()
 	{
-		log('BNC.MarkupEditor.build();');
+		// log('BNC.MarkupEditor.build();');
 
 		var panel = BNC.Layout.getPanel(1);
 		if (panel) {
@@ -936,7 +1004,7 @@ BNC.StyleEditor = Object.merge({}, BNC.Editor, {
 		}
 	}
 });
-BNC.StyleEditor.wake();
+BNC.StyleEditor.prepare();
 
 
 
@@ -949,7 +1017,7 @@ BNC.InteractionEditor = Object.merge({}, BNC.Editor, {
 	 */
 	build: function()
 	{
-		log('BNC.MarkupEditor.build();');
+		// log('BNC.MarkupEditor.build();');
 
 		var panel = BNC.Layout.getPanel(2);
 		if (panel) {
@@ -964,7 +1032,7 @@ BNC.InteractionEditor = Object.merge({}, BNC.Editor, {
 		}
 	}
 });
-BNC.InteractionEditor.wake();
+BNC.InteractionEditor.prepare();
 
 
 
@@ -975,7 +1043,7 @@ BNC.Result = {
 	/**
 	 *
 	 */
-	wake: function()
+	prepare: function()
 	{
 		BNC.Events.addEvent('bnc.layout.build', this.init.bind(this));
 	},
@@ -985,7 +1053,7 @@ BNC.Result = {
 	 */
 	init: function()
 	{
-		log('BNC.Result.init()');
+		// log('BNC.Result.init()');
 
 		BNC.Events.addEvent('bnc.layout.dragStart', this.showOverlay.bind(this));
 		BNC.Events.addEvent('bnc.layout.dragEnd', this.hideOverlay.bind(this));
@@ -998,7 +1066,7 @@ BNC.Result = {
 	 */
 	build: function()
 	{
-		log('BNC.Result.build();');
+		// log('BNC.Result.build();');
 
 		var panel = BNC.Layout.getPanel(3);
 		if (panel) {
@@ -1047,7 +1115,7 @@ BNC.Result = {
 		this.overlay.dispose();
 	}
 };
-BNC.Result.wake();
+BNC.Result.prepare();
 
 /**
  *
@@ -1073,7 +1141,7 @@ BNC.Popover = new Class({
 	 */
 	initialize: function(contents, options)
 	{
-		log('BNC.Popover.initialize(', contents, options, ');');
+		// log('BNC.Popover.initialize(', contents, options, ');');
 
 		this.setOptions(options);
 		this.build(contents);
@@ -1084,7 +1152,7 @@ BNC.Popover = new Class({
 	 */
 	build: function(contents)
 	{
-		log('BNC.Popover..build(', contents, ');');
+		// log('BNC.Popover.build(', contents, ');');
 
 		var self = this,
 			offset = {x: 0, y: 0};
@@ -1115,9 +1183,7 @@ BNC.Popover = new Class({
 			},
 			events: {
 				outerclick: function(e) {
-											console.log(self);
 					if (!self.hidden && e.target !== self.options.button) {
-						log('outerclick', self.options.button);
 						self.hide();
 					}
 				}
@@ -1130,7 +1196,7 @@ BNC.Popover = new Class({
 	 */
 	show: function()
 	{
-		log('BNC.Popover.show();');
+		// log('BNC.Popover.show();');
 
 		this.element.setStyles({
 			display: 'block',
@@ -1148,7 +1214,7 @@ BNC.Popover = new Class({
 	 */
 	hide: function()
 	{
-		log('BNC.Popover.hide();');
+		// log('BNC.Popover.hide();');
 		this.element.morph({
 			top: this.offset.y - 3,
 			opacity: 0
@@ -1163,7 +1229,7 @@ BNC.Popover = new Class({
 	 */
 	toggle: function()
 	{
-		log('BNC.Popover.toggle();');
+		// log('BNC.Popover.toggle();');
 
 		if (this.hidden) {
 			this.show();
