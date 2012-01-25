@@ -3,6 +3,7 @@
  */
 "use strict";
 
+/*jsl:ignoreall*/
 /**
  * console.log wrapper
  */
@@ -270,6 +271,15 @@ BNC.Bouncie.prepare();
  */
 BNC.Settings = {
 	/**
+	 * Available frameworks
+	 */
+	frameworks: [],
+	/**
+	 * Available framework versions
+	 */
+	versions: {},
+
+	/**
 	 *
 	 */
 	prepare: function()
@@ -283,8 +293,15 @@ BNC.Settings = {
 	init: function()
 	{
 		log('BNC.Settings.init();');
+
+		var self = this;
 		this.frameworks = JSON.parse(document.getElement('script[type=frameworks]').get('html'));
-		console.log(this.frameworks);
+		Array.each(this.frameworks, function(framework) {
+			Array.each(framework.versions, function(version) {
+				version.x_framework_id = framework.id;
+				self.versions[version['id']] = version;
+			});
+		});
 
 		BNC.Events.addEvent('bnc.layout.build', this.build.bind(this));
 	},
@@ -296,7 +313,7 @@ BNC.Settings = {
 	{
 		log('BNC.Settings.build();');
 
-		var settingsButton;
+		var self = this, settingsButton;
 		BNC.Layout.addToRegion(new Element('ul.buttons', {
 			children: new Element('li', {
 				children: settingsButton = new Element('a.button.settings[href=#settings][text=Settings]')
@@ -347,13 +364,18 @@ BNC.Settings = {
 		Array.each(this.frameworks, function(framework) {
 			var optgroup = new Element('optgroup', {label: framework.name, value: framework.id});
 			Array.each(framework.versions, function(version) {
-				var option = new Element('option', {text: framework.name+' '+version.name});
+				console.log(version);
+				var option = new Element('option', {text: framework.name+' '+version.name, value: version.id});
 				optgroup.adopt(option);
 			});
 			input_framework.adopt(optgroup);
 		});
+
 		input_framework.addEvent('change', function(e) {
-			console.log('chaaange');
+			var selected = self.versions[input_framework.getSelected()[0].get('value')];
+			if (selected.extensions && selected.extensions.length) {
+				console.log('extensions: ', selected.extensions);
+			}
 		});
 
 		new BNC.Popover(settingsContents, {button: settingsButton});
@@ -728,10 +750,12 @@ BNC.Layouts.push({
 
 		BNC.Events.fireEvent('bnc.layout.dragStart');
 
+		var p1, p2;
 		switch (handleId) {
-			case 0: var p1 = p[0].getCoords(), p2 = p[1].getCoords(); break;
-			case 1: var p1 = p[0].getCoords(), p2 = p[2].getCoords(); break;
-			case 2: var p1 = p[2].getCoords(), p2 = p[3].getCoords(); break;
+			case 0: p1 = p[0].getCoords(); p2 = p[1].getCoords(); break;
+			case 1: p1 = p[0].getCoords(); p2 = p[2].getCoords(); break;
+			case 2: p1 = p[2].getCoords(); p2 = p[3].getCoords(); break;
+			default: log('Unhandled handleId: ', handleId); break;
 		}
 
 		var box = {
@@ -741,13 +765,14 @@ BNC.Layouts.push({
 			y2: p2.y2
 		};
 
+		var limits;
 		if (el.hasClass('horz')) {
-			var limits = {
+			limits = {
 				x1: handlePos.x, x2: handlePos.x,
 				y1: box.y1 + 100, y2: box.y2 - 100 - handleSize.y
 			};
 		} else {
-			var limits = {
+			limits = {
 				x1: box.x1 + 200, x2: box.x2 - 200 - handleSize.x,
 				y1: handlePos.y, y2: handlePos.y
 			};
@@ -900,6 +925,9 @@ BNC.Panel = new Class({
  */
 BNC.Editor = {
 	/**
+	 * Keep track of the active line
+	 */
+	/**
 	 * Options that are shared by all codemirror instances
 	 */
 	mirrorOptions: {
@@ -909,7 +937,13 @@ BNC.Editor = {
 		lineNumbers: true,
 		matchBrackets: true,
 		fixedGutter: true,
-		theme: 'bounce-light'
+		theme: 'bounce-light' //,
+		// onCursorActivity: function() {
+		// 	console.log('cursor activity', this, self);
+		// 	editor.setLineClass(hlLine, null);
+		// 	hlLine = editor.setLineClass(editor.getCursor().line, "activeline");
+		// }
+		// var hlLine = editor.setLineClass(0, "activeline");
 	},
 
 	/**
@@ -1165,7 +1199,7 @@ BNC.Popover = new Class({
 			this.options.button.addEvent('click', function(e) {
 				e.preventDefault();
 				self.toggle();
-			})
+			});
 		}
 
 		this.element = new Element('div.popover', {

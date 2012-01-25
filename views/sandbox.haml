@@ -3,8 +3,10 @@
   %head
     %meta{:charset=>'utf-8'}
     %title Bounce &mdash; Sandbox
-    %style= bouncie[:style]
+    %style= css
+    - scripts.each do |script|
+      %script{:src => script}
   %body
-    = bouncie[:markup]
-    %script= bouncie[:interaction]
+    = html
+    %script= js
 

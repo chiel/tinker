@@ -11,6 +11,18 @@ class Framework
 	end
 
 	#
+	#
+	#
+	def get(id)
+		version = DB[:framework_version].select(:id, :x_framework_id, :name, :dirname, :filename).filter(:id => id).first;
+		framework = DB[:framework].select(:name, :dirname).filter(:id => version[:x_framework_id]).first
+		# puts framework
+		# puts version
+		version[:filepath] = framework[:dirname]+'/'+version[:dirname]+'/'+version[:filename]
+		return version
+	end
+
+	#
 	# Grab a list of all available libraries
 	#
 	def list
@@ -18,7 +30,7 @@ class Framework
 		frameworks = DB[:framework].select(:id, :name).all
 		frameworks.each do |framework|
 			# then versions
-			versions = DB[:framework_version].select(:name, :filename).filter(:x_framework_id => framework[:id]).all
+			versions = DB[:framework_version].select(:id, :name, :filename).filter(:x_framework_id => framework[:id]).order(:name.desc).all
 			versions.each do |version|
 				# then extensions
 				extensions = DB[:framework_extension].select(:name, :filename).filter(:x_framework_version_id => version[:id]).all
