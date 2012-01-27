@@ -2,15 +2,15 @@
 %html{:lang=>'en'}
   %head
     %meta{:charset=>'utf-8'}
-    %title Bounce &mdash; Social Code Collaboration
+    %title Tinker &mdash; Social Code Collaboration
     %link{:rel=>'stylesheet', :href=>'/css/normalize.css'}
     %link{:rel=>'stylesheet', :href=>'/css/base.css'}
     %link{:rel=>'stylesheet', :href=>'/css/codemirror.css'}
   %body
-    %script{:type=>'bouncie/properties'}= bouncie.properties.to_json
-    %script{:type=>'bouncie/markup'}= CGI.escapeHTML bouncie.markup || ''
-    %script{:type=>'bouncie/style'}= CGI.escapeHTML bouncie.style || ''
-    %script{:type=>'bouncie/interaction'}= CGI.escapeHTML bouncie.interaction || ''
+    %script{:type=>'tinker/properties'}= tinker.properties.to_json
+    %script{:type=>'tinker/markup'}= CGI.escapeHTML tinker.markup || ''
+    %script{:type=>'tinker/style'}= CGI.escapeHTML tinker.style || ''
+    %script{:type=>'tinker/interaction'}= CGI.escapeHTML tinker.interaction || ''
     %script{:type=>'urls'}= urls.to_json
     %script{:type=>'frameworks'}= libraries.to_json
     %script{:src=>'/js/mootools.js'}
@@ -19,6 +19,6 @@
     %script{:src=>'/js/syntax/xml.js'}
     %script{:src=>'/js/syntax/css.js'}
     %script{:src=>'/js/syntax/javascript.js'}
-    %script{:src=>'/js/bounce.core.js'}
-    %script BNC.init({theme: 'light'});
+    %script{:src=>'/js/tinker.core.js'}
+    %script Tinker.init({theme: 'light'});
 

@@ -1,5 +1,7 @@
 $:.unshift File.expand_path('.') + '/lib'
-%w[yaml json sinatra/base mysql2 sequel haml sass digest/sha2 controller client sandbox bouncie framework].each { |f| require f }
+%w[yaml json sinatra/base mysql2 sequel haml sass digest/sha2 controller client sandbox tinker framework].each do |f|
+	require f
+end
 
 APP_CONFIG = YAML.load_file 'config.yml'
 DB = Sequel.connect(APP_CONFIG['db']['url'])

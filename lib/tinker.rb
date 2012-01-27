@@ -1,4 +1,4 @@
-class Bouncie
+class Tinker
 
 	attr_reader :markup, :style, :interaction
 
@@ -38,7 +38,7 @@ class Bouncie
 				:password => APP_CONFIG['db']['pass'],
 				:database => APP_CONFIG['db']['name']
 			)
-			query = 'INSERT INTO bouncie_revision (x_bouncie_hash, revision, markup, style, interaction) '
+			query = 'INSERT INTO tinker_revision (x_tinker_hash, revision, markup, style, interaction) '
 			query << 'VALUES ("'+client.escape(hash)+'", 0, '
 			query << '"'+client.escape(entry[:markup])+'", '
 			query << '"'+client.escape(entry[:style])+'", '
@@ -58,8 +58,8 @@ class Bouncie
 	#
 	#
 	def read(hash, revision)
-		entry = DB[:bouncie_revision].filter(
-			:x_bouncie_hash => hash,
+		entry = DB[:tinker_revision].filter(
+			:x_tinker_hash => hash,
 			:revision => revision.to_i > 0 ? revision.to_i : 0
 		).first
 
@@ -83,14 +83,14 @@ class Bouncie
 				:password => APP_CONFIG['db']['pass'],
 				:database => APP_CONFIG['db']['name']
 			)
-			query = 'SELECT MAX(revision) as max FROM bouncie_revision '
-			query << 'WHERE x_bouncie_hash = "'+hash+'"'
+			query = 'SELECT MAX(revision) as max FROM tinker_revision '
+			query << 'WHERE x_tinker_hash = "'+hash+'"'
 			results = client.query(query)
 
 			max = results.first['max'].to_i
 			revision = (max + 1).to_s
 
-			query = 'INSERT INTO bouncie_revision (x_bouncie_hash, revision, markup, style, interaction) '
+			query = 'INSERT INTO tinker_revision (x_tinker_hash, revision, markup, style, interaction) '
 			query << 'VALUES ("'+client.escape(hash)+'", '+revision+', '
 			query << '"'+client.escape(entry[:markup])+'", '
 			query << '"'+client.escape(entry[:style])+'", '

@@ -52,37 +52,45 @@ Element.Properties.children = {
 	}
 };
 
+/**
+ * Create a closure for private stuff
+ */
 !function() {
 
 /**
- * Init function which fires an event
+ * Make this stuff public
  */
-BNC.init = function(config)
+Tinker.init = function(config)
 {
-	// log('BNC.init(', config, ');');
+	TP.Events.fireEvent('init', config);
+}
 
-	BNC.Events.fireEvent('bnc.init', config);
-};
+
+
+/**
+ * Private namespace
+ */
+var TP = {};
 
 
 
 /**
  *
  */
-BNC.Events = new Events;
+TP.Events = new Events;
 
 
 
 /**
  *
  */
-BNC.Core = {
+TP.Core = {
 	/**
 	 *
 	 */
 	prepare: function()
 	{
-		BNC.Events.addEvent('bnc.init', this.init.bind(this));
+		TP.Events.addEvent('init', this.init.bind(this));
 	},
 
 	/**
@@ -90,17 +98,17 @@ BNC.Core = {
 	 */
 	init: function(config)
 	{
-		// log('BNC.Core.init(', config, ');');
+		// log('TP.Core.init(', config, ');');
 	}
 };
-BNC.Core.prepare();
+TP.Core.prepare();
 
 
 
 /**
  *
  */
-BNC.Bouncie = {
+TP.Tinker = {
 	/**
 	 *
 	 */
@@ -119,22 +127,22 @@ BNC.Bouncie = {
 	 */
 	prepare: function()
 	{
-		BNC.Events.addEvent('bnc.init', this.init.bind(this));
+		TP.Events.addEvent('init', this.init.bind(this));
 	},
 
 	/**
-	 * Store data for the current bouncie
+	 * Store data for the current tinker
 	 */
 	init: function(config)
 	{
-		// log('BNC.Bouncie.init(', config, ');');
+		// log('TP.Tinker.init(', config, ');');
 
-		this.properties = JSON.parse(document.getElement('script[type=bouncie/properties]').get('html'));
-		this.markup = document.getElement('script[type=bouncie/markup]').get('html');
-		this.style = document.getElement('script[type=bouncie/style]').get('html');
-		this.interaction = document.getElement('script[type=bouncie/interaction]').get('html');
+		this.properties = JSON.parse(document.getElement('script[type=tinker/properties]').get('html'));
+		this.markup = document.getElement('script[type=tinker/markup]').get('html');
+		this.style = document.getElement('script[type=tinker/style]').get('html');
+		this.interaction = document.getElement('script[type=tinker/interaction]').get('html');
 
-		BNC.Events.addEvent('bnc.layout.build', this.build.bind(this));
+		TP.Events.addEvent('layout.build', this.build.bind(this));
 	},
 
 	/**
@@ -142,10 +150,10 @@ BNC.Bouncie = {
 	 */
 	build: function()
 	{
-		// log('BNC.Bouncie.build();');
+		// log('TP.Tinker.build();');
 
 		if (this.properties.hash) {
-			this.run();
+			TP.Events.addEvent('settings.build', this.run.bind(this));
 		}
 
 		var self = this;
@@ -156,7 +164,7 @@ BNC.Bouncie = {
 			return new Element('li').adopt(el);
 		});
 
-		BNC.Layout.addToRegion(new Element('ul.buttons', {
+		TP.Layout.addToRegion(new Element('ul.buttons', {
 			children: buttons,
 			events: {
 				click: function(e) {
@@ -169,69 +177,69 @@ BNC.Bouncie = {
 					}
 				}
 			}
-		}), 'br');
+		}), 'tr');
 	},
 
 	/**
-	 * Get properties for current bouncie
+	 * Get properties for current tinker
 	 */
 	getProperties: function()
 	{
-		// log('BNC.Bouncie.getProperties();');
+		// log('TP.Tinker.getProperties();');
 
 		return this.properties;
 	},
 
 	/**
-	 * Get markup for current bouncie
+	 * Get markup for current tinker
 	 */
 	getMarkup: function()
 	{
-		// log('BNC.Bouncie.getMarkup();');
+		// log('TP.Tinker.getMarkup();');
 
 		return this.markup;
 	},
 
 	/**
-	 * Get style for current bouncie
+	 * Get style for current tinker
 	 */
 	getStyle: function()
 	{
-		// log('BNC.Bouncie.getStyle();');
+		// log('TP.Tinker.getStyle();');
 
 		return this.style;
 	},
 
 	/**
-	 * Get interaction for current bouncie
+	 * Get interaction for current tinker
 	 */
 	getInteraction: function()
 	{
-		// log('BNC.Bouncie.getInteraction();');
+		// log('TP.Tinker.getInteraction();');
 
 		return this.interaction;
 	},
 
 	/**
-	 * Run the current bouncie in the result frame
+	 * Run the current tinker in the result frame
 	 */
 	run: function()
 	{
-		log('BNC.Bouncie.run();');
+		log('TP.Tinker.run();');
 
-		BNC.Events.fireEvent('bnc.bouncie.save');
-		BNC.Layout.wrapper.submit();
+		TP.Events.fireEvent('tinker.save');
+		TP.Layout.wrapper.submit();
 	},
 
 	/**
-	 * Save the current bouncie
+	 * Save the current tinker
 	 */
 	save: function()
 	{
-		log('BNC.Bouncie.save();');
+		log('TP.Tinker.save();');
 
-		BNC.Events.fireEvent('bnc.bouncie.save');
-		BNC.Layout.wrapper.submit();
+		TP.Events.fireEvent('tinker.save');
+		TP.Layout.wrapper.submit();
 
 		var self = this;
 		var url = '/save';
@@ -240,7 +248,7 @@ BNC.Bouncie = {
 		}
 		new Request.JSON({
 			url: url,
-			data: BNC.Layout.wrapper,
+			data: TP.Layout.wrapper,
 			method: 'post',
 			onSuccess: function(response) {
 				if (!response.hash) {
@@ -262,14 +270,14 @@ BNC.Bouncie = {
 		}).send();
 	}
 };
-BNC.Bouncie.prepare();
+TP.Tinker.prepare();
 
 
 
 /**
  *
  */
-BNC.Settings = {
+TP.Settings = {
 	/**
 	 * Available frameworks
 	 */
@@ -284,7 +292,7 @@ BNC.Settings = {
 	 */
 	prepare: function()
 	{
-		BNC.Events.addEvent('bnc.init', this.init.bind(this));
+		TP.Events.addEvent('init', this.init.bind(this));
 	},
 
 	/**
@@ -292,7 +300,7 @@ BNC.Settings = {
 	 */
 	init: function()
 	{
-		log('BNC.Settings.init();');
+		log('TP.Settings.init();');
 
 		var self = this;
 		this.frameworks = JSON.parse(document.getElement('script[type=frameworks]').get('html'));
@@ -303,7 +311,7 @@ BNC.Settings = {
 			});
 		});
 
-		BNC.Events.addEvent('bnc.layout.build', this.build.bind(this));
+		TP.Events.addEvent('layout.build', this.build.bind(this));
 	},
 
 	/**
@@ -311,10 +319,10 @@ BNC.Settings = {
 	 */
 	build: function()
 	{
-		log('BNC.Settings.build();');
+		log('TP.Settings.build();');
 
 		var self = this, settingsButton;
-		BNC.Layout.addToRegion(new Element('ul.buttons', {
+		TP.Layout.addToRegion(new Element('ul.buttons', {
 			children: new Element('li', {
 				children: settingsButton = new Element('a.button.settings[href=#settings][text=Settings]')
 			})
@@ -378,23 +386,25 @@ BNC.Settings = {
 			}
 		});
 
-		new BNC.Popover(settingsContents, {button: settingsButton});
+		new TP.Popover(settingsContents, {button: settingsButton});
+
+		TP.Events.fireEvent('settings.build');
 	}
 };
-BNC.Settings.prepare();
+TP.Settings.prepare();
 
 
 
 /**
  *
  */
-BNC.Assets = {
+TP.Assets = {
 	/**
 	 *
 	 */
 	prepare: function()
 	{
-		BNC.Events.addEvent('bnc.init', this.init.bind(this));
+		TP.Events.addEvent('init', this.init.bind(this));
 	},
 
 	/**
@@ -402,9 +412,9 @@ BNC.Assets = {
 	 */
 	init: function()
 	{
-		log('BNC.Assets.init();');
+		log('TP.Assets.init();');
 
-		BNC.Events.addEvent('bnc.layout.build', this.build.bind(this));
+		TP.Events.addEvent('layout.build', this.build.bind(this));
 	},
 
 	/**
@@ -412,9 +422,9 @@ BNC.Assets = {
 	 */
 	build: function()
 	{
-		log('BNC.Assets.build();');
+		log('TP.Assets.build();');
 		var assetButton;
-		BNC.Layout.addToRegion(new Element('ul.buttons', {
+		TP.Layout.addToRegion(new Element('ul.buttons', {
 			children: new Element('li', {
 				children: assetButton = new Element('a.button.assets[href=#assets][text=Assets]')
 			})
@@ -427,17 +437,17 @@ BNC.Assets = {
 				})
 			})
 		});
-		new BNC.Popover(assetContents, {button: assetButton});
+		new TP.Popover(assetContents, {button: assetButton});
 	}
 };
-BNC.Assets.prepare();
+TP.Assets.prepare();
 
 
 
 /**
  *
  */
-BNC.Layout = {
+TP.Layout = {
 	/**
 	 * The currently active layout
 	 */
@@ -472,7 +482,7 @@ BNC.Layout = {
 	 */
 	prepare: function()
 	{
-		BNC.Events.addEvent('bnc.init', this.init.bind(this));
+		TP.Events.addEvent('init', this.init.bind(this));
 	},
 
 	/**
@@ -480,7 +490,7 @@ BNC.Layout = {
 	 */
 	init: function(config)
 	{
-		// log('BNC.Layout.init(', config, ');');
+		// log('TP.Layout.init(', config, ');');
 
 		this.build();
 	},
@@ -490,7 +500,7 @@ BNC.Layout = {
 	 */
 	build: function()
 	{
-		// log('BNC.Layout.build();');
+		// log('TP.Layout.build();');
 
 		document.body.setStyle('opacity', 0).set('morph', {duration: 250});
 
@@ -514,16 +524,16 @@ BNC.Layout = {
 		};
 
 		this.panels = [
-			new BNC.Panel(this.body, 0),
-			new BNC.Panel(this.body, 1),
-			new BNC.Panel(this.body, 2),
-			new BNC.Panel(this.body, 3)
+			new TP.Panel(this.body, 0),
+			new TP.Panel(this.body, 1),
+			new TP.Panel(this.body, 2),
+			new TP.Panel(this.body, 3)
 		];
 
 		var els = this.panels.map(function(p) { return p.getOuter(); });
 		this.fx = new Fx.Elements(els, {duration: 200});
 		this.activate();
-		BNC.Events.fireEvent('bnc.layout.build');
+		TP.Events.fireEvent('layout.build');
 	},
 
 	/**
@@ -531,23 +541,23 @@ BNC.Layout = {
 	 */
 	activate: function(index)
 	{
-		// log('BNC.Layout.activate();');
+		// log('TP.Layout.activate();');
 
 		if (index !== this.curLayout) {
 			var init = this.curLayout === null;
 
-			if (init && !BNC.Layouts[index]) {
+			if (init && !TP.Layouts[index]) {
 				index = 0;
 			}
 
-			if (!init && BNC.Layouts[this.curLayout]) {
+			if (!init && TP.Layouts[this.curLayout]) {
 				document.html.removeClass('layout-'+this.curLayout);
-				BNC.Layouts[this.curLayout].deactivate();
+				TP.Layouts[this.curLayout].deactivate();
 			}
 
-			if (BNC.Layouts[index]) {
+			if (TP.Layouts[index]) {
 				document.html.addClass('layout-'+index);
-				BNC.Layouts[index].activate();
+				TP.Layouts[index].activate();
 				this.curLayout = index;
 			}
 		}
@@ -579,21 +589,21 @@ BNC.Layout = {
 		this.regions[region].adopt(node);
 	}
 };
-BNC.Layout.prepare();
+TP.Layout.prepare();
 
 
 
 /**
  * A collection of existing layouts
  */
-BNC.Layouts = [];
+TP.Layouts = [];
 
 
 
 /**
  * Default layout
  */
-BNC.Layouts.push({
+TP.Layouts.push({
 	/**
 	 * Drag handles
 	 */
@@ -614,12 +624,12 @@ BNC.Layouts.push({
 	 */
 	activate: function()
 	{
-		// log('BNC.Layouts[0].activate();');
+		// log('TP.Layouts[0].activate();');
 
 		var self = this;
 		window.addEvent('resize', function(e) {
 			var dimensions = self.getDimensions();
-			BNC.Layout.fx.set(dimensions);
+			TP.Layout.fx.set(dimensions);
 			self.recalibrate();
 		});
 
@@ -629,7 +639,7 @@ BNC.Layouts.push({
 		}
 
 		var dimensions = this.getDimensions();
-		BNC.Layout.fx.set(dimensions);
+		TP.Layout.fx.set(dimensions);
 		document.body.morph({opacity: [0, 1]});
 		this.build();
 		this.recalibrate();
@@ -640,7 +650,7 @@ BNC.Layouts.push({
 	 */
 	deactivate: function()
 	{
-		// log('BNC.Layouts[0].deactivate();');
+		// log('TP.Layouts[0].deactivate();');
 	},
 
 	/**
@@ -648,7 +658,7 @@ BNC.Layouts.push({
 	 */
 	build: function()
 	{
-		// log('BNC.Layouts[0].build();');
+		// log('TP.Layouts[0].build();');
 
 		if (this.handles.length === 0) {
 			var self = this;
@@ -661,7 +671,7 @@ BNC.Layouts.push({
 			});
 		}
 
-		this.handles.inject(BNC.Layout.body);
+		this.handles.inject(TP.Layout.body);
 	},
 
 	/**
@@ -669,9 +679,9 @@ BNC.Layouts.push({
 	 */
 	recalibrate: function()
 	{
-		// log('BNC.Layouts[0].recalibrate()');
+		// log('TP.Layouts[0].recalibrate()');
 
-		var p = BNC.Layout.panels,
+		var p = TP.Layout.panels,
 			p0 = p[0].getCoords(),
 			p2 = p[2].getCoords(),
 			p3 = p[3].getCoords();
@@ -698,10 +708,10 @@ BNC.Layouts.push({
 	 */
 	getDimensions: function()
 	{
-		// log('BNC.Layouts[0].getDimensions();');
+		// log('TP.Layouts[0].getDimensions();');
 
 		var rs = this.relativeSizes,
-			bSize = BNC.Layout.body.getSize(),
+			bSize = TP.Layout.body.getSize(),
 			opw = bSize.x / 100,
 			oph = bSize.y / 100,
 			d = {};
@@ -739,16 +749,16 @@ BNC.Layouts.push({
 	 */
 	dragStart: function(e, el)
 	{
-		// log('BNC.Layouts[0].dragStart(',e,el,')');
+		// log('TP.Layouts[0].dragStart(',e,el,')');
 
 		e.stop();
-		var p = BNC.Layout.panels,
+		var p = TP.Layout.panels,
 			handleId = el.retrieve('handleId'),
-			handlePos = el.getPosition(BNC.Layout.body),
+			handlePos = el.getPosition(TP.Layout.body),
 			handleSize = el.getSize(),
 			mouseStart = e.client;
 
-		BNC.Events.fireEvent('bnc.layout.dragStart');
+		TP.Events.fireEvent('layout.dragStart');
 
 		var p1, p2;
 		switch (handleId) {
@@ -817,10 +827,10 @@ BNC.Layouts.push({
 
 		// Drag end
 		var mouseup = function(e) {
-			BNC.Events.fireEvent('bnc.layout.dragEnd');
+			TP.Events.fireEvent('layout.dragEnd');
 
 			// Store relative sizes of elements
-			var bSize = BNC.Layout.body.getSize(),
+			var bSize = TP.Layout.body.getSize(),
 				opw = bSize.x / 100,
 				oph = bSize.y / 100,
 				p0Size = p[0].getOuter().getSize(),
@@ -853,7 +863,7 @@ BNC.Layouts.push({
 /**
  * Create a panel which can hold result/editor frames
  */
-BNC.Panel = new Class({
+TP.Panel = new Class({
 	/**
 	 * The panel's parent
 	 */
@@ -872,7 +882,7 @@ BNC.Panel = new Class({
 	 */
 	initialize: function(wrapper, index)
 	{
-		// log('BNC.Panel.initialize(', wrapper, index, ');');
+		// log('TP.Panel.initialize(', wrapper, index, ');');
 
 		this.wrapper = wrapper;
 		this.outer = new Element('section#panel'+index).inject(this.wrapper);
@@ -884,7 +894,7 @@ BNC.Panel = new Class({
 	 */
 	getOuter: function()
 	{
-		// log('BNC.Panel.getOuter();', this.outer);
+		// log('TP.Panel.getOuter();', this.outer);
 
 		return this.outer;
 	},
@@ -894,7 +904,7 @@ BNC.Panel = new Class({
 	 */
 	getInner: function()
 	{
-		// log('BNC.Panel.getInner();');
+		// log('TP.Panel.getInner();');
 
 		return this.inner;
 	},
@@ -904,7 +914,7 @@ BNC.Panel = new Class({
 	 */
 	getCoords: function()
 	{
-		// log('BNC.Panel.getCoords();');
+		// log('TP.Panel.getCoords();');
 
 		var pos = this.inner.getPosition(this.wrapper),
 			size = this.inner.getSize();
@@ -923,7 +933,7 @@ BNC.Panel = new Class({
 /**
  * Shared functionality across editors
  */
-BNC.Editor = {
+TP.Editor = {
 	/**
 	 * Keep track of the active line
 	 */
@@ -937,7 +947,7 @@ BNC.Editor = {
 		lineNumbers: true,
 		matchBrackets: true,
 		fixedGutter: true,
-		theme: 'bounce-light' //,
+		theme: 'tinker-light' //,
 		// onCursorActivity: function() {
 		// 	console.log('cursor activity', this, self);
 		// 	editor.setLineClass(hlLine, null);
@@ -951,8 +961,8 @@ BNC.Editor = {
 	 */
 	prepare: function()
 	{
-		BNC.Events.addEvent('bnc.layout.build', this.init.bind(this));
-		BNC.Events.addEvent('bnc.bouncie.save', this.save.bind(this));
+		TP.Events.addEvent('layout.build', this.init.bind(this));
+		TP.Events.addEvent('tinker.save', this.save.bind(this));
 	},
 
 	/**
@@ -960,7 +970,7 @@ BNC.Editor = {
 	 */
 	init: function()
 	{
-		// log('BNC.Editor.init();');
+		// log('TP.Editor.init();');
 
 		this.build();
 	},
@@ -970,7 +980,7 @@ BNC.Editor = {
 	 */
 	build: function()
 	{
-		// log('BNC.Editor.build();');
+		// log('TP.Editor.build();');
 	},
 
 	/**
@@ -989,20 +999,20 @@ BNC.Editor = {
 /**
  *
  */
-BNC.MarkupEditor = Object.merge({}, BNC.Editor, {
+TP.MarkupEditor = Object.merge({}, TP.Editor, {
 	/**
 	 *
 	 */
 	build: function()
 	{
-		// log('BNC.MarkupEditor.build();');
+		// log('TP.MarkupEditor.build();');
 
-		var panel = BNC.Layout.getPanel(0);
+		var panel = TP.Layout.getPanel(0);
 		if (panel) {
 			this.frame = new Element('div.frame');
 			this.textarea = new Element('textarea', {
 				name: 'markup',
-				html: BNC.Bouncie.getMarkup()
+				html: TP.Tinker.getMarkup()
 			});
 			this.frame.adopt(this.textarea).inject(panel.getInner());
 			var options = Object.append({mode: 'text/html'}, this.mirrorOptions);
@@ -1010,27 +1020,27 @@ BNC.MarkupEditor = Object.merge({}, BNC.Editor, {
 		}
 	}
 });
-BNC.MarkupEditor.prepare();
+TP.MarkupEditor.prepare();
 
 
 
 /**
  *
  */
-BNC.StyleEditor = Object.merge({}, BNC.Editor, {
+TP.StyleEditor = Object.merge({}, TP.Editor, {
 	/**
 	 *
 	 */
 	build: function()
 	{
-		// log('BNC.MarkupEditor.build();');
+		// log('TP.MarkupEditor.build();');
 
-		var panel = BNC.Layout.getPanel(1);
+		var panel = TP.Layout.getPanel(1);
 		if (panel) {
 			this.frame = new Element('div.frame');
 			this.textarea = new Element('textarea', {
 				name: 'style',
-				html: BNC.Bouncie.getStyle()
+				html: TP.Tinker.getStyle()
 			});
 			this.frame.adopt(this.textarea).inject(panel.getInner());
 			var options = Object.append({mode: 'text/css'}, this.mirrorOptions);
@@ -1038,27 +1048,27 @@ BNC.StyleEditor = Object.merge({}, BNC.Editor, {
 		}
 	}
 });
-BNC.StyleEditor.prepare();
+TP.StyleEditor.prepare();
 
 
 
 /**
  *
  */
-BNC.InteractionEditor = Object.merge({}, BNC.Editor, {
+TP.InteractionEditor = Object.merge({}, TP.Editor, {
 	/**
 	 *
 	 */
 	build: function()
 	{
-		// log('BNC.MarkupEditor.build();');
+		// log('TP.MarkupEditor.build();');
 
-		var panel = BNC.Layout.getPanel(2);
+		var panel = TP.Layout.getPanel(2);
 		if (panel) {
 			this.frame = new Element('div.frame');
 			this.textarea = new Element('textarea', {
 				name: 'interaction',
-				html: BNC.Bouncie.getInteraction()
+				html: TP.Tinker.getInteraction()
 			});
 			this.frame.adopt(this.textarea).inject(panel.getInner());
 			var options = Object.append({mode: 'text/javascript'}, this.mirrorOptions);
@@ -1066,20 +1076,20 @@ BNC.InteractionEditor = Object.merge({}, BNC.Editor, {
 		}
 	}
 });
-BNC.InteractionEditor.prepare();
+TP.InteractionEditor.prepare();
 
 
 
 /**
  *
  */
-BNC.Result = {
+TP.Result = {
 	/**
 	 *
 	 */
 	prepare: function()
 	{
-		BNC.Events.addEvent('bnc.layout.build', this.init.bind(this));
+		TP.Events.addEvent('layout.build', this.init.bind(this));
 	},
 
 	/**
@@ -1087,10 +1097,10 @@ BNC.Result = {
 	 */
 	init: function()
 	{
-		// log('BNC.Result.init()');
+		// log('TP.Result.init()');
 
-		BNC.Events.addEvent('bnc.layout.dragStart', this.showOverlay.bind(this));
-		BNC.Events.addEvent('bnc.layout.dragEnd', this.hideOverlay.bind(this));
+		TP.Events.addEvent('layout.dragStart', this.showOverlay.bind(this));
+		TP.Events.addEvent('layout.dragEnd', this.hideOverlay.bind(this));
 
 		this.build();
 	},
@@ -1100,9 +1110,9 @@ BNC.Result = {
 	 */
 	build: function()
 	{
-		// log('BNC.Result.build();');
+		// log('TP.Result.build();');
 
-		var panel = BNC.Layout.getPanel(3);
+		var panel = TP.Layout.getPanel(3);
 		if (panel) {
 			this.wrapper = panel.getInner();
 			this.frame = new Element('div.frame');
@@ -1116,7 +1126,7 @@ BNC.Result = {
 	 */
 	buildOverlay: function()
 	{
-		// log('BNC.Result.buildOverlay();');
+		// log('TP.Result.buildOverlay();');
 
 		if (!this.overlay) {
 			this.overlay = new Element('div', {
@@ -1133,7 +1143,7 @@ BNC.Result = {
 	 */
 	showOverlay: function()
 	{
-		// log('BNC.Result.showOverlay();');
+		// log('TP.Result.showOverlay();');
 
 		this.buildOverlay();
 		this.overlay.inject(this.wrapper);
@@ -1144,17 +1154,17 @@ BNC.Result = {
 	 */
 	hideOverlay: function()
 	{
-		// log('BNC.Result.hideOverlay();');
+		// log('TP.Result.hideOverlay();');
 
 		this.overlay.dispose();
 	}
 };
-BNC.Result.prepare();
+TP.Result.prepare();
 
 /**
  *
  */
-BNC.Popover = new Class({
+TP.Popover = new Class({
 	/**
 	 *
 	 */
@@ -1175,7 +1185,7 @@ BNC.Popover = new Class({
 	 */
 	initialize: function(contents, options)
 	{
-		// log('BNC.Popover.initialize(', contents, options, ');');
+		// log('TP.Popover.initialize(', contents, options, ');');
 
 		this.setOptions(options);
 		this.build(contents);
@@ -1186,7 +1196,7 @@ BNC.Popover = new Class({
 	 */
 	build: function(contents)
 	{
-		// log('BNC.Popover.build(', contents, ');');
+		// log('TP.Popover.build(', contents, ');');
 
 		var self = this,
 			offset = {x: 0, y: 0};
@@ -1222,7 +1232,7 @@ BNC.Popover = new Class({
 					}
 				}
 			}
-		}).inject(BNC.Layout.wrapper);
+		}).inject(TP.Layout.wrapper);
 	},
 
 	/**
@@ -1230,7 +1240,7 @@ BNC.Popover = new Class({
 	 */
 	show: function()
 	{
-		// log('BNC.Popover.show();');
+		// log('TP.Popover.show();');
 
 		this.element.setStyles({
 			display: 'block',
@@ -1248,7 +1258,7 @@ BNC.Popover = new Class({
 	 */
 	hide: function()
 	{
-		// log('BNC.Popover.hide();');
+		// log('TP.Popover.hide();');
 		this.element.morph({
 			top: this.offset.y - 3,
 			opacity: 0
@@ -1263,7 +1273,7 @@ BNC.Popover = new Class({
 	 */
 	toggle: function()
 	{
-		// log('BNC.Popover.toggle();');
+		// log('TP.Popover.toggle();');
 
 		if (this.hidden) {
 			this.show();
@@ -1273,5 +1283,5 @@ BNC.Popover = new Class({
 	}
 });
 
-}(typeof BNC == 'undefined' ? (window.BNC = {}) : BNC);
+}(typeof Tinker == 'undefined' ? (window.Tinker = {}) : Tinker);
 

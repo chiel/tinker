@@ -5,15 +5,17 @@ class Sandbox < Controller
 	end
 
 	post '/' do
-		framework = Framework.new.get params[:framework]
+		puts params
+		framework = Framework.get params[:framework]
 		locals = {
 			:html => params[:markup],
 			:css => params[:style],
 			:js => params[:interaction],
-			:scripts => [
-				'/frameworks/'+framework[:filepath]
-			]
+			:scripts => []
 		}
+		if framework
+			locals[:scripts] << '/frameworks/'+framework[:filepath]
+		end
 
 		headers 'X-Frame-Options' => ''
 		body haml :sandbox, :locals => locals
