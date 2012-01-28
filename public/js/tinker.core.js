@@ -486,6 +486,14 @@ TP.Layout = {
 		ox: 210,
 		oy: 110
 	},
+	/**
+	 * Layout picker element
+	 */
+	layoutPicker: null,
+	/**
+	 * Layout picker buttons
+	 */
+	layoutButtons: [],
 
 	/**
 	 *
@@ -534,19 +542,6 @@ TP.Layout = {
 			br: new Element('div.region.br').inject(this.footer)
 		};
 
-		var layoutSelector = new Element('ul.layouts');
-		layoutSelector.addEvent('click', function(e) {
-			e.preventDefault();
-			var layoutIndex = e.target.retrieve('layoutIndex');
-			self.activate(layoutIndex);
-		});
-		Array.each(TP.Layouts, function(layout, index) {
-			layoutSelector.adopt(new Element('li', {
-				children: new Element('a.button-layout.ls-'+index).store('layoutIndex', index)
-			}));
-		});
-		this.addToRegion(layoutSelector, 'bm');
-
 		this.panels = [
 			new TP.Panel(this.body, 0),
 			new TP.Panel(this.body, 1),
@@ -556,8 +551,41 @@ TP.Layout = {
 
 		var els = this.panels.map(function(p) { return p.getOuter(); });
 		this.fx = new Fx.Elements(els, {duration: 200});
+		this.buildLayoutPicker();
 		this.activate(0, true);
 		TP.Events.fireEvent('layout.build');
+	},
+
+	/**
+	 *
+	 */
+	buildLayoutPicker: function()
+	{
+		log('TP.Layout.buildLayoutPicker();');
+
+		var self = this;
+		this.layoutButtons = new Elements();
+
+		Array.each(TP.Layouts, function(layout, index) {
+			var anchor = new Element('a.button-layout.ls-'+index).store('layoutIndex', index);
+			self.layoutButtons.push(anchor);
+		});
+
+		this.layoutPicker = new Element('div#layoutpicker', {
+			children: [
+				new Element('div.arrow'),
+				new Element('ul', {
+					children: this.layoutButtons.map(function(el) { return new Element('li').adopt(el); })
+				})
+			]
+		});
+		this.layoutPicker.addEvent('click', function(e) {
+			e.preventDefault();
+			if (e.target.get('tag') === 'a') {
+				self.activate(e.target.retrieve('layoutIndex'));
+			}
+		});
+		this.addToRegion(this.layoutPicker, 'bm');
 	},
 
 	/**
