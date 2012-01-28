@@ -11,10 +11,15 @@ class Sandbox < Controller
 			:html => params[:markup],
 			:css => params[:style],
 			:js => params[:interaction],
-			:scripts => []
+			:scripts => [],
+			:stylesheets => []
 		}
 		if framework
 			locals[:scripts] << '/frameworks/'+framework[:filepath]
+		end
+
+		if params[:normalize]
+			locals[:stylesheets] << '/css/normalize.css'
 		end
 
 		headers 'X-Frame-Options' => ''

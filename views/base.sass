@@ -73,16 +73,20 @@ footer
   position: absolute
   bottom: 0
   width: 100%
+  text-align: center
 
 .region
   overflow: hidden
   height: 100%
+  text-align: left
   &.tl
     float: left
   &.tr
     float: right
   &.bl
     float: left
+  &.bm
+    display: inline-block
   &.br
     float: right
   ul
@@ -91,10 +95,10 @@ footer
 #body
   overflow: hidden
   position: absolute
-  top: 53px
-  bottom: 53px
-  left: 0
-  width: 100%
+  top: 58px
+  right: 5px
+  bottom: 58px
+  left: 5px
 
 section
   overflow: hidden
@@ -104,10 +108,10 @@ section
   z-index: 1
 .inner
   position: absolute
-  top: 10px
-  right: 10px
-  bottom: 10px
-  left: 10px
+  top: 5px
+  right: 5px
+  bottom: 5px
+  left: 5px
 .frame
   position: absolute
   top: 0
@@ -144,25 +148,12 @@ section
   cursor: move
   &.vert
     background: rgba(255, 0, 0, .3)
-    background: url(../img/handle-vert.png) no-repeat center
+    // background: url(../img/handle-vert.png) no-repeat center
     cursor: ew-resize
   &.horz
     background: rgba(0, 0, 255, .3)
-    background: url(../img/handle-horz.png) no-repeat center
+    // background: url(../img/handle-horz.png) no-repeat center
     cursor: ns-resize
-
-.layout-0
-  #panel0 .inner
-    right: 5px
-    bottom: 5px
-  #panel1 .inner
-    top: 5px
-    right: 5px
-  #panel2 .inner
-    right: 5px
-    left: 5px
-  #panel3 .inner
-    left: 5px
 
 .popover
   position: absolute
@@ -184,6 +175,16 @@ section
     background: #eee
   .popover-content
     margin: 12px
+
+.layouts
+  li
+    float: left
+
+.button-layout
+  display: block
+  width: 20px
+  height: 20px
+  background: #f00
 
 /**
  * Codemirror overrides

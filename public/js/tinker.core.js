@@ -168,7 +168,7 @@ TP.Tinker = {
 			children: buttons,
 			events: {
 				click: function(e) {
-					e.stop();
+					e.preventDefault();
 					var href = e.target.get('href');
 					if (href === '#run') {
 						self.run();
@@ -352,7 +352,7 @@ TP.Settings = {
 						children: [
 							new Element('label').set('text', 'Normalize.css'),
 							new Element('span.input', {
-								children: input_normalize = new Element('input[type=checkbox][checked]')
+								children: input_normalize = new Element('input[name=normalize][type=checkbox][checked]')
 							})
 						]
 					})
@@ -372,7 +372,6 @@ TP.Settings = {
 		Array.each(this.frameworks, function(framework) {
 			var optgroup = new Element('optgroup', {label: framework.name, value: framework.id});
 			Array.each(framework.versions, function(version) {
-				console.log(version);
 				var option = new Element('option', {text: framework.name+' '+version.name, value: version.id});
 				optgroup.adopt(option);
 			});
@@ -476,6 +475,17 @@ TP.Layout = {
 	 * Fx object to animate between layouts
 	 */
 	fx: null,
+	/**
+	 * Minimum dimensions of a panel
+	 *
+	 * Includes inner and outer minimum dimensions
+	 */
+	min: {
+		x: 200,
+		y: 100,
+		ox: 210,
+		oy: 110
+	},
 
 	/**
 	 *
@@ -502,10 +512,10 @@ TP.Layout = {
 	{
 		// log('TP.Layout.build();');
 
+		var self = this;
 		document.body.setStyle('opacity', 0).set('morph', {duration: 250});
 
 		var urls = JSON.parse(document.getElement('script[type=urls]').get('html'));
-
 		this.wrapper = new Element('form#wrapper', {
 			method: 'post',
 			action: urls.sandbox,
@@ -520,8 +530,22 @@ TP.Layout = {
 			tl: new Element('div.region.tl').inject(this.header),
 			tr: new Element('div.region.tr').inject(this.header),
 			bl: new Element('div.region.bl').inject(this.footer),
+			bm: new Element('div.region.bm').inject(this.footer),
 			br: new Element('div.region.br').inject(this.footer)
 		};
+
+		var layoutSelector = new Element('ul.layouts');
+		layoutSelector.addEvent('click', function(e) {
+			e.preventDefault();
+			var layoutIndex = e.target.retrieve('layoutIndex');
+			self.activate(layoutIndex);
+		});
+		Array.each(TP.Layouts, function(layout, index) {
+			layoutSelector.adopt(new Element('li', {
+				children: new Element('a.button-layout.ls-'+index).store('layoutIndex', index)
+			}));
+		});
+		this.addToRegion(layoutSelector, 'bm');
 
 		this.panels = [
 			new TP.Panel(this.body, 0),
@@ -532,14 +556,14 @@ TP.Layout = {
 
 		var els = this.panels.map(function(p) { return p.getOuter(); });
 		this.fx = new Fx.Elements(els, {duration: 200});
-		this.activate();
+		this.activate(0, true);
 		TP.Events.fireEvent('layout.build');
 	},
 
 	/**
 	 * Activate a layout by index
 	 */
-	activate: function(index)
+	activate: function(index, init)
 	{
 		// log('TP.Layout.activate();');
 
@@ -557,7 +581,7 @@ TP.Layout = {
 
 			if (TP.Layouts[index]) {
 				document.html.addClass('layout-'+index);
-				TP.Layouts[index].activate();
+				TP.Layouts[index].activate(init);
 				this.curLayout = index;
 			}
 		}
@@ -589,6 +613,7 @@ TP.Layout = {
 		this.regions[region].adopt(node);
 	}
 };
+
 TP.Layout.prepare();
 
 
@@ -608,7 +633,6 @@ TP.Layouts.push({
 	 * Drag handles
 	 */
 	handles: [],
-
 	/**
 	 * Relative size of the panels
 	 */
@@ -618,20 +642,24 @@ TP.Layouts.push({
 		{x: 34, y: 100},
 		{x: 0, y: 100}
 	],
+	/**
+	 * Bound functions
+	 */
+	bound: {},
+	/**
+	 * Store stuff during a drag
+	 */
+	dragOpts: {},
 
 	/**
 	 * Activate this layout
 	 */
-	activate: function()
+	activate: function(init)
 	{
-		// log('TP.Layouts[0].activate();');
+		log('TP.Layouts[0].activate();');
 
-		var self = this;
-		window.addEvent('resize', function(e) {
-			var dimensions = self.getDimensions();
-			TP.Layout.fx.set(dimensions);
-			self.recalibrate();
-		});
+		this.bound.resize = this.resize.bind(this);
+		window.addEvent('resize', this.bound.resize);
 
 		var relativeSizes = localStorage['layout0Sizes'];
 		if (relativeSizes) {
@@ -639,10 +667,18 @@ TP.Layouts.push({
 		}
 
 		var dimensions = this.getDimensions();
-		TP.Layout.fx.set(dimensions);
-		document.body.morph({opacity: [0, 1]});
-		this.build();
-		this.recalibrate();
+		if (init) {
+			TP.Layout.fx.set(dimensions);
+			document.body.morph({opacity: [0, 1]});
+			this.build();
+			this.recalibrate();
+		} else {
+			var self = this;
+			TP.Layout.fx.start(dimensions).chain(function() {
+				self.build();
+				self.recalibrate();
+			});
+		}
 	},
 
 	/**
@@ -650,7 +686,57 @@ TP.Layouts.push({
 	 */
 	deactivate: function()
 	{
-		// log('TP.Layouts[0].deactivate();');
+		log('TP.Layouts[0].deactivate();');
+
+		this.handles.dispose();
+		window.removeEvent('resize', this.bound.resize);
+	},
+
+	/**
+	 * Get dimensions for panels based on passed relative sizes
+	 */
+	getDimensions: function()
+	{
+		// log('TP.Layouts[0].getDimensions();');
+
+		var rs = this.relativeSizes,
+			p = TP.Layout.panels,
+			bSize = TP.Layout.body.getSize(),
+			min = TP.Layout.min,
+			opw = bSize.x / 100,
+			oph = bSize.y / 100,
+			d = {};
+
+		d[0] = {
+			top: 0,
+			left: 0,
+			width: Math.ceil(opw * rs[0].x),
+			height: Math.ceil(oph * rs[0].y)
+		};
+		d[0].width = d[0].width < min.ox ? min.ox : d[0].width;
+		d[0].height = d[0].height < min.oy ? min.oy : d[0].height;
+		d[1] = {
+			top: d[0].height,
+			left: 0,
+			width: Math.ceil(opw * rs[1].x),
+			height: bSize.y - d[0].height
+		};
+		d[1].width = d[1].width < min.ox ? min.ox : d[1].width;
+		d[2] = {
+			top: 0,
+			left: d[0].width,
+			width: Math.ceil(opw * rs[2].x),
+			height: bSize.y
+		};
+		d[2].width = d[2].width < min.ox ? min.ox : d[2].width;
+		d[3] = {
+			top: 0,
+			left: d[0].width + d[2].width,
+			width: bSize.x - (d[0].width + d[2].width),
+			height: bSize.y
+		};
+
+		return d;
 	},
 
 	/**
@@ -704,14 +790,237 @@ TP.Layouts.push({
 	},
 
 	/**
-	 * Calculate the dimensions of each panel based on relative sizing
+	 * Handle starting drag
+	 */
+	dragStart: function(e, handle)
+	{
+		// log('TP.Layouts[0].dragStart(', e, handle, ');');
+
+		e.stop();
+		var p = TP.Layout.panels, d = this.dragOpts, p1, p2;
+
+		d.handle = handle;
+		d.handleId = handle.retrieve('handleId');
+		d.handlePos = handle.getPosition(TP.Layout.body),
+		d.handleSize = handle.getSize();
+		d.mousePos = e.client;
+
+		TP.Events.fireEvent('layout.dragStart');
+
+		switch (d.handleId) {
+			case 0: p1 = p[0].getCoords(); p2 = p[1].getCoords(); break;
+			case 1: p1 = p[0].getCoords(); p2 = p[2].getCoords(); break;
+			case 2: p1 = p[2].getCoords(); p2 = p[3].getCoords(); break;
+			default: log('Unhandled handleId: ', d.handleId); break;
+		}
+
+		d.box = {
+			x1: p1.x1,
+			y1: p1.y1,
+			x2: p2.x2,
+			y2: p2.y2
+		};
+
+		if (d.handle.hasClass('horz')) {
+			d.limits = {
+				x1: d.box.x1,
+				x2: d.box.x1,
+				y1: d.box.y1 + 100,
+				y2: d.box.y2 - 100 - d.handleSize.y
+			};
+		} else {
+			d.limits = {
+				x1: d.box.x1 + 200,
+				x2: d.box.x2 - 200 - d.handleSize.x,
+				y1: d.box.y1,
+				y2: d.box.y1
+			};
+		}
+
+		this.bound.mousemove = this.drag.bind(this);
+		this.bound.mouseup = this.dragEnd.bind(this);
+
+		document.addEvents({
+			mousemove: this.bound.mousemove,
+			mouseup: this.bound.mouseup
+		});
+	},
+
+	/**
+	 *
+	 */
+	drag: function(e)
+	{
+		// log('TP.Layouts[0].drag(', e, ');');
+
+		var p = TP.Layout.panels,
+			d = this.dragOpts,
+			x = d.handlePos.x - (d.mousePos.x - e.client.x),
+			y = d.handlePos.y - (d.mousePos.y - e.client.y);
+
+		if (x < d.limits.x1) { x = d.limits.x1; }
+		if (x > d.limits.x2) { x = d.limits.x2; }
+		if (y < d.limits.y1) { y = d.limits.y1; }
+		if (y > d.limits.y2) { y = d.limits.y2; }
+
+		d.handle.setStyles({top: y, left: x});
+
+		if (d.handleId === 0) {
+			p[0].getOuter().setStyle('height', y + 5);
+			p[1].getOuter().setStyles({
+				top: y + 5,
+				height: (d.box.y2 - y)
+			});
+		} else if (d.handleId === 1) {
+			p[0].getOuter().setStyle('width', x + 5);
+			p[1].getOuter().setStyle('width', x + 5);
+			this.handles[0].setStyle('width', x - 5);
+			p[2].getOuter().setStyles({
+				left: x + 5,
+				width: d.box.x2 - x
+			});
+		} else if (d.handleId === 2) {
+			p[2].getOuter().setStyle('width', (x - d.box.x1) + 10);
+			p[3].getOuter().setStyles({
+				left: x + 5,
+				width: d.box.x2 - x
+			});
+		}
+	},
+
+	/**
+	 * Drag end event
+	 */
+	dragEnd: function(e)
+	{
+		// log('TP.Layouts[0].dragEnd(', e, ');');
+
+		TP.Events.fireEvent('layout.dragEnd');
+		document.removeEvents({
+			mousemove: this.bound.mousemove,
+			mouseup: this.bound.mouseup
+		});
+		this.storeSizes();
+	},
+
+	/**
+	 * Handle window resizing
+	 */
+	resize: function()
+	{
+		// log('TP.Layouts[0].resize();');
+
+		var dimensions = this.getDimensions();
+		TP.Layout.fx.set(dimensions);
+		this.recalibrate();
+	},
+
+	/**
+	 * Store relative sizes of elements
+	 */
+	storeSizes: function()
+	{
+		log('TP.Layouts[0.storeSizes();');
+
+		var p = TP.Layout.panels,
+			bSize = TP.Layout.body.getSize(),
+			opw = bSize.x / 100,
+			oph = bSize.y / 100,
+			p0Size = p[0].getOuter().getSize(),
+			p1Size = p[1].getOuter().getSize(),
+			p2Size = p[2].getOuter().getSize(),
+			p3Size = p[3].getOuter().getSize();
+
+		this.relativeSizes = [
+			{x: Math.floor(p0Size.x/opw), y: Math.floor(p0Size.y/oph)},
+			{x: Math.floor(p1Size.x/opw), y: 0},
+			{x: Math.floor(p2Size.x/opw), y: 100},
+			{x: 0, y: 100}
+		];
+		localStorage['layout0Sizes'] = JSON.stringify(this.relativeSizes);
+	}
+});
+
+
+
+/**
+ * Default layout
+ */
+TP.Layouts.push({
+	/**
+	 * Drag handles
+	 */
+	handles: [],
+	/**
+	 * Relative size of the panels
+	 */
+	relativeSizes: [
+		{x: 50, y: 33},
+		{x: 50, y: 33},
+		{x: 50, y: 33},
+		{x: 0, y: 100}
+	],
+	/**
+	 * Bound functions
+	 */
+	bound: {},
+	/**
+	 * Store stuff during a drag
+	 */
+	dragOpts: {},
+
+	/**
+	 * Activate this layout
+	 */
+	activate: function(init)
+	{
+		log('TP.Layouts[1].activate();');
+
+		this.bound.resize = this.resize.bind(this);
+		window.addEvent('resize', this.bound.resize);
+
+		var relativeSizes = localStorage['layout1Sizes'];
+		if (relativeSizes) {
+			this.relativeSizes = JSON.parse(relativeSizes);
+		}
+
+		var dimensions = this.getDimensions();
+		if (init) {
+			TP.Layout.fx.set(dimensions);
+			document.body.morph({opacity: [0, 1]});
+			this.build();
+			this.recalibrate();
+		} else {
+			var self = this;
+			TP.Layout.fx.start(dimensions).chain(function() {
+				self.build();
+				self.recalibrate();
+			});
+		}
+	},
+
+	/**
+	 * Deactivate this layout
+	 */
+	deactivate: function()
+	{
+		log('TP.Layouts[1].deactivate();');
+
+		this.handles.dispose();
+		window.addEvent('resize', this.bound.resize);
+	},
+
+	/**
+	 * Get dimensions for panels based on passed relative sizes
 	 */
 	getDimensions: function()
 	{
-		// log('TP.Layouts[0].getDimensions();');
+		// log('TP.Layouts[1].getDimensions();');
 
 		var rs = this.relativeSizes,
+			p = TP.Layout.panels,
 			bSize = TP.Layout.body.getSize(),
+			min = TP.Layout.min,
 			opw = bSize.x / 100,
 			oph = bSize.y / 100,
 			d = {};
@@ -722,22 +1031,27 @@ TP.Layouts.push({
 			width: Math.ceil(opw * rs[0].x),
 			height: Math.ceil(oph * rs[0].y)
 		};
+		d[0].width = d[0].width < min.ox ? min.ox : d[0].width;
+		d[0].height = d[0].height < min.oy ? min.oy : d[0].height;
 		d[1] = {
 			top: d[0].height,
 			left: 0,
 			width: Math.ceil(opw * rs[1].x),
-			height: bSize.y - d[0].height
+			height: Math.ceil(oph * rs[1].y)
 		};
+		d[1].width = d[1].width < min.ox ? min.ox : d[1].width;
+		d[1].height = d[1].height < min.oy ? min.oy : d[1].height;
 		d[2] = {
-			top: 0,
-			left: d[0].width,
+			top: d[0].height + d[1].height,
+			left: 0,
 			width: Math.ceil(opw * rs[2].x),
-			height: bSize.y
+			height: bSize.y - d[1].height - d[0].height
 		};
+		d[2].width = d[2].width < min.ox ? min.ox : d[2].width;
 		d[3] = {
 			top: 0,
-			left: d[0].width + d[2].width,
-			width: bSize.x - (d[0].width + d[2].width),
+			left: d[0].width,
+			width: bSize.x - d[0].width,
 			height: bSize.y
 		};
 
@@ -745,116 +1059,206 @@ TP.Layouts.push({
 	},
 
 	/**
+	 * Build up any additional element required for this layout
+	 */
+	build: function()
+	{
+		// log('TP.Layouts[1].build();');
+
+		if (this.handles.length === 0) {
+			var self = this;
+			this.handles = new Elements([
+				new Element('div.handle.horz.h1').store('handleId', 0),
+				new Element('div.handle.horz.h2').store('handleId', 1),
+				new Element('div.handle.vert.h3').store('handleId', 2)
+			]).addEvent('mousedown', function(e) {
+				self.dragStart(e, e.target);
+			});
+		}
+
+		this.handles.inject(TP.Layout.body);
+	},
+
+	/**
+	 * Recalibrate handle positions/sizes
+	 */
+	recalibrate: function()
+	{
+		// log('TP.Layouts[1].recalibrate()');
+
+		var p = TP.Layout.panels,
+			p0 = p[0].getCoords(),
+			p1 = p[1].getCoords(),
+			p3 = p[3].getCoords();
+
+		this.handles[0].setStyles({
+			top: p0.y2,
+			left: p0.x1,
+			width: p0.x2 - p0.x1
+		});
+		this.handles[1].setStyles({
+			top: p1.y2,
+			left: p1.x1,
+			width: p1.x2 - p1.x1
+		});
+		this.handles[2].setStyles({
+			top: p0.y1,
+			left: p0.x2,
+			height: p3.y2 - p3.y1
+		});
+	},
+
+	/**
 	 * Handle starting drag
 	 */
-	dragStart: function(e, el)
+	dragStart: function(e, handle)
 	{
-		// log('TP.Layouts[0].dragStart(',e,el,')');
+		// log('TP.Layouts[1].dragStart(', e, handle, ');');
 
 		e.stop();
-		var p = TP.Layout.panels,
-			handleId = el.retrieve('handleId'),
-			handlePos = el.getPosition(TP.Layout.body),
-			handleSize = el.getSize(),
-			mouseStart = e.client;
+		var p = TP.Layout.panels, d = this.dragOpts, p1, p2;
+
+		d.handle = handle;
+		d.handleId = handle.retrieve('handleId');
+		d.handlePos = handle.getPosition(TP.Layout.body),
+		d.handleSize = handle.getSize();
+		d.mousePos = e.client;
 
 		TP.Events.fireEvent('layout.dragStart');
 
-		var p1, p2;
-		switch (handleId) {
+		switch (d.handleId) {
 			case 0: p1 = p[0].getCoords(); p2 = p[1].getCoords(); break;
-			case 1: p1 = p[0].getCoords(); p2 = p[2].getCoords(); break;
-			case 2: p1 = p[2].getCoords(); p2 = p[3].getCoords(); break;
-			default: log('Unhandled handleId: ', handleId); break;
+			case 1: p1 = p[1].getCoords(); p2 = p[2].getCoords(); break;
+			case 2: p1 = p[0].getCoords(); p2 = p[3].getCoords(); break;
+			default: log('Unhandled handleId: ', d.handleId); break;
 		}
 
-		var box = {
+		d.box = {
 			x1: p1.x1,
 			y1: p1.y1,
 			x2: p2.x2,
 			y2: p2.y2
 		};
 
-		var limits;
-		if (el.hasClass('horz')) {
-			limits = {
-				x1: handlePos.x, x2: handlePos.x,
-				y1: box.y1 + 100, y2: box.y2 - 100 - handleSize.y
+		if (d.handle.hasClass('horz')) {
+			d.limits = {
+				x1: d.box.x1,
+				x2: d.box.x1,
+				y1: d.box.y1 + 100,
+				y2: d.box.y2 - 100 - d.handleSize.y
 			};
 		} else {
-			limits = {
-				x1: box.x1 + 200, x2: box.x2 - 200 - handleSize.x,
-				y1: handlePos.y, y2: handlePos.y
+			d.limits = {
+				x1: d.box.x1 + 200,
+				x2: d.box.x2 - 200 - d.handleSize.x,
+				y1: d.box.y1,
+				y2: d.box.y1
 			};
 		}
 
-		// Handle being dragged
-		var mousemove = function(e) {
-			var x = handlePos.x - (mouseStart.x - e.client.x),
-				y = handlePos.y - (mouseStart.y - e.client.y);
+		this.bound.mousemove = this.drag.bind(this);
+		this.bound.mouseup = this.dragEnd.bind(this);
 
-			// Ensure the handle is within it's bounds
-			if (x < limits.x1) { x = limits.x1; }
-			if (x > limits.x2) { x = limits.x2; }
-			if (y < limits.y1) { y = limits.y1; }
-			if (y > limits.y2) { y = limits.y2; }
-
-			el.setStyles({top: y, left: x});
-
-			if (handleId === 0) {
-				p[0].getOuter().setStyle('height', y + 5);
-				p[1].getOuter().setStyles({
-					top: y + 5,
-					height: (box.y2 - y) + 5
-				});
-			} else if (handleId === 1) {
-				p[0].getOuter().setStyle('width', x + 5);
-				p[1].getOuter().setStyle('width', x + 5);
-				this.handles[0].setStyle('width', x - 10);
-				p[2].getOuter().setStyles({
-					left: x + 5,
-					width: box.x2 - x
-				});
-			} else if (handleId === 2) {
-				p[2].getOuter().setStyle('width', (x - box.x1) + 10);
-				p[3].getOuter().setStyles({
-					left: x + 5,
-					width: (box.x2 - x) + 5
-				});
-			}
-
-		}.bind(this);
-
-		// Drag end
-		var mouseup = function(e) {
-			TP.Events.fireEvent('layout.dragEnd');
-
-			// Store relative sizes of elements
-			var bSize = TP.Layout.body.getSize(),
-				opw = bSize.x / 100,
-				oph = bSize.y / 100,
-				p0Size = p[0].getOuter().getSize(),
-				p1Size = p[1].getOuter().getSize(),
-				p2Size = p[2].getOuter().getSize(),
-				p3Size = p[3].getOuter().getSize();
-
-			self.relativeSizes = [
-				{x: Math.round(p0Size.x/opw), y: Math.round(p0Size.y/oph)},
-				{x: Math.round(p1Size.x/opw), y: 0},
-				{x: Math.round(p2Size.x/opw), y: 100},
-				{x: 0, y: 100}
-			];
-			localStorage['layout0Sizes'] = JSON.stringify(self.relativeSizes);
-
-			document.removeEvents({
-				mousemove: mousemove,
-				mouseup: mouseup
-			});
-		};
 		document.addEvents({
-			mousemove: mousemove,
-			mouseup: mouseup
+			mousemove: this.bound.mousemove,
+			mouseup: this.bound.mouseup
 		});
+	},
+
+	/**
+	 *
+	 */
+	drag: function(e)
+	{
+		// log('TP.Layouts[1].drag(', e, ');');
+
+		var p = TP.Layout.panels,
+			d = this.dragOpts,
+			x = d.handlePos.x - (d.mousePos.x - e.client.x),
+			y = d.handlePos.y - (d.mousePos.y - e.client.y);
+
+		if (x < d.limits.x1) { x = d.limits.x1; }
+		if (x > d.limits.x2) { x = d.limits.x2; }
+		if (y < d.limits.y1) { y = d.limits.y1; }
+		if (y > d.limits.y2) { y = d.limits.y2; }
+
+		d.handle.setStyles({top: y, left: x});
+
+		if (d.handleId === 0) {
+			p[0].getOuter().setStyle('height', y + 5);
+			p[1].getOuter().setStyles({
+				top: y + 5,
+				height: d.box.y2 - y
+			});
+		} else if (d.handleId === 1) {
+			p[1].getOuter().setStyle('height', (y - d.box.y1) + 10);
+			p[2].getOuter().setStyles({
+				top: y + 5,
+				height: d.box.y2 - y
+			});
+		} else if (d.handleId === 2) {
+			p[0].getOuter().setStyle('width', x + 5);
+			p[1].getOuter().setStyle('width', x + 5);
+			p[2].getOuter().setStyle('width', x + 5);
+			this.handles[0].setStyle('width', x - 5);
+			this.handles[1].setStyle('width', x - 5);
+			p[3].getOuter().setStyles({
+				left: x + 5,
+				width: d.box.x2 - x
+			});
+		}
+	},
+
+	/**
+	 * Drag end event
+	 */
+	dragEnd: function(e)
+	{
+		// log('TP.Layouts[1].dragEnd(', e, ');');
+
+		TP.Events.fireEvent('layout.dragEnd');
+		document.removeEvents({
+			mousemove: this.bound.mousemove,
+			mouseup: this.bound.mouseup
+		});
+		this.storeSizes();
+	},
+
+	/**
+	 * Handle window resizing
+	 */
+	resize: function()
+	{
+		// log('TP.Layouts[1].resize();');
+
+		var dimensions = this.getDimensions();
+		TP.Layout.fx.set(dimensions);
+		this.recalibrate();
+	},
+
+	/**
+	 *
+	 */
+	storeSizes: function()
+	{
+		// log('TP.Layouts[1].storeSizes();');
+
+		var p = TP.Layout.panels,
+			bSize = TP.Layout.body.getSize(),
+			opw = bSize.x / 100,
+			oph = bSize.y / 100,
+			p0Size = p[0].getOuter().getSize(),
+			p1Size = p[1].getOuter().getSize(),
+			p2Size = p[2].getOuter().getSize(),
+			p3Size = p[3].getOuter().getSize();
+
+		this.relativeSizes = [
+			{x: Math.floor(p0Size.x/opw), y: Math.floor(p0Size.y/oph)},
+			{x: Math.floor(p1Size.x/opw), y: Math.floor(p1Size.y/oph)},
+			{x: Math.floor(p2Size.x/opw), y: 0},
+			{x: 0, y: 100}
+		];
+		localStorage['layout1Sizes'] = JSON.stringify(this.relativeSizes);
 	}
 });
 
@@ -912,7 +1316,7 @@ TP.Panel = new Class({
 	/**
 	 * Get coords for a panel's inner element, relative to the wrapper
 	 */
-	getCoords: function()
+	getCoords: function(outer)
 	{
 		// log('TP.Panel.getCoords();');
 

@@ -3,6 +3,8 @@
   %head
     %meta{:charset=>'utf-8'}
     %title Tinker &mdash; Sandbox
+    - stylesheets.each do |stylesheet|
+      %link{:rel => 'stylesheet', :href => stylesheet}
     %style= css
     - scripts.each do |script|
       %script{:src => script}
