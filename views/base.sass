@@ -148,11 +148,11 @@ section
   cursor: move
   &.vert
     background: rgba(255, 0, 0, .3)
-    // background: url(../img/handle-vert.png) no-repeat center
+    background: url(../img/handle-vert.png) no-repeat center
     cursor: ew-resize
   &.horz
     background: rgba(0, 0, 255, .3)
-    // background: url(../img/handle-horz.png) no-repeat center
+    background: url(../img/handle-horz.png) no-repeat center
     cursor: ns-resize
 
 .popover
@@ -177,16 +177,24 @@ section
     margin: 12px
 
 #layoutpicker
+  position: relative
+  .arrow
+    position: absolute
+    width: 0
+    height: 5px
+    border-top: 5px solid #bcbcbc
+    border-right: 5px solid transparent
+    border-left: 5px solid transparent
   ul
     overflow: hidden
   li
     float: left
-    margin: 10px 10px
+    margin: 14px 10px
 
 .button-layout
   display: block
   width: 34px
-  height: 26px
+  height: 24px
   background: #a4a4a4
   &.active
     background: #6aa8e2

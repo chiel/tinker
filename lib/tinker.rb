@@ -21,7 +21,10 @@ class Tinker
 	def properties
 		{
 			:hash => @hash,
-			:revision => @revision
+			:revision => @revision,
+			:doctype => @doctype,
+			:framework => @framework,
+			:normalize => @normalize
 		}
 	end
 
@@ -38,8 +41,13 @@ class Tinker
 				:password => APP_CONFIG['db']['pass'],
 				:database => APP_CONFIG['db']['name']
 			)
-			query = 'INSERT INTO tinker_revision (x_tinker_hash, revision, markup, style, interaction) '
+
+			query = 'INSERT INTO tinker_revision (x_tinker_hash, revision, x_doctype_id, '
+			query << 'x_framework_version_id, normalize, markup, style, interaction) '
 			query << 'VALUES ("'+client.escape(hash)+'", 0, '
+			query << '"'+client.escape(entry[:doctype])+'", '
+			query << '"'+client.escape(entry[:framework])+'", '
+			query << entry[:normalize].to_s+', '
 			query << '"'+client.escape(entry[:markup])+'", '
 			query << '"'+client.escape(entry[:style])+'", '
 			query << '"'+client.escape(entry[:interaction])+'")'
@@ -51,7 +59,7 @@ class Tinker
 		rescue Mysql2::Error => e
 			puts 'SQL ERROR: '+e.message
 		end
-		return response.to_json
+		response.to_json
 	end
 
 	#
@@ -65,6 +73,9 @@ class Tinker
 
 		@hash = hash
 		@revision = revision
+		@doctype = entry[:x_doctype_id]
+		@framework = entry[:x_framework_version_id]
+		@normalize = entry[:normalize]
 		@markup = entry[:markup]
 		@style = entry[:style]
 		@interaction = entry[:interaction]
@@ -90,8 +101,12 @@ class Tinker
 			max = results.first['max'].to_i
 			revision = (max + 1).to_s
 
-			query = 'INSERT INTO tinker_revision (x_tinker_hash, revision, markup, style, interaction) '
+			query = 'INSERT INTO tinker_revision (x_tinker_hash, revision, x_doctype_id, '
+			query << 'x_framework_version_id, normalize, markup, style, interaction) '
 			query << 'VALUES ("'+client.escape(hash)+'", '+revision+', '
+			query << '"'+client.escape(entry[:doctype])+'", '
+			query << '"'+client.escape(entry[:framework])+'", '
+			query << entry[:normalize].to_s+', '
 			query << '"'+client.escape(entry[:markup])+'", '
 			query << '"'+client.escape(entry[:style])+'", '
 			query << '"'+client.escape(entry[:interaction])+'")'
@@ -103,7 +118,7 @@ class Tinker
 		rescue Mysql2::Error => e
 			puts 'SQL ERROR: '+e.message
 		end
-		return response.to_json
+		response.to_json
 	end
 
 	#

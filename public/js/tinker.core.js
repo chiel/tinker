@@ -246,6 +246,7 @@ TP.Tinker = {
 		if (this.properties.hash) {
 			url += '/'+this.properties.hash;
 		}
+		log(TP.Layout.wrapper.toQueryString());
 		new Request.JSON({
 			url: url,
 			data: TP.Layout.wrapper,
@@ -303,6 +304,7 @@ TP.Settings = {
 		log('TP.Settings.init();');
 
 		var self = this;
+		this.doctypes = JSON.parse(document.getElement('script[type=doctypes]').get('html'));
 		this.frameworks = JSON.parse(document.getElement('script[type=frameworks]').get('html'));
 		Array.each(this.frameworks, function(framework) {
 			Array.each(framework.versions, function(version) {
@@ -360,19 +362,23 @@ TP.Settings = {
 			})
 		}).adopt();
 
-		input_doctype.adopt(
-			new Element('option', {text: 'HTML 5'}),
-			new Element('option', {text: 'HTML 4.01 Strict'}),
-			new Element('option', {text: 'HTML 4.01 Transitional'}),
-			new Element('option', {text: 'HTML 4.01 Frameset'}),
-			new Element('option', {text: 'XHTML 1.0 Strict'}),
-			new Element('option', {text: 'XHTML 1.0 Transitional'})
-		);
+		var properties = TP.Tinker.getProperties();
+		if (properties.hash && !properties.normalize) {
+			input_normalize.set('checked', false);
+		}
+
+		Array.each(this.doctypes, function(doctype) {
+			var option = new Element('option', {text: doctype.name, value: doctype.id});
+			input_doctype.adopt(option);
+		});
 
 		Array.each(this.frameworks, function(framework) {
 			var optgroup = new Element('optgroup', {label: framework.name, value: framework.id});
 			Array.each(framework.versions, function(version) {
 				var option = new Element('option', {text: framework.name+' '+version.name, value: version.id});
+				if (properties.framework === version.id) {
+					option.set('selected', true);
+				}
 				optgroup.adopt(option);
 			});
 			input_framework.adopt(optgroup);
@@ -403,7 +409,7 @@ TP.Assets = {
 	 */
 	prepare: function()
 	{
-		TP.Events.addEvent('init', this.init.bind(this));
+		// TP.Events.addEvent('init', this.init.bind(this));
 	},
 
 	/**
@@ -491,6 +497,10 @@ TP.Layout = {
 	 */
 	layoutPicker: null,
 	/**
+	 *
+	 */
+	layoutArrow: null,
+	/**
 	 * Layout picker buttons
 	 */
 	layoutButtons: [],
@@ -552,7 +562,7 @@ TP.Layout = {
 		var els = this.panels.map(function(p) { return p.getOuter(); });
 		this.fx = new Fx.Elements(els, {duration: 200});
 		this.buildLayoutPicker();
-		this.activate(0, true);
+		this.activate(localStorage['activeLayout'], true);
 		TP.Events.fireEvent('layout.build');
 	},
 
@@ -561,24 +571,27 @@ TP.Layout = {
 	 */
 	buildLayoutPicker: function()
 	{
-		log('TP.Layout.buildLayoutPicker();');
+		// log('TP.Layout.buildLayoutPicker();');
 
 		var self = this;
 		this.layoutButtons = new Elements();
 
 		Array.each(TP.Layouts, function(layout, index) {
-			var anchor = new Element('a.button-layout.ls-'+index).store('layoutIndex', index);
+			var anchor = new Element('a.button-layout.ls-'+index, {
+				href: '#layout'+index
+			}).store('layoutIndex', index);
 			self.layoutButtons.push(anchor);
 		});
 
 		this.layoutPicker = new Element('div#layoutpicker', {
 			children: [
-				new Element('div.arrow'),
+				this.layoutArrow = new Element('div.arrow'),
 				new Element('ul', {
 					children: this.layoutButtons.map(function(el) { return new Element('li').adopt(el); })
 				})
 			]
 		});
+		this.layoutArrow.set('morph', {duration: 150});
 		this.layoutPicker.addEvent('click', function(e) {
 			e.preventDefault();
 			if (e.target.get('tag') === 'a') {
@@ -603,12 +616,18 @@ TP.Layout = {
 			}
 
 			if (!init && TP.Layouts[this.curLayout]) {
+				this.layoutButtons[this.curLayout].removeClass('active');
 				document.html.removeClass('layout-'+this.curLayout);
 				TP.Layouts[this.curLayout].deactivate();
 			}
 
 			if (TP.Layouts[index]) {
+				var pos = this.layoutButtons[index].getPosition(this.layoutPicker),
+					size = this.layoutButtons[index].getSize();
+				this.layoutArrow.morph({left: (pos.x + (size.x/2) - 5)});
+				this.layoutButtons[index].addClass('active');
 				document.html.addClass('layout-'+index);
+				localStorage['activeLayout'] = index;
 				TP.Layouts[index].activate(init);
 				this.curLayout = index;
 			}
@@ -620,6 +639,8 @@ TP.Layout = {
 	 */
 	getPanel: function(index)
 	{
+		log('TP.Layout.getPanel(', index, ');');
+
 		if (this.panels[index]) {
 			return this.panels[index];
 		}
@@ -631,6 +652,8 @@ TP.Layout = {
 	 */
 	addToRegion: function(node, region)
 	{
+		// log('TP.Layout.addToRegion(', node, region, ');');
+
 		if (!this.regions[region]) {
 			return;
 		}
@@ -684,7 +707,7 @@ TP.Layouts.push({
 	 */
 	activate: function(init)
 	{
-		log('TP.Layouts[0].activate();');
+		// log('TP.Layouts[0].activate();');
 
 		this.bound.resize = this.resize.bind(this);
 		window.addEvent('resize', this.bound.resize);
@@ -714,7 +737,7 @@ TP.Layouts.push({
 	 */
 	deactivate: function()
 	{
-		log('TP.Layouts[0].deactivate();');
+		// log('TP.Layouts[0].deactivate();');
 
 		this.handles.dispose();
 		window.removeEvent('resize', this.bound.resize);
@@ -948,7 +971,7 @@ TP.Layouts.push({
 	 */
 	storeSizes: function()
 	{
-		log('TP.Layouts[0.storeSizes();');
+		// log('TP.Layouts[0.storeSizes();');
 
 		var p = TP.Layout.panels,
 			bSize = TP.Layout.body.getSize(),
@@ -1002,7 +1025,7 @@ TP.Layouts.push({
 	 */
 	activate: function(init)
 	{
-		log('TP.Layouts[1].activate();');
+		// log('TP.Layouts[1].activate();');
 
 		this.bound.resize = this.resize.bind(this);
 		window.addEvent('resize', this.bound.resize);
@@ -1032,7 +1055,7 @@ TP.Layouts.push({
 	 */
 	deactivate: function()
 	{
-		log('TP.Layouts[1].deactivate();');
+		// log('TP.Layouts[1].deactivate();');
 
 		this.handles.dispose();
 		window.addEvent('resize', this.bound.resize);

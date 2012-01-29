@@ -1,22 +1,36 @@
 class Client < Controller
 	get '/' do
-		tinker = Tinker.new
-		libraries = Framework.list
-		haml :index, :locals => {:tinker => tinker, :libraries => libraries, :urls => APP_CONFIG['urls']}
+		locals = {
+			:tinker => Tinker.new,
+			:doctypes => Doctype.list,
+			:frameworks => Framework.list,
+			:urls => APP_CONFIG['urls']
+		}
+		haml :index, :locals => locals
 	end
 
 	get %r{^/([A-Za-z0-9]+)(?:\/([0-9]+))?$} do |hash, revision|
-		tinker = Tinker.new hash, revision
-		libraries = Framework.list
-		haml :index, :locals => {:tinker => tinker, :libraries => libraries, :urls => APP_CONFIG['urls']}
+		locals = {
+			:tinker => Tinker.new(hash, revision),
+			:doctypes => Doctype.list,
+			:frameworks => Framework.list,
+			:urls => APP_CONFIG['urls']
+		}
+		haml :index, :locals => locals
 	end
 
 	post %r{^/save(?:\/([A-Za-z0-9]+))?/?$} do |hash|
+		puts params
 		entry = {
+			:doctype => params[:doctype],
+			:framework => params[:framework],
+			:normalize => params[:normalize] ? 1 : 0,
 			:markup => params[:markup],
 			:style => params[:style],
 			:interaction => params[:interaction]
 		}
+
+		puts entry
 
 		tinker = Tinker.new
 		if hash

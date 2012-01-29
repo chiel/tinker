@@ -12,7 +12,8 @@
     %script{:type=>'tinker/style'}= CGI.escapeHTML tinker.style || ''
     %script{:type=>'tinker/interaction'}= CGI.escapeHTML tinker.interaction || ''
     %script{:type=>'urls'}= urls.to_json
-    %script{:type=>'frameworks'}= libraries.to_json
+    %script{:type=>'doctypes'}= doctypes.to_json
+    %script{:type=>'frameworks'}= frameworks.to_json
     %script{:src=>'/js/mootools.js'}
     %script{:src=>'/js/mootools-more.js'}
     %script{:src=>'/js/codemirror.js'}
