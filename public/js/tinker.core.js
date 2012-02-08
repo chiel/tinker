@@ -331,7 +331,16 @@ TP.Settings = {
 		}), 'tl');
 
 		var input_doctype, input_framework, input_normalize;
-		var settingsContents = new Element('fieldset', {
+		var contents = new Element('div'/*, {
+			children: new Element('ul.tabs', {
+				children: [
+					new Element('li', {children: new Element('a', {text: 'General'})}),
+					new Element('li', {children: new Element('a', {text: 'Assets'})}),
+					new Element('li', {children: new Element('a', {text: 'Info'})})
+				]
+			})
+		}*/);
+		var general = new Element('fieldset', {
 			children: new Element('ul', {
 				children: [
 					new Element('li', {
@@ -360,7 +369,9 @@ TP.Settings = {
 					})
 				]
 			})
-		}).adopt();
+		});
+
+		contents.adopt(general);
 
 		var properties = TP.Tinker.getProperties();
 		if (properties.hash && !properties.normalize) {
@@ -391,7 +402,7 @@ TP.Settings = {
 			}
 		});
 
-		new TP.Popover(settingsContents, {button: settingsButton});
+		new TP.Popover(contents, {button: settingsButton});
 
 		TP.Events.fireEvent('settings.build');
 	}
@@ -531,7 +542,6 @@ TP.Layout = {
 		// log('TP.Layout.build();');
 
 		var self = this;
-		document.body.setStyle('opacity', 0).set('morph', {duration: 250});
 
 		var urls = JSON.parse(document.getElement('script[type=urls]').get('html'));
 		this.wrapper = new Element('form#wrapper', {
@@ -720,7 +730,6 @@ TP.Layouts.push({
 		var dimensions = this.getDimensions();
 		if (init) {
 			TP.Layout.fx.set(dimensions);
-			document.body.morph({opacity: [0, 1]});
 			this.build();
 			this.recalibrate();
 		} else {
@@ -1038,7 +1047,6 @@ TP.Layouts.push({
 		var dimensions = this.getDimensions();
 		if (init) {
 			TP.Layout.fx.set(dimensions);
-			document.body.morph({opacity: [0, 1]});
 			this.build();
 			this.recalibrate();
 		} else {
