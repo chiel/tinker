@@ -3,7 +3,6 @@
  */
 "use strict";
 
-/*jsl:ignoreall*/
 /**
  * console.log wrapper
  */
@@ -63,7 +62,7 @@ Element.Properties.children = {
 Tinker.init = function(config)
 {
 	TP.Events.fireEvent('init', config);
-}
+};
 
 
 
@@ -572,7 +571,7 @@ TP.Layout = {
 		var els = this.panels.map(function(p) { return p.getOuter(); });
 		this.fx = new Fx.Elements(els, {duration: 200});
 		this.buildLayoutPicker();
-		this.activate(localStorage['activeLayout'], true);
+		this.activate(localStorage['activeLayout']);
 		TP.Events.fireEvent('layout.build');
 	},
 
@@ -614,7 +613,7 @@ TP.Layout = {
 	/**
 	 * Activate a layout by index
 	 */
-	activate: function(index, init)
+	activate: function(index)
 	{
 		// log('TP.Layout.activate();');
 
@@ -861,7 +860,7 @@ TP.Layouts.push({
 
 		d.handle = handle;
 		d.handleId = handle.retrieve('handleId');
-		d.handlePos = handle.getPosition(TP.Layout.body),
+		d.handlePos = handle.getPosition(TP.Layout.body);
 		d.handleSize = handle.getSize();
 		d.mousePos = e.client;
 
@@ -1179,7 +1178,7 @@ TP.Layouts.push({
 
 		d.handle = handle;
 		d.handleId = handle.retrieve('handleId');
-		d.handlePos = handle.getPosition(TP.Layout.body),
+		d.handlePos = handle.getPosition(TP.Layout.body);
 		d.handleSize = handle.getSize();
 		d.mousePos = e.client;
 
