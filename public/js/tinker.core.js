@@ -730,11 +730,13 @@ TP.Layouts.push({
 			TP.Layout.fx.set(dimensions);
 			this.build();
 			this.recalibrate();
+			TP.Events.fireEvent('layout.activate');
 		} else {
 			var self = this;
 			TP.Layout.fx.start(dimensions).chain(function() {
 				self.build();
 				self.recalibrate();
+				TP.Events.fireEvent('layout.activate');
 			});
 		}
 	},
@@ -1047,11 +1049,13 @@ TP.Layouts.push({
 			TP.Layout.fx.set(dimensions);
 			this.build();
 			this.recalibrate();
+			TP.Events.fireEvent('layout.activate');
 		} else {
 			var self = this;
 			TP.Layout.fx.start(dimensions).chain(function() {
 				self.build();
 				self.recalibrate();
+				TP.Events.fireEvent('layout.activate');
 			});
 		}
 	},
@@ -1419,6 +1423,7 @@ TP.Editor = {
 	{
 		TP.Events.addEvent('layout.build', this.init.bind(this));
 		TP.Events.addEvent('tinker.save', this.save.bind(this));
+		TP.Events.addEvent('layout.activate', this.refresh.bind(this));
 	},
 
 	/**
@@ -1468,6 +1473,16 @@ TP.Editor = {
 		this.codemirror.setLineClass(this.curLine, null);
 		this.curLine = this.codemirror.getCursor().line;
 		this.codemirror.setLineClass(this.curLine, 'active_line');
+	},
+
+	/**
+	 *
+	 */
+	refresh: function()
+	{
+		if (this.codemirror) {
+			this.codemirror.refresh();
+		}
 	},
 
 	/**
