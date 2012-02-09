@@ -571,7 +571,7 @@ TP.Layout = {
 		var els = this.panels.map(function(p) { return p.getOuter(); });
 		this.fx = new Fx.Elements(els, {duration: 200});
 		this.buildLayoutPicker();
-		this.activate(localStorage['activeLayout']);
+		this.activate(localStorage['activeLayout'] || 0);
 		TP.Events.fireEvent('layout.build');
 	},
 
