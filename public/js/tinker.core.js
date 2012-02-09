@@ -224,7 +224,7 @@ TP.Tinker = {
 	 */
 	run: function()
 	{
-		log('TP.Tinker.run();');
+		// log('TP.Tinker.run();');
 
 		TP.Events.fireEvent('tinker.save');
 		TP.Layout.wrapper.submit();
@@ -235,7 +235,7 @@ TP.Tinker = {
 	 */
 	save: function()
 	{
-		log('TP.Tinker.save();');
+		// log('TP.Tinker.save();');
 
 		TP.Events.fireEvent('tinker.save');
 		TP.Layout.wrapper.submit();
@@ -245,7 +245,6 @@ TP.Tinker = {
 		if (this.properties.hash) {
 			url += '/'+this.properties.hash;
 		}
-		log(TP.Layout.wrapper.toQueryString());
 		new Request.JSON({
 			url: url,
 			data: TP.Layout.wrapper,
@@ -300,7 +299,7 @@ TP.Settings = {
 	 */
 	init: function()
 	{
-		log('TP.Settings.init();');
+		// log('TP.Settings.init();');
 
 		var self = this;
 		this.doctypes = JSON.parse(document.getElement('script[type=doctypes]').get('html'));
@@ -320,7 +319,7 @@ TP.Settings = {
 	 */
 	build: function()
 	{
-		log('TP.Settings.build();');
+		// log('TP.Settings.build();');
 
 		var self = this, settingsButton;
 		TP.Layout.addToRegion(new Element('ul.buttons', {
@@ -396,9 +395,9 @@ TP.Settings = {
 
 		input_framework.addEvent('change', function(e) {
 			var selected = self.versions[input_framework.getSelected()[0].get('value')];
-			if (selected.extensions && selected.extensions.length) {
-				console.log('extensions: ', selected.extensions);
-			}
+			// if (selected.extensions && selected.extensions.length) {
+			// 	console.log('extensions: ', selected.extensions);
+			// }
 		});
 
 		new TP.Popover(contents, {button: settingsButton});
@@ -427,7 +426,7 @@ TP.Assets = {
 	 */
 	init: function()
 	{
-		log('TP.Assets.init();');
+		// log('TP.Assets.init();');
 
 		TP.Events.addEvent('layout.build', this.build.bind(this));
 	},
@@ -437,7 +436,7 @@ TP.Assets = {
 	 */
 	build: function()
 	{
-		log('TP.Assets.build();');
+		// log('TP.Assets.build();');
 		var assetButton;
 		TP.Layout.addToRegion(new Element('ul.buttons', {
 			children: new Element('li', {
@@ -648,7 +647,7 @@ TP.Layout = {
 	 */
 	getPanel: function(index)
 	{
-		log('TP.Layout.getPanel(', index, ');');
+		// log('TP.Layout.getPanel(', index, ');');
 
 		if (this.panels[index]) {
 			return this.panels[index];
@@ -1399,6 +1398,7 @@ TP.Editor = {
 	/**
 	 * Keep track of the active line
 	 */
+	curLine: 0,
 	/**
 	 * Options that are shared by all codemirror instances
 	 */
@@ -1409,13 +1409,7 @@ TP.Editor = {
 		lineNumbers: true,
 		matchBrackets: true,
 		fixedGutter: true,
-		theme: 'tinker-light' //,
-		// onCursorActivity: function() {
-		// 	console.log('cursor activity', this, self);
-		// 	editor.setLineClass(hlLine, null);
-		// 	hlLine = editor.setLineClass(editor.getCursor().line, "activeline");
-		// }
-		// var hlLine = editor.setLineClass(0, "activeline");
+		theme: 'tinker-light'
 	},
 
 	/**
@@ -1434,7 +1428,46 @@ TP.Editor = {
 	{
 		// log('TP.Editor.init();');
 
+		var self = this;
+		Object.append(this.mirrorOptions, {
+			onFocus: this.onFocus.bind(this),
+			onBlur: this.onBlur.bind(this),
+			onCursorActivity: this.highlightLine.bind(this)
+		});
 		this.build();
+	},
+
+	/**
+	 * When the editor gets focussed
+	 */
+	onFocus: function()
+	{
+		// log('TP.Editor.onFocus();');
+
+		this.frame.addClass('focussed');
+		this.highlightLine();
+	},
+
+	/**
+	 * When the editor gets blurred
+	 */
+	onBlur: function()
+	{
+		// log('TP.Editor.onBlur();');
+
+		this.frame.removeClass('focussed');
+	},
+
+	/**
+	 *
+	 */
+	highlightLine: function()
+	{
+		// log('TP.Editor.highlightLine();');
+
+		this.codemirror.setLineClass(this.curLine, null);
+		this.curLine = this.codemirror.getCursor().line;
+		this.codemirror.setLineClass(this.curLine, 'active_line');
 	},
 
 	/**
@@ -1476,9 +1509,11 @@ TP.MarkupEditor = Object.merge({}, TP.Editor, {
 				name: 'markup',
 				html: TP.Tinker.getMarkup()
 			});
-			this.frame.adopt(this.textarea).inject(panel.getInner());
+			this.settings = new Element('div.settings', {text: 'HTML'});
+			this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
 			var options = Object.append({mode: 'text/html'}, this.mirrorOptions);
 			this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
+			this.highlightLine();
 		}
 	}
 });
@@ -1504,9 +1539,11 @@ TP.StyleEditor = Object.merge({}, TP.Editor, {
 				name: 'style',
 				html: TP.Tinker.getStyle()
 			});
-			this.frame.adopt(this.textarea).inject(panel.getInner());
+			this.settings = new Element('div.settings', {text: 'CSS'});
+			this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
 			var options = Object.append({mode: 'text/css'}, this.mirrorOptions);
 			this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
+			this.highlightLine();
 		}
 	}
 });
@@ -1532,9 +1569,11 @@ TP.InteractionEditor = Object.merge({}, TP.Editor, {
 				name: 'interaction',
 				html: TP.Tinker.getInteraction()
 			});
-			this.frame.adopt(this.textarea).inject(panel.getInner());
+			this.settings = new Element('div.settings', {text: 'JS'});
+			this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
 			var options = Object.append({mode: 'text/javascript'}, this.mirrorOptions);
 			this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
+			this.highlightLine();
 		}
 	}
 });
