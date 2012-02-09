@@ -90,6 +90,7 @@ TP.Core = {
 	prepare: function()
 	{
 		TP.Events.addEvent('init', this.init.bind(this));
+		TP.Events.addEvent('layout.build', this.build.bind(this));
 	},
 
 	/**
@@ -98,6 +99,29 @@ TP.Core = {
 	init: function(config)
 	{
 		// log('TP.Core.init(', config, ');');
+	},
+
+	/**
+	 *
+	 */
+	build: function()
+	{
+		log('TP.Core.build();');
+
+		var aboutButton;
+		TP.Layout.addToRegion(new Element('ul.buttons', {
+			children: new Element('li', {
+				children: aboutButton = new Element('a.button.about[href=#about][text=About]')
+			})
+		}), 'br');
+
+		var html = '<p>Tinker comes from <a href="https://twitter.com/#!/chielkunkels">@chielkunkels</a> '
+			+'and <a href="https://twitter.com/#!/ponjoh">@ponjoh</a>.</p><p>Check out the code on '
+			+'<a href="http://git.io/tinker">Github</a> and follow '
+			+'<a href="https://twitter.com/#!/tinker_io">@tinker_io</a> on Twitter.</p>';
+		var contents = new Element('div#about', {html: html});
+
+		new TP.Popover(contents, {button: aboutButton, anchor: 'br'});
 	}
 };
 TP.Core.prepare();
@@ -1689,7 +1713,8 @@ TP.Popover = new Class({
 	 *
 	 */
 	options: {
-		button: null
+		button: null,
+		anchor: 'tl'
 	},
 	/**
 	 *
@@ -1720,7 +1745,14 @@ TP.Popover = new Class({
 		if (this.options.button) {
 			var pos = this.options.button.getPosition(),
 				size = this.options.button.getSize();
-			this.offset = {x: pos.x, y: pos.y + size.y};
+
+			if (this.options.anchor === 'tl') {
+				this.offset = {x: pos.x, y: pos.y + size.y};
+			} else if (this.options.anchor === 'br') {
+				var bSize = document.body.getSize();
+				pos = {x: (bSize.x - pos.x) - size.x, y: bSize.y - pos.y};
+				this.offset = {x: pos.x, y: pos.y};
+			}
 
 			this.options.button.addEvent('click', function(e) {
 				e.preventDefault();
@@ -1737,8 +1769,6 @@ TP.Popover = new Class({
 				duration: 150
 			},
 			styles: {
-				top: this.offset.y,
-				left: this.offset.x,
 				display: 'none'
 			},
 			events: {
@@ -1748,7 +1778,15 @@ TP.Popover = new Class({
 					}
 				}
 			}
-		}).inject(TP.Layout.wrapper);
+		});
+		this.element.addClass(this.options.anchor);
+
+		if (this.options.anchor === 'tl') {
+			this.element.setStyles({top: this.offset.y, left: this.offset.x});
+		} else if (this.options.anchor === 'br') {
+			this.element.setStyles({bottom: this.offset.y, right: this.offset.x});
+		}
+		this.element.inject(TP.Layout.wrapper);
 	},
 
 	/**
@@ -1760,10 +1798,10 @@ TP.Popover = new Class({
 
 		this.element.setStyles({
 			display: 'block',
-			top: this.offset.y - 3,
+			// top: this.offset.y - 3,
 			opacity: 0
 		}).morph({
-			top: this.offset.y,
+			// top: this.offset.y,
 			opacity: 1
 		});
 		this.hidden = false;
@@ -1776,7 +1814,7 @@ TP.Popover = new Class({
 	{
 		// log('TP.Popover.hide();');
 		this.element.morph({
-			top: this.offset.y - 3,
+			// top: this.offset.y - 3,
 			opacity: 0
 		}).get('morph').chain(function() {
 			this.subject.setStyle('display', 'none');
