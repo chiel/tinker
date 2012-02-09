@@ -42,7 +42,7 @@ label
 
 .buttons
   overflow: hidden
-  padding: 15px 10px
+  padding: 14px 10px
   li
     float: left
     margin: 0 0 0 10px
@@ -52,15 +52,18 @@ label
 .button
   display: block
   height: 22px
-  padding: 0 8px
-  border: 1px solid rgba(0, 0, 0, .3)
+  padding: 0 9px
+  // border: 1px solid rgba(0, 0, 0, .7)
   border-radius: 3px
-  box-shadow: rgba(255, 255, 255, .1) 0 1px 0, inset rgba(255, 255, 255, .1) 0 1px 0
-  @include basic-gradient(#545454, #3c3c3c)
-  // filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ccffffff', endColorstr='#1affffff', GradientType=0)
+  box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset rgba(255, 255, 255, .15) 0 1px 0
+  @include basic-gradient(#5d5d5d, #363636)
   color: #fff
-  font-size: 12px
-  line-height: 22px
+  font-size: 11px
+  line-height: 20px
+  &.primary
+    box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset rgba(255, 255, 255, .4) 0 1px 0
+    @include basic-gradient(#79b4ec, #3d7fbe)
+    text-shadow: #3170bd 0 1px 0
 
 #wrapper
   width: 100%
@@ -69,14 +72,14 @@ label
   color: #666
 
 header, footer
-  height: 52px
-  background: url(../img/bg-head.png)
-  box-shadow: inset rgba(0, 0, 0, .9) 0 2px 7px
+  height: 53px
+  background: url(../img/bg-header.png)
 
 footer
   position: absolute
   bottom: 0
   width: 100%
+  background: url(../img/bg-footer.png)
   text-align: center
 
 .region
@@ -202,23 +205,28 @@ section
   .arrow
     position: absolute
     width: 0
-    height: 5px
-    border-top: 5px solid #bcbcbc
-    border-right: 5px solid transparent
-    border-left: 5px solid transparent
+    height: 4px
+    border-top: 4px solid #bcbcbc
+    border-right: 4px solid transparent
+    border-left: 4px solid transparent
   ul
     overflow: hidden
   li
     float: left
-    margin: 14px 10px
+    margin: 11px 10px
 
 .button-layout
   display: block
-  width: 34px
-  height: 24px
-  background: #a4a4a4
-  &.active
-    background: #6aa8e2
+  width: 39px
+  height: 33px
+  &.ls-0
+    background: url(../img/icon-layout0.png) 0 0
+    &.active
+      background-position: 0 -33px
+  &.ls-1
+    background: url(../img/icon-layout1.png) 0 0
+    &.active
+      background-position: 0 -33px
 
 /**
  * Codemirror overrides
