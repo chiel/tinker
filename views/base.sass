@@ -6,6 +6,10 @@
   background: -ms-linear-gradient(top, $start 0%, $finish 100%)
   background: linear-gradient(top, $start 0%, $finish 100%)
 
+@mixin transition($property)
+  -moz-transition: $property
+  -webkit-transition: $property
+
 html, body
   overflow: hidden
   height: 100%
@@ -152,7 +156,7 @@ section
     background: #fff
     line-height: 20px
     opacity: .6
-    -webkit-transition: opacity .3s
+    @include transition(opacity .3s)
   .active_line
     background: #f5f5f5
 
