@@ -8,10 +8,10 @@ Installation instructions will be here when there's actually something to instal
 
 Online
 ------
-Visit bounce at http://bounceapp.net.
+Visit Tinker at http://tinker.io.
 
 Copyright
 ---------
 Copyright (c) 2011 Chiel Kunkels
 
-Bounce is licensed under the MIT license.
+Tinker is licensed under the MIT license.
