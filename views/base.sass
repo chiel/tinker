@@ -25,6 +25,9 @@ a
   color: inherit
   text-decoration: none
 
+.is-hidden
+  display: none
+
 fieldset
   margin: 0
   padding: 0
@@ -56,7 +59,6 @@ footer .buttons
   display: block
   height: 22px
   padding: 0 9px
-  // border: 1px solid rgba(0, 0, 0, .7)
   border-radius: 3px
   box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset rgba(255, 255, 255, .15) 0 1px 0
   @include basic-gradient(#5d5d5d, #363636)
@@ -67,6 +69,24 @@ footer .buttons
     box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset rgba(255, 255, 255, .4) 0 1px 0
     @include basic-gradient(#79b4ec, #3d7fbe)
     text-shadow: #3170bd 0 1px 0
+
+.tabs
+  overflow: hidden
+  a
+    display: block
+    padding: 0 9px
+    border: 1px solid #666
+    border-left: 0
+    line-height: 20px
+    &.is-active
+      background: #ccc
+  li
+    float: left
+    &:first-child a
+      border-left: 1px solid #666
+      border-radius: 3px 0 0 3px
+    &:last-child a
+      border-radius: 0 3px 3px 0
 
 #wrapper
   width: 100%
@@ -184,7 +204,7 @@ section
 
 .popover
   position: absolute
-  z-index: 2
+  z-index: 10
   margin: 8px 0 0
   border: 1px solid rgba(0, 0, 0, .2)
   border-radius: 6px

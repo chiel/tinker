@@ -2,7 +2,9 @@
 %html{:lang=>'en'}
   %head
     %meta{:charset=>'utf-8'}
-    %title Tinker &mdash; Sandbox
+    - metas.each do |meta|
+      = meta
+    %title= title
     - stylesheets.each do |stylesheet|
       %link{:rel => 'stylesheet', :href => stylesheet}
     %style= css

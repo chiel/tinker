@@ -106,7 +106,7 @@ TP.Core = {
 	 */
 	build: function()
 	{
-		log('TP.Core.build();');
+		// log('TP.Core.build();');
 
 		var aboutButton;
 		TP.Layout.addToRegion(new Element('ul.buttons', {
@@ -176,7 +176,7 @@ TP.Tinker = {
 		// log('TP.Tinker.build();');
 
 		if (this.properties.hash) {
-			TP.Events.addEvent('settings.build', this.run.bind(this));
+			TP.Events.addEvent('settings.general.build', this.run.bind(this));
 		}
 
 		var self = this;
@@ -302,39 +302,27 @@ TP.Tinker.prepare();
  */
 TP.Settings = {
 	/**
-	 * Available frameworks
+	 * Tab bar element
 	 */
-	frameworks: [],
+	tabWrapper: null,
 	/**
-	 * Available framework versions
+	 *
 	 */
-	versions: {},
+	tabs: {},
+	/**
+	 * Available settings panes
+	 */
+	panes: {},
+	/**
+	 *
+	 */
+	activePane: 'general',
 
 	/**
 	 *
 	 */
 	prepare: function()
 	{
-		TP.Events.addEvent('init', this.init.bind(this));
-	},
-
-	/**
-	 *
-	 */
-	init: function()
-	{
-		// log('TP.Settings.init();');
-
-		var self = this;
-		this.doctypes = JSON.parse(document.getElement('script[type=doctypes]').get('html'));
-		this.frameworks = JSON.parse(document.getElement('script[type=frameworks]').get('html'));
-		Array.each(this.frameworks, function(framework) {
-			Array.each(framework.versions, function(version) {
-				version.x_framework_id = framework.id;
-				self.versions[version['id']] = version;
-			});
-		});
-
 		TP.Events.addEvent('layout.build', this.build.bind(this));
 	},
 
@@ -352,48 +340,124 @@ TP.Settings = {
 			})
 		}), 'tl');
 
-		var input_doctype, input_framework, input_normalize;
-		var contents = new Element('div'/*, {
-			children: new Element('ul.tabs', {
-				children: [
-					new Element('li', {children: new Element('a', {text: 'General'})}),
-					new Element('li', {children: new Element('a', {text: 'Assets'})}),
-					new Element('li', {children: new Element('a', {text: 'Info'})})
-				]
-			})
-		}*/);
-		var general = new Element('fieldset', {
-			children: new Element('ul', {
-				children: [
-					new Element('li', {
-						children: [
-							new Element('label[text=Doctype]'),
-							new Element('span.input', {
-								children: input_doctype = new Element('select[name=doctype]')
-							})
-						]
-					}),
-					new Element('li', {
-						children: [
-							new Element('label[text=Framework]'),
-							new Element('span.input', {
-								children: input_framework = new Element('select[name=framework]')
-							})
-						]
-					}),
-					new Element('li', {
-						children: [
-							new Element('label').set('text', 'Normalize.css'),
-							new Element('span.input', {
-								children: input_normalize = new Element('input[name=normalize][type=checkbox][checked]')
-							})
-						]
-					})
-				]
-			})
+		var contents = new Element('div', {
+			children: [
+				this.tabWrapper = new Element('ul.tabs', {
+					children: [
+						new Element('li', {children: this.tabs.general = new Element('a.is-active[href=#settings-general]', {text: 'General'})}),
+						new Element('li', {children: this.tabs.assets = new Element('a[href=#settings-assets]', {text: 'Assets'})}),
+						new Element('li', {children: this.tabs.info = new Element('a[href=#settings-info]', {text: 'Info'})})
+					]
+				}),
+				this.panes.general = new Element('div.settings-general'),
+				this.panes.assets = new Element('div.settings-assets.is-hidden'),
+				this.panes.info = new Element('div.settings-info.is-hidden')
+			]
 		});
 
-		contents.adopt(general);
+		this.tabWrapper.addEvent('click', function(e) {
+			if (e.target.get('tag') === 'a') {
+				e.preventDefault();
+				var pane = e.target.get('href').replace(/\#settings-/, '');
+				self.tabs[self.activePane].removeClass('is-active');
+				self.panes[self.activePane].addClass('is-hidden');
+				self.tabs[pane].addClass('is-active');
+				self.panes[pane].removeClass('is-hidden');
+				self.activePane = pane;
+			}
+		});
+
+		TP.Events.fireEvent('settings.build');
+		new TP.Popover(contents, {button: settingsButton});
+	}
+};
+TP.Settings.prepare();
+
+
+
+/**
+ *
+ */
+TP.Settings.General = {
+	/**
+	 * Available doctypes
+	 */
+	doctypes: [],
+	/**
+	 * Available frameworks
+	 */
+	frameworks: [],
+	/**
+	 * Available framework versions
+	 */
+	versions: {},
+
+	/**
+	 *
+	 */
+	prepare: function()
+	{
+		TP.Events.addEvent('init', this.init.bind(this));
+		TP.Events.addEvent('settings.build', this.build.bind(this));
+	},
+
+	/**
+	 *
+	 */
+	init: function()
+	{
+		var self = this;
+		this.doctypes = JSON.parse(document.getElement('script[type=doctypes]').get('html'));
+		this.frameworks = JSON.parse(document.getElement('script[type=frameworks]').get('html'));
+		Array.each(this.frameworks, function(framework) {
+			Array.each(framework.versions, function(version) {
+				version.x_framework_id = framework.id;
+				self.versions[version['id']] = version;
+			});
+		});
+	},
+
+	/**
+	 *
+	 */
+	build: function()
+	{
+		var input_doctype, input_framework, input_normalize;
+
+		TP.Settings.panes.general.adopt(
+			new Element('fieldset', {
+				children: new Element('ul', {
+					children: [
+						new Element('li', {
+							children: [
+								new Element('label[for=input-doctype][text=Doctype]'),
+								new Element('span.input', {
+									children: input_doctype = new Element('select[id=input-doctype][name=doctype]')
+								})
+							]
+						}),
+						new Element('li', {
+							children: [
+								new Element('label[for=input-framework][text=Framework]'),
+								new Element('span.input', {
+									children: input_framework = new Element('select[id=input-framework][name=framework]', {
+										children: new Element('option', {text: 'None', value: 0})
+									})
+								})
+							]
+						}),
+						new Element('li', {
+							children: [
+								new Element('label[for=input-normalize]', {text: 'Normalize.css'}),
+								new Element('span.input', {
+									children: input_normalize = new Element('input[id=input-normalize][name=normalize][type=checkbox][checked]')
+								})
+							]
+						})
+					]
+				})
+			})
+		);
 
 		var properties = TP.Tinker.getProperties();
 		if (properties.hash && !properties.normalize) {
@@ -423,36 +487,37 @@ TP.Settings = {
 			// 	console.log('extensions: ', selected.extensions);
 			// }
 		});
-
-		new TP.Popover(contents, {button: settingsButton});
-
-		TP.Events.fireEvent('settings.build');
 	}
 };
-TP.Settings.prepare();
+TP.Settings.General.prepare();
 
 
 
 /**
  *
  */
-TP.Assets = {
+TP.Settings.Assets = {
+	/**
+	 * List of all the assets we've added so far
+	 */
+	assets: {
+		css: [],
+		js: []
+	},
+	/**
+	 *
+	 */
+	wrapper: null,
+	input: null,
+	addButton: null,
+	assetList: null,
+
 	/**
 	 *
 	 */
 	prepare: function()
 	{
-		// TP.Events.addEvent('init', this.init.bind(this));
-	},
-
-	/**
-	 *
-	 */
-	init: function()
-	{
-		// log('TP.Assets.init();');
-
-		TP.Events.addEvent('layout.build', this.build.bind(this));
+		TP.Events.addEvent('settings.build', this.build.bind(this));
 	},
 
 	/**
@@ -460,25 +525,93 @@ TP.Assets = {
 	 */
 	build: function()
 	{
-		// log('TP.Assets.build();');
-		var assetButton;
-		TP.Layout.addToRegion(new Element('ul.buttons', {
-			children: new Element('li', {
-				children: assetButton = new Element('a.button.assets[href=#assets][text=Assets]')
-			})
-		}), 'tl');
+		var self = this;
 
-		var assetContents = new Element('fieldset', {
-			children: new Element('ul', {
-				children: new Element('li', {
-					children: new Element('input')
-				})
+		TP.Settings.panes.assets.adopt(
+			this.wrapper = new Element('fieldset', {
+				children: [
+					new Element('ul', {
+						children: new Element('li', {
+							children: [
+								this.input = new Element('input'),
+								this.addButton = new Element('a[text=Add][href=#]')
+							]
+						})
+					}),
+					this.assetList = new Element('ul#assetList')
+				]
 			})
+		);
+
+		this.addButton.addEvent('click', function(e) {
+			e.preventDefault();
+			var type, asset = self.input.get('value').trim();
+			if (asset === '') {
+				return;
+			}
+			if (asset.match(/\.css$/)) {
+				type = 'css';
+			} else if (asset.match(/\.js$/)) {
+				type = 'js';
+			} else {
+				return;
+			}
+
+			if (self.assets[type].indexOf(asset) === -1) {
+				self.assets[type].push(asset);
+				self.assetList.adopt(
+					new Element('li', {text: asset})
+				);
+				self.wrapper.adopt(new Element('input[type=hidden]', {name: 'assets['+type+'][]', value: asset}));
+			}
+			self.input.set('value', '');
 		});
-		new TP.Popover(assetContents, {button: assetButton});
 	}
 };
-TP.Assets.prepare();
+TP.Settings.Assets.prepare();
+
+
+
+/**
+ *
+ */
+TP.Settings.Info = {
+	/**
+	 *
+	 */
+	prepare: function()
+	{
+		TP.Events.addEvent('settings.build', this.build.bind(this));
+	},
+
+	/**
+	 *
+	 */
+	build: function()
+	{
+		TP.Settings.panes.info.adopt(
+			new Element('fieldset', {
+				children: new Element('ul', {
+					children: [
+						new Element('li', {
+							children: [
+								new Element('label[for=input-title]', {text: 'Title'}),
+								new Element('input[id=input-title][name=title]')
+							]
+						}),
+						new Element('li', {
+							children: [
+								new Element('label[for=input-description]', {text: 'Description'}),
+								new Element('textarea[id=input-description][name=description]')
+							]
+						})
+					]
+				})
+			})
+		);
+	}
+};
+TP.Settings.Info.prepare();
 
 
 
