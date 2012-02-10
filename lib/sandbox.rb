@@ -5,7 +5,6 @@ class Sandbox < Controller
 	end
 
 	post '/' do
-		puts params
 		locals = {
 			:title => params[:title] || 'Tinker &mdash; Sandbox',
 			:doctype => Doctype.code(params[:doctype]),
@@ -42,8 +41,6 @@ class Sandbox < Controller
 				end
 			end
 		end
-
-		puts locals
 
 		headers 'X-Frame-Options' => ''
 		body haml :sandbox, :locals => locals

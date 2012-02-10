@@ -165,6 +165,9 @@ TP.Tinker = {
 		this.style = document.getElement('script[type=tinker/style]').get('html');
 		this.interaction = document.getElement('script[type=tinker/interaction]').get('html');
 
+		if (this.properties.hash) {
+			TP.Events.addEvent('result.build', this.run.bind(this));
+		}
 		TP.Events.addEvent('layout.build', this.build.bind(this));
 	},
 
@@ -174,10 +177,6 @@ TP.Tinker = {
 	build: function()
 	{
 		// log('TP.Tinker.build();');
-
-		if (this.properties.hash) {
-			TP.Events.addEvent('settings.general.build', this.run.bind(this));
-		}
 
 		var self = this;
 		var buttons = $$(
@@ -487,6 +486,9 @@ TP.Settings.General = {
 			// 	console.log('extensions: ', selected.extensions);
 			// }
 		});
+
+		TP.Events.fireEvent('settings.general.build');
+		TP.Events.fireEvent('general.build');
 	}
 };
 TP.Settings.General.prepare();
@@ -517,7 +519,15 @@ TP.Settings.Assets = {
 	 */
 	prepare: function()
 	{
+		TP.Events.addEvent('init', this.init.bind(this));
 		TP.Events.addEvent('settings.build', this.build.bind(this));
+	},
+
+	/**
+	 *
+	 */
+	init: function()
+	{
 	},
 
 	/**
@@ -525,7 +535,7 @@ TP.Settings.Assets = {
 	 */
 	build: function()
 	{
-		var self = this;
+		var self = this, properties = TP.Tinker.getProperties();
 
 		TP.Settings.panes.assets.adopt(
 			this.wrapper = new Element('fieldset', {
@@ -543,29 +553,43 @@ TP.Settings.Assets = {
 			})
 		);
 
+		if (properties.assets) {
+			Object.each(properties.assets, function(assets, type) {
+				Array.each(assets, function(asset) {
+					self.addAsset(asset, type);
+				});
+			});
+		}
+
 		this.addButton.addEvent('click', function(e) {
 			e.preventDefault();
-			var type, asset = self.input.get('value').trim();
-			if (asset === '') {
-				return;
-			}
-			if (asset.match(/\.css$/)) {
-				type = 'css';
-			} else if (asset.match(/\.js$/)) {
-				type = 'js';
-			} else {
-				return;
-			}
+			var asset = self.input.get('value').trim(),
+				type = asset.replace(/.*\.([a-z]+)/i, '$1');
 
-			if (self.assets[type].indexOf(asset) === -1) {
-				self.assets[type].push(asset);
-				self.assetList.adopt(
-					new Element('li', {text: asset})
-				);
-				self.wrapper.adopt(new Element('input[type=hidden]', {name: 'assets['+type+'][]', value: asset}));
-			}
+			self.addAsset(asset, type);
 			self.input.set('value', '');
 		});
+	},
+
+	/**
+	 *
+	 */
+	addAsset: function(asset, type)
+	{
+		if (asset === '' || type === '') {
+			return;
+		}
+		if (!this.assets[type]) {
+			return;
+		}
+
+		if (this.assets[type].indexOf(asset) === -1) {
+			this.assets[type].push(asset);
+			this.assetList.adopt(
+				new Element('li', {text: asset})
+			);
+			this.wrapper.adopt(new Element('input[type=hidden]', {name: 'assets['+type+'][]', value: asset}));
+		}
 	}
 };
 TP.Settings.Assets.prepare();
@@ -589,6 +613,7 @@ TP.Settings.Info = {
 	 */
 	build: function()
 	{
+		var properties = TP.Tinker.getProperties();
 		TP.Settings.panes.info.adopt(
 			new Element('fieldset', {
 				children: new Element('ul', {
@@ -596,13 +621,17 @@ TP.Settings.Info = {
 						new Element('li', {
 							children: [
 								new Element('label[for=input-title]', {text: 'Title'}),
-								new Element('input[id=input-title][name=title]')
+								new Element('input[id=input-title][name=title]', {
+									value: properties.title || ''
+								})
 							]
 						}),
 						new Element('li', {
 							children: [
 								new Element('label[for=input-description]', {text: 'Description'}),
-								new Element('textarea[id=input-description][name=description]')
+								new Element('textarea[id=input-description][name=description]', {
+									value: properties.description || ''
+								})
 							]
 						})
 					]
@@ -1770,7 +1799,7 @@ TP.Result = {
 	 */
 	init: function()
 	{
-		// log('TP.Result.init()');
+		log('TP.Result.init()');
 
 		TP.Events.addEvent('layout.dragStart', this.showOverlay.bind(this));
 		TP.Events.addEvent('layout.dragEnd', this.hideOverlay.bind(this));
@@ -1783,7 +1812,7 @@ TP.Result = {
 	 */
 	build: function()
 	{
-		// log('TP.Result.build();');
+		log('TP.Result.build();');
 
 		var panel = TP.Layout.getPanel(3);
 		if (panel) {
@@ -1791,6 +1820,8 @@ TP.Result = {
 			this.frame = new Element('div.frame');
 			this.iframe = new Element('iframe', {name: 'sandbox'});
 			this.frame.adopt(this.iframe).inject(this.wrapper);
+
+			TP.Events.fireEvent('result.build');
 		}
 	},
 

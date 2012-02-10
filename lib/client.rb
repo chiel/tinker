@@ -10,6 +10,7 @@ class Client < Controller
 	end
 
 	get %r{^/([A-Za-z0-9]+)(?:\/([0-9]+))?$} do |hash, revision|
+		p revision
 		locals = {
 			:tinker => Tinker.new(hash, revision),
 			:doctypes => Doctype.list,
@@ -22,12 +23,15 @@ class Client < Controller
 	post %r{^/save(?:\/([A-Za-z0-9]+))?/?$} do |hash|
 		puts params
 		entry = {
+			:title => params[:title],
+			:description => params[:description],
 			:doctype => params[:doctype],
 			:framework => params[:framework],
 			:normalize => params[:normalize] ? 1 : 0,
 			:markup => params[:markup],
 			:style => params[:style],
-			:interaction => params[:interaction]
+			:interaction => params[:interaction],
+			:assets => params[:assets] || []
 		}
 
 		puts entry

@@ -5,11 +5,7 @@ class Tinker
 	#
 	#
 	#
-	def initialize(hash = nil, revision = 0)
-		if !revision
-			revision = 0
-		end
-
+	def initialize(hash = nil, revision = nil)
 		if hash
 			self.read hash, revision
 		end
@@ -24,7 +20,10 @@ class Tinker
 			:revision => @revision,
 			:doctype => @doctype,
 			:framework => @framework,
-			:normalize => @normalize
+			:normalize => @normalize,
+			:assets => @assets,
+			:title => @title,
+			:description => @description
 		}
 	end
 
@@ -41,6 +40,11 @@ class Tinker
 				:password => APP_CONFIG['db']['pass'],
 				:database => APP_CONFIG['db']['name']
 			)
+			query = 'INSERT INTO tinker (hash, name, description) '
+			query << 'VALUES("'+client.escape(hash)+'", '
+			query << '"'+client.escape(entry[:title])+'", '
+			query << '"'+client.escape(entry[:description])+'")'
+			results = client.query(query)
 
 			query = 'INSERT INTO tinker_revision (x_tinker_hash, revision, x_doctype_id, '
 			query << 'x_framework_version_id, normalize, markup, style, interaction) '
@@ -52,6 +56,18 @@ class Tinker
 			query << '"'+client.escape(entry[:style])+'", '
 			query << '"'+client.escape(entry[:interaction])+'")'
 			results = client.query(query)
+
+			if entry[:assets]
+				entry[:assets].each do |type, assets|
+					assets.each do |asset|
+						query = 'INSERT INTO tinker_revision_asset(x_tinker_hash, revision, url, filetype) '
+						query << 'VALUES("'+client.escape(hash)+'", 0, '
+						query << '"'+client.escape(asset)+'", "'+client.escape(type)+'")'
+						results = client.query(query)
+					end
+				end
+			end
+
 			response = {
 				:hash => hash,
 				:revision => 0
@@ -66,26 +82,51 @@ class Tinker
 	#
 	#
 	def read(hash, revision)
-		entry = DB[:tinker_revision].filter(
-			:x_tinker_hash => hash,
-			:revision => revision.to_i > 0 ? revision.to_i : 0
-		).first
-
 		@hash = hash
-		@revision = revision
+		revision = revision != nil ? revision.to_i : nil
+
+		# main
+		entry = DB[:tinker].select(:name, :description).filter(:hash => @hash).first
+		@title = entry[:name]
+		@description = entry[:description]
+
+		# revision
+		rev = DB[:tinker_revision].filter(:x_tinker_hash => @hash)
+		if revision == nil
+			rev = rev.order(:revision.desc)
+		else
+			rev = rev.filter(:revision => revision)
+		end
+		entry = rev.first
+
+		@revision = entry[:revision]
 		@doctype = entry[:x_doctype_id]
 		@framework = entry[:x_framework_version_id]
 		@normalize = entry[:normalize]
 		@markup = entry[:markup]
 		@style = entry[:style]
 		@interaction = entry[:interaction]
+
+		# assets
+		assets = DB[:tinker_revision_asset].select(:url, :filetype).filter(
+			:x_tinker_hash => @hash,
+			:revision => @revision
+		).all
+
+		@assets = {}
+		assets.each do |asset|
+			if !@assets[asset[:filetype]]
+				@assets[asset[:filetype]] = []
+			end
+
+			@assets[asset[:filetype]] << asset[:url]
+		end
 	end
 
 	#
 	#
 	#
 	def update(hash, entry)
-		print 'update '+hash.to_s+"\n\n"
 		response = {}
 		begin
 			client = Mysql2::Client.new(
@@ -94,6 +135,12 @@ class Tinker
 				:password => APP_CONFIG['db']['pass'],
 				:database => APP_CONFIG['db']['name']
 			)
+
+			query = 'UPDATE tinker SET name = "'+client.escape(entry[:title])+'", '
+			query << 'description = "'+client.escape(entry[:description])+'" '
+			query << 'WHERE hash = "'+client.escape(hash)+'"'
+			results = client.query(query)
+
 			query = 'SELECT MAX(revision) as max FROM tinker_revision '
 			query << 'WHERE x_tinker_hash = "'+hash+'"'
 			results = client.query(query)
@@ -111,6 +158,18 @@ class Tinker
 			query << '"'+client.escape(entry[:style])+'", '
 			query << '"'+client.escape(entry[:interaction])+'")'
 			results = client.query(query)
+
+			if entry[:assets]
+				entry[:assets].each do |type, assets|
+					assets.each do |asset|
+						query = 'INSERT INTO tinker_revision_asset(x_tinker_hash, revision, url, filetype) '
+						query << 'VALUES("'+client.escape(hash)+'", '+revision+', '
+						query << '"'+client.escape(asset)+'", "'+client.escape(type)+'")'
+						results = client.query(query)
+					end
+				end
+			end
+
 			response = {
 				:hash => hash,
 				:revision => revision
