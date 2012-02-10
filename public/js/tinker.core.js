@@ -1610,6 +1610,7 @@ TP.Editor = {
 		TP.Events.addEvent('layout.build', this.init.bind(this));
 		TP.Events.addEvent('tinker.save', this.save.bind(this));
 		TP.Events.addEvent('layout.activate', this.refresh.bind(this));
+		TP.Events.addEvent('layout.dragEnd', this.refresh.bind(this));
 	},
 
 	/**
