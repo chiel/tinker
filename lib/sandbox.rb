@@ -8,6 +8,7 @@ class Sandbox < Controller
 		puts params
 		framework = Framework.get params[:framework]
 		locals = {
+			:doctype => Doctype.code(params[:doctype]),
 			:html => params[:markup],
 			:css => params[:style],
 			:js => params[:interaction],
