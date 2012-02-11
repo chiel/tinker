@@ -95,6 +95,7 @@ footer .buttons
   color: #666
 
 header, footer
+  position: relative
   height: 53px
   background: url(../img/bg-header.png)
 
@@ -107,18 +108,21 @@ footer
 
 .region
   overflow: hidden
+  position: absolute
+  top: 0
   height: 100%
   text-align: left
   &.tl
-    float: left
+    left: 0
   &.tr
-    float: right
+    right: 0
   &.bl
-    float: left
+    left: 0
   &.bm
+    position: relative
     display: inline-block
   &.br
-    float: right
+    right: 0
   ul
     float: left
 
