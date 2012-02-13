@@ -7,10 +7,7 @@
     %link{:rel=>'stylesheet', :href=>'/css/base.css'}
     %link{:rel=>'stylesheet', :href=>'/css/codemirror.css'}
   %body
-    %script{:type=>'tinker/properties'}= tinker.properties.to_json
-    %script{:type=>'tinker/markup'}= CGI.escapeHTML tinker.markup || ''
-    %script{:type=>'tinker/style'}= CGI.escapeHTML tinker.style || ''
-    %script{:type=>'tinker/interaction'}= CGI.escapeHTML tinker.interaction || ''
+    %script{:type=>'tinker'}= tinker.to_json
     %script{:type=>'urls'}= urls.to_json
     %script{:type=>'doctypes'}= doctypes.to_json
     %script{:type=>'frameworks'}= frameworks.to_json

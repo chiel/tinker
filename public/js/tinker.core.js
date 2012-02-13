@@ -156,16 +156,21 @@ TP.Tinker = {
 	/**
 	 * Store data for the current tinker
 	 */
-	init: function(config)
+	init: function()
 	{
 		// log('TP.Tinker.init(', config, ');');
 
-		this.properties = JSON.parse(document.getElement('script[type=tinker/properties]').get('html'));
-		this.markup = document.getElement('script[type=tinker/markup]').get('html');
-		this.style = document.getElement('script[type=tinker/style]').get('html');
-		this.interaction = document.getElement('script[type=tinker/interaction]').get('html');
+		var data = JSON.parse(document.getElement('script[type=tinker]').get('html'));
+		this.hash = data.hash || null;
+		this.revision = data.revision || null;
+		this.doctype = data.revision || null;
+		this.framework = data.framework || null;
+		this.normalize = data.normalize || null;
+		this.markup = data.markup || null;
+		this.style = data.style || null;
+		this.interaction = data.interaction || null;
 
-		if (this.properties.hash) {
+		if (this.hash) {
 			TP.Events.addEvent('result.build', this.run.bind(this));
 		}
 		TP.Events.addEvent('layout.build', this.build.bind(this));
@@ -203,46 +208,6 @@ TP.Tinker = {
 	},
 
 	/**
-	 * Get properties for current tinker
-	 */
-	getProperties: function()
-	{
-		// log('TP.Tinker.getProperties();');
-
-		return this.properties;
-	},
-
-	/**
-	 * Get markup for current tinker
-	 */
-	getMarkup: function()
-	{
-		// log('TP.Tinker.getMarkup();');
-
-		return this.markup;
-	},
-
-	/**
-	 * Get style for current tinker
-	 */
-	getStyle: function()
-	{
-		// log('TP.Tinker.getStyle();');
-
-		return this.style;
-	},
-
-	/**
-	 * Get interaction for current tinker
-	 */
-	getInteraction: function()
-	{
-		// log('TP.Tinker.getInteraction();');
-
-		return this.interaction;
-	},
-
-	/**
 	 * Run the current tinker in the result frame
 	 */
 	run: function()
@@ -265,8 +230,8 @@ TP.Tinker = {
 
 		var self = this;
 		var url = '/save';
-		if (this.properties.hash) {
-			url += '/'+this.properties.hash;
+		if (this.hash) {
+			url += '/'+this.hash;
 		}
 		new Request.JSON({
 			url: url,
@@ -276,11 +241,11 @@ TP.Tinker = {
 				if (!response.hash) {
 					return;
 				}
-				self.properties.hash = response.hash;
+				self.hash = response.hash;
 				var url = '/'+response.hash;
 				if (response.revision) {
 					url += '/'+response.revision;
-					self.properties.revision = response.revision;
+					self.revision = response.revision;
 				}
 				// Check for history api
 				if (!!(window.history && history.pushState)) {
@@ -458,8 +423,7 @@ TP.Settings.General = {
 			})
 		);
 
-		var properties = TP.Tinker.getProperties();
-		if (properties.hash && !properties.normalize) {
+		if (TP.Tinker.hash && !TP.Tinker.normalize) {
 			input_normalize.set('checked', false);
 		}
 
@@ -472,7 +436,7 @@ TP.Settings.General = {
 			var optgroup = new Element('optgroup', {label: framework.name, value: framework.id});
 			Array.each(framework.versions, function(version) {
 				var option = new Element('option', {text: framework.name+' '+version.name, value: version.id});
-				if (properties.framework === version.id) {
+				if (TP.Tinker.framework === version.id) {
 					option.set('selected', true);
 				}
 				optgroup.adopt(option);
@@ -535,7 +499,7 @@ TP.Settings.Assets = {
 	 */
 	build: function()
 	{
-		var self = this, properties = TP.Tinker.getProperties();
+		var self = this;
 
 		TP.Settings.panes.assets.adopt(
 			this.wrapper = new Element('fieldset', {
@@ -553,8 +517,8 @@ TP.Settings.Assets = {
 			})
 		);
 
-		if (properties.assets) {
-			Object.each(properties.assets, function(assets, type) {
+		if (TP.Tinker.assets) {
+			Object.each(TP.Tinker.assets, function(assets, type) {
 				Array.each(assets, function(asset) {
 					self.addAsset(asset, type);
 				});
@@ -613,7 +577,6 @@ TP.Settings.Info = {
 	 */
 	build: function()
 	{
-		var properties = TP.Tinker.getProperties();
 		TP.Settings.panes.info.adopt(
 			new Element('fieldset', {
 				children: new Element('ul', {
@@ -622,7 +585,7 @@ TP.Settings.Info = {
 							children: [
 								new Element('label[for=input-title]', {text: 'Title'}),
 								new Element('input[id=input-title][name=title]', {
-									value: properties.title || ''
+									value: TP.Tinker.title || ''
 								})
 							]
 						}),
@@ -630,7 +593,7 @@ TP.Settings.Info = {
 							children: [
 								new Element('label[for=input-description]', {text: 'Description'}),
 								new Element('textarea[id=input-description][name=description]', {
-									value: properties.description || ''
+									value: TP.Tinker.description || ''
 								})
 							]
 						})
@@ -1709,7 +1672,7 @@ TP.MarkupEditor = Object.merge({}, TP.Editor, {
 			this.frame = new Element('div.frame');
 			this.textarea = new Element('textarea', {
 				name: 'markup',
-				html: TP.Tinker.getMarkup()
+				html: TP.Tinker.markup
 			});
 			this.settings = new Element('div.settings', {text: 'HTML'});
 			this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
@@ -1739,7 +1702,7 @@ TP.StyleEditor = Object.merge({}, TP.Editor, {
 			this.frame = new Element('div.frame');
 			this.textarea = new Element('textarea', {
 				name: 'style',
-				html: TP.Tinker.getStyle()
+				html: TP.Tinker.style
 			});
 			this.settings = new Element('div.settings', {text: 'CSS'});
 			this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
@@ -1769,7 +1732,7 @@ TP.InteractionEditor = Object.merge({}, TP.Editor, {
 			this.frame = new Element('div.frame');
 			this.textarea = new Element('textarea', {
 				name: 'interaction',
-				html: TP.Tinker.getInteraction()
+				html: TP.Tinker.interaction
 			});
 			this.settings = new Element('div.settings', {text: 'JS'});
 			this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());

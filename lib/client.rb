@@ -1,18 +1,7 @@
 class Client < Controller
-	get '/' do
+	get %r{^/(?:([A-Za-z0-9]+)(?:\/([0-9]+)))?$} do |hash, revision|
 		locals = {
-			:tinker => Tinker.new,
-			:doctypes => Doctype.list,
-			:frameworks => Framework.list,
-			:urls => APP_CONFIG['urls']
-		}
-		haml :index, :locals => locals
-	end
-
-	get %r{^/([A-Za-z0-9]+)(?:\/([0-9]+))?$} do |hash, revision|
-		p revision
-		locals = {
-			:tinker => Tinker.new(hash, revision),
+			:tinker => Tinker.find(hash, revision),
 			:doctypes => Doctype.list,
 			:frameworks => Framework.list,
 			:urls => APP_CONFIG['urls']
