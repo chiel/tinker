@@ -162,16 +162,22 @@ TP.Tinker = {
 
 		var data = JSON.parse(document.getElement('script[type=tinker]').get('html'));
 		this.hash = data.hash || null;
-		this.revision = data.revision || null;
+		this.revision = data.revision || 0;
 		this.doctype = data.revision || null;
 		this.framework = data.framework || null;
 		this.normalize = data.normalize || null;
+		this.title = data.title || null;
+		this.description = data.description || null;
 		this.markup = data.markup || null;
 		this.style = data.style || null;
 		this.interaction = data.interaction || null;
 
 		if (this.hash) {
 			TP.Events.addEvent('result.build', this.run.bind(this));
+			// @todo only do this when the revision is not in the url yet
+			if (!!(window.history && history.pushState)) {
+				history.pushState(null, null, '/'+this.hash+'/'+this.revision);
+			}
 		}
 		TP.Events.addEvent('layout.build', this.build.bind(this));
 	},
@@ -205,6 +211,20 @@ TP.Tinker = {
 				}
 			}
 		}), 'tr');
+
+		if (this.hash) {
+			new Element('input[type=hidden]', {
+				name: 'hash',
+				value: this.hash
+			}).inject(TP.Layout.wrapper);
+
+			if (this.revision) {
+				new Element('input[type=hidden]', {
+					name: 'revision',
+					value: this.revision
+				}).inject(TP.Layout.wrapper);
+			}
+		}
 	},
 
 	/**
@@ -229,30 +249,26 @@ TP.Tinker = {
 		TP.Layout.wrapper.submit();
 
 		var self = this;
-		var url = '/save';
-		if (this.hash) {
-			url += '/'+this.hash;
-		}
 		new Request.JSON({
-			url: url,
+			url: '/save',
 			data: TP.Layout.wrapper,
 			method: 'post',
 			onSuccess: function(response) {
-				if (!response.hash) {
-					return;
-				}
-				self.hash = response.hash;
-				var url = '/'+response.hash;
-				if (response.revision) {
-					url += '/'+response.revision;
-					self.revision = response.revision;
-				}
-				// Check for history api
-				if (!!(window.history && history.pushState)) {
-					history.pushState(null, null, url);
-				} else {
-					window.location = url;
-				}
+				// if (!response.hash) {
+				// 	return;
+				// }
+				// self.hash = response.hash;
+				// var url = '/'+response.hash;
+				// if (response.revision) {
+				// 	url += '/'+response.revision;
+				// 	self.revision = response.revision;
+				// }
+				// // Check for history api
+				// if (!!(window.history && history.pushState)) {
+				// 	history.pushState(null, null, url);
+				// } else {
+				// 	window.location = url;
+				// }
 			}
 		}).send();
 	}

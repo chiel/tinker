@@ -1,5 +1,9 @@
+#
+# Handles client calls
+#
 class Client < Controller
-	get %r{^/(?:([A-Za-z0-9]+)(?:\/([0-9]+)))?$} do |hash, revision|
+	# new or existing tinker
+	get %r{^/(?:([A-Za-z0-9]{5})(?:\/([0-9]+))?\/?)?$} do |hash, revision|
 		locals = {
 			:tinker => Tinker.find(hash, revision),
 			:doctypes => Doctype.list,
@@ -9,27 +13,34 @@ class Client < Controller
 		haml :index, :locals => locals
 	end
 
-	post %r{^/save(?:\/([A-Za-z0-9]+))?/?$} do |hash|
-		puts params
-		entry = {
-			:title => params[:title],
-			:description => params[:description],
-			:doctype => params[:doctype],
-			:framework => params[:framework],
-			:normalize => params[:normalize] ? 1 : 0,
-			:markup => params[:markup],
-			:style => params[:style],
-			:interaction => params[:interaction],
-			:assets => params[:assets] || []
-		}
+	# save new or existing tinker
+	post '/save' do
+		tinker = Tinker.find(params[:hash])
 
-		puts entry
+		tinker['title'] = params[:title]
+		tinker['description'] = params[:description]
+		tinker['doctype'] = params[:doctype]
+		tinker['framework'] = params[:framework]
+		tinker['normalize'] = params[:normalize] ? 1 : 0
+		tinker['assets'] = params[:assets] || []
+		tinker['markup'] = params[:markup]
+		tinker['style'] = params[:style]
+		tinker['interaction'] = params[:interaction]
 
-		tinker = Tinker.new
-		if hash
-			tinker.update hash, entry
+		if tinker.save && !tinker['hash'].nil? && !tinker['revision'].nil?
+			{
+				:status => 'ok',
+				:hash => tinker['hash'],
+				:revision => tinker['revision']
+			}.to_json
 		else
-			tinker.create entry
+			{
+				:status => 'error',
+				:error => {
+					:code => 100,
+					:message => 'Something went wrong while trying to save'
+				}
+			}.to_json
 		end
 	end
 
