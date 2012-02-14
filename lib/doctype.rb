@@ -1,10 +1,5 @@
 #
-#
-#
 class Doctype
-
-	#
-	#
 	#
 	class << self
 		#

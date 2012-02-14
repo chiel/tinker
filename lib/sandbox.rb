@@ -1,9 +1,6 @@
+# Handles sandbox calls
 class Sandbox < Controller
-	get '/' do
-		headers 'X-Frame-Options' => ''
-		body 'SANDBOX'
-	end
-
+	# View a tinker
 	post '/' do
 		locals = {
 			:title => params[:title] || 'Tinker &mdash; Sandbox',

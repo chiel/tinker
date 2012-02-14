@@ -1,6 +1,4 @@
-#
 # Handles client calls
-#
 class Client < Controller
 	# new or existing tinker
 	get %r{^/(?:([A-Za-z0-9]{5})(?:\/([0-9]+))?\/?)?$} do |hash, revision|

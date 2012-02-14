@@ -1,16 +1,13 @@
+# A class to manage everything concerning tinkers
 class Tinker
 
-	#
-	#
-	#
+	# Create a new tinker
 	def initialize
 		@dirty = false
 		@data = {}
 	end
 
-	#
-	#
-	#
+	# Find a tinker by hash (and revision)
 	def self.find( hash, revision = nil )
 		tinker = Tinker.new
 		return tinker unless hash
@@ -51,35 +48,28 @@ class Tinker
 		tinker
 	end
 
-	#
-	#
-	#
+	# Check if anything has changed in the tinker
 	def dirty?
 		@dirty
 	end
 
-	#
-	#
-	#
+	# Check if it's a new tinker
 	def new?
 		!@data['hash'] || @data['hash'].nil?
 	end
 
+	# Retrieve a value
 	def []( key )
 		@data[key] || nil
 	end
 
-	#
-	#
-	#
+	# Set a value
 	def []=( key, value )
 		@data[key] = value
 		@dirty = true
 	end
 
-	#
-	#
-	#
+	# Get a new unique hash
 	def new_hash
 		longhash = Digest::SHA1.hexdigest(Time.new.to_i.to_s)
 		i = 0
@@ -93,17 +83,13 @@ class Tinker
 		hash
 	end
 
-	#
-	#
-	#
+	# Get a new revision number for the current hash
 	def new_revision
 		revision = DB[:tinker_revision].filter(:x_tinker_hash => @data['hash']).max(:revision)
 		revision.to_i + 1
 	end
 
-	#
-	#
-	#
+	# Save the tinker's current state
 	def save
 		return true unless dirty?
 
@@ -140,9 +126,7 @@ class Tinker
 		return true
 	end
 
-	#
-	#
-	#
+	# Return a json object representing the tinker's state
 	def to_json
 		@data.to_json
 	end
