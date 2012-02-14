@@ -30,14 +30,12 @@ class Sandbox < Controller
 		end
 
 		if params[:assets]
-			if params[:assets][:js]
-				params[:assets][:js].each do |asset|
-					locals[:scripts] << asset
-				end
-			end
-			if params[:assets][:css]
-				params[:assets][:css].each do |asset|
+			params[:assets].each do |asset|
+				type = asset.gsub /.*\.([a-z+]+)/i, '\1'
+				if type == 'css'
 					locals[:stylesheets] << asset
+				elsif type == 'js'
+					locals[:scripts] << asset
 				end
 			end
 		end

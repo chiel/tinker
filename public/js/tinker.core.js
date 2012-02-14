@@ -136,14 +136,12 @@ TP.Tinker = {
 	 *
 	 */
 	markup: null,
-	/**
-	 *
-	 */
 	style: null,
-	/**
-	 *
-	 */
 	interaction: null,
+
+	//
+	inputHash: null,
+	inputRevision: null,
 
 	/**
 	 *
@@ -162,10 +160,11 @@ TP.Tinker = {
 
 		var data = JSON.parse(document.getElement('script[type=tinker]').get('html'));
 		this.hash = data.hash || null;
-		this.revision = data.revision || 0;
+		this.revision = data.revision || null;
 		this.doctype = data.revision || null;
 		this.framework = data.framework || null;
 		this.normalize = data.normalize || null;
+		this.assets = data.assets || [];
 		this.title = data.title || null;
 		this.description = data.description || null;
 		this.markup = data.markup || null;
@@ -176,7 +175,9 @@ TP.Tinker = {
 			TP.Events.addEvent('result.build', this.run.bind(this));
 			// @todo only do this when the revision is not in the url yet
 			if (!!(window.history && history.pushState)) {
-				history.pushState(null, null, '/'+this.hash+'/'+this.revision);
+				var url = '/'+this.hash;
+				url += this.revision > 0 ? '/'+this.revision : '';
+				history.pushState(null, null, url);
 			}
 		}
 		TP.Events.addEvent('layout.build', this.build.bind(this));
@@ -212,19 +213,10 @@ TP.Tinker = {
 			}
 		}), 'tr');
 
-		if (this.hash) {
-			new Element('input[type=hidden]', {
-				name: 'hash',
-				value: this.hash
-			}).inject(TP.Layout.wrapper);
-
-			if (this.revision) {
-				new Element('input[type=hidden]', {
-					name: 'revision',
-					value: this.revision
-				}).inject(TP.Layout.wrapper);
-			}
-		}
+		TP.Layout.wrapper.adopt(
+			this.inputHash = new Element('input[type=hidden]', {name: 'hash', value: this.hash}),
+			this.inputRevision = new Element('input[type=hidden]', {name: 'revision', value: this.revision})
+		);
 	},
 
 	/**
@@ -254,21 +246,24 @@ TP.Tinker = {
 			data: TP.Layout.wrapper,
 			method: 'post',
 			onSuccess: function(response) {
-				// if (!response.hash) {
-				// 	return;
-				// }
-				// self.hash = response.hash;
-				// var url = '/'+response.hash;
-				// if (response.revision) {
-				// 	url += '/'+response.revision;
-				// 	self.revision = response.revision;
-				// }
-				// // Check for history api
-				// if (!!(window.history && history.pushState)) {
-				// 	history.pushState(null, null, url);
-				// } else {
-				// 	window.location = url;
-				// }
+				if (response.status === 'ok') {
+					self.hash = response.hash;
+					self.revision = response.revision;
+
+					self.inputHash.set('value', self.hash);
+					self.inputRevision.set('value', self.revision);
+
+					var url = '/'+self.hash;
+					url += self.revision > 0 ? '/'+self.revision : '';
+
+					if (!!(window.history && history.pushState)) {
+						history.pushState(null, null, url);
+					} else {
+						window.location = url;
+					}
+				} else if (response.status === 'error') {
+					log(response.error.message);
+				}
 			}
 		}).send();
 	}
@@ -461,7 +456,7 @@ TP.Settings.General = {
 		});
 
 		input_framework.addEvent('change', function(e) {
-			var selected = self.versions[input_framework.getSelected()[0].get('value')];
+			// var selected = self.versions[input_framework.getSelected()[0].get('value')];
 			// if (selected.extensions && selected.extensions.length) {
 			// 	console.log('extensions: ', selected.extensions);
 			// }
@@ -482,10 +477,7 @@ TP.Settings.Assets = {
 	/**
 	 * List of all the assets we've added so far
 	 */
-	assets: {
-		css: [],
-		js: []
-	},
+	assets: [],
 	/**
 	 *
 	 */
@@ -499,15 +491,8 @@ TP.Settings.Assets = {
 	 */
 	prepare: function()
 	{
-		TP.Events.addEvent('init', this.init.bind(this));
 		TP.Events.addEvent('settings.build', this.build.bind(this));
-	},
-
-	/**
-	 *
-	 */
-	init: function()
-	{
+		TP.Events.addEvent('asset.remove', this.removeAsset.bind(this));
 	},
 
 	/**
@@ -534,19 +519,16 @@ TP.Settings.Assets = {
 		);
 
 		if (TP.Tinker.assets) {
-			Object.each(TP.Tinker.assets, function(assets, type) {
-				Array.each(assets, function(asset) {
-					self.addAsset(asset, type);
-				});
+			Array.each(TP.Tinker.assets, function(asset) {
+				self.addAsset(asset);
 			});
 		}
 
 		this.addButton.addEvent('click', function(e) {
 			e.preventDefault();
-			var asset = self.input.get('value').trim(),
-				type = asset.replace(/.*\.([a-z]+)/i, '$1');
+			var url = self.input.get('value').trim();
 
-			self.addAsset(asset, type);
+			self.addAsset(url);
 			self.input.set('value', '');
 		});
 	},
@@ -554,25 +536,67 @@ TP.Settings.Assets = {
 	/**
 	 *
 	 */
-	addAsset: function(asset, type)
+	addAsset: function(url)
 	{
-		if (asset === '' || type === '') {
-			return;
-		}
-		if (!this.assets[type]) {
+		log('TP.Settings.Assets.addAsset(', url, ');');
+
+		if (url === '') {
 			return;
 		}
 
-		if (this.assets[type].indexOf(asset) === -1) {
-			this.assets[type].push(asset);
-			this.assetList.adopt(
-				new Element('li', {text: asset})
-			);
-			this.wrapper.adopt(new Element('input[type=hidden]', {name: 'assets['+type+'][]', value: asset}));
-		}
+		var asset = new TP.Asset(url);
+		this.assets.push(asset);
+		this.assetList.adopt(asset.element);
+	},
+
+	/**
+	 *
+	 */
+	removeAsset: function(asset)
+	{
+		this.assets.splice(this.assets.indexOf(asset), 1);
+		log(this.assets);
 	}
 };
 TP.Settings.Assets.prepare();
+
+
+
+/**
+ *
+ */
+TP.Asset = new Class({
+	/**
+	 *
+	 */
+	initialize: function(url)
+	{
+		// log('TP.Asset.initialize(', url, ');');
+
+		this.url = url;
+		this.name = this.url.replace(/^.*\/(.+)$/, '$1');
+		this.type = this.name.replace(/.*\.([a-z]+)/i, '$1');
+		this.element = new Element('li', {
+			children: [
+				new Element('span', {text: this.name}),
+				new Element('a.delete[href=#]').addEvent('click', this.remove.bind(this)),
+				new Element('input[type=hidden]', {name: 'assets[]', value: this.url})
+			]
+		});
+	},
+
+	/**
+	 *
+	 */
+	remove: function(e)
+	{
+		// log('TP.Asset.remove();');
+
+		e.stop();
+		this.element.destroy();
+		TP.Events.fireEvent('asset.remove', this);
+	}
+});
 
 
 

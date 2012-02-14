@@ -37,20 +37,17 @@ class Tinker
 		tinker['style'] = data[:style]
 		tinker['interaction'] = data[:interaction]
 
-		data = DB[:tinker_revision_asset].select(:url, :filetype).filter(
+		data = DB[:tinker_revision_asset].select(:url).filter(
 			:x_tinker_hash => hash,
 			:revision => revision
 		).all
 
-		assets = {}
+		assets = []
 		data.each do |asset|
-			if !assets[asset[:filetype]]
-				assets[asset[:filetype]] = []
-			end
-
-			assets[asset[:filetype]] << asset[:url]
+			assets << asset[:url]
 		end
-		tinker[:assets] = assets
+
+		tinker['assets'] = assets
 		tinker
 	end
 
@@ -68,14 +65,14 @@ class Tinker
 		!@data['hash'] || @data['hash'].nil?
 	end
 
-	def [] ( key )
+	def []( key )
 		@data[key] || nil
 	end
 
 	#
 	#
 	#
-	def []= ( key, value )
+	def []=( key, value )
 		@data[key] = value
 		@dirty = true
 	end
@@ -131,15 +128,12 @@ class Tinker
 		)
 
 		if @data['assets']
-			@data['assets'].each do |type, assets|
-				assets.each do |asset|
-					DB[:tinker_revision_asset].insert(
-						:x_tinker_hash => @data['hash'],
-						:revision => @data['revision'],
-						:url => asset,
-						:filetype => type
-					)
-				end
+			@data['assets'].each do |asset|
+				DB[:tinker_revision_asset].insert(
+					:x_tinker_hash => @data['hash'],
+					:revision => @data['revision'],
+					:url => asset
+				)
 			end
 		end
 
