@@ -18,6 +18,13 @@ class Sandbox < Controller
 			locals[:scripts] << '/frameworks/'+framework[:filepath]
 		end
 
+		if params[:extensions]
+			extensions = Framework.get_extensions params[:extensions]
+			extensions.each do |extension|
+				locals[:scripts] << '/frameworks/'+extension[:filepath]
+			end
+		end
+
 		if params[:normalize]
 			locals[:stylesheets] << '/css/normalize.css'
 		end

@@ -397,7 +397,7 @@ TP.Settings.General = {
 	 */
 	build: function()
 	{
-		var input_doctype, input_framework, input_normalize;
+		var self = this, input_doctype, input_framework, input_normalize, extensionList;
 
 		TP.Settings.panes.general.adopt(
 			new Element('fieldset', {
@@ -418,7 +418,8 @@ TP.Settings.General = {
 									children: input_framework = new Element('select[id=input-framework][name=framework]', {
 										children: new Element('option', {text: 'None', value: 0})
 									})
-								})
+								}),
+								extensionList = new Element('ul#extension_list')
 							]
 						}),
 						new Element('li', {
@@ -456,10 +457,21 @@ TP.Settings.General = {
 		});
 
 		input_framework.addEvent('change', function(e) {
-			// var selected = self.versions[input_framework.getSelected()[0].get('value')];
-			// if (selected.extensions && selected.extensions.length) {
-			// 	console.log('extensions: ', selected.extensions);
-			// }
+			extensionList.empty();
+			var selected = self.versions[input_framework.getSelected()[0].get('value')];
+			if (selected && selected.extensions && selected.extensions.length) {
+				Array.each(selected.extensions, function(extension, index) {
+					log(extension);
+					new Element('li', {children: [
+						new Element('input[type=checkbox]', {
+							id: 'extension-'+index,
+							name: 'extensions[]',
+							value: extension.id
+						}),
+						new Element('label', {'for': 'extension-'+index, text: extension.name})
+					]}).inject(extensionList);
+				});
+			}
 		});
 
 		TP.Events.fireEvent('settings.general.build');
@@ -513,7 +525,7 @@ TP.Settings.Assets = {
 							]
 						})
 					}),
-					this.assetList = new Element('ul#assetList')
+					this.assetList = new Element('ul#asset_list')
 				]
 			})
 		);
@@ -1633,13 +1645,13 @@ TP.Editor = {
 	},
 
 	/**
-	 * When the editor gets focussed
+	 * When the editor gets focused
 	 */
 	onFocus: function()
 	{
 		// log('TP.Editor.onFocus();');
 
-		this.frame.addClass('focussed');
+		this.frame.addClass('focused');
 		this.highlightLine();
 	},
 
@@ -1650,7 +1662,7 @@ TP.Editor = {
 	{
 		// log('TP.Editor.onBlur();');
 
-		this.frame.removeClass('focussed');
+		this.frame.removeClass('focused');
 	},
 
 	/**

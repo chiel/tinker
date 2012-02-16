@@ -10,6 +10,16 @@ class Framework
 
 	end
 
+	def self.get_extensions( ids )
+		extensions = DB[:framework_extension].filter(:id => ids).all
+		version = DB[:framework_version].select(:id, :x_framework_id, :name, :dirname, :filename).filter(:id => extensions[0][:x_framework_version_id]).first;
+		framework = DB[:framework].select(:name, :dirname).filter(:id => version[:x_framework_id]).first
+		extensions.each do |extension|
+			extension[:filepath] = framework[:dirname]+'/'+version[:dirname]+'/'+extension[:filename]
+		end
+		extensions
+	end
+
 	#
 	#
 	#
@@ -40,7 +50,7 @@ class Framework
 				versions = DB[:framework_version].select(:id, :name, :filename).filter(:x_framework_id => framework[:id]).order(:name.desc).all
 				versions.each do |version|
 					# then extensions
-					extensions = DB[:framework_extension].select(:name, :filename).filter(:x_framework_version_id => version[:id]).all
+					extensions = DB[:framework_extension].select(:id, :name, :filename).filter(:x_framework_version_id => version[:id]).all
 					version[:extensions] = extensions
 				end
 				framework[:versions] = versions
