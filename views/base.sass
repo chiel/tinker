@@ -37,11 +37,10 @@ fieldset
     padding: 3px
 label
   float: left
-  width: 150px
-  line-height: 18px
-.input
-  float: left
-  line-height: 18px
+  width: 80px
+  margin: 0 10px 0 0
+  line-height: 20px
+  text-align: right
 
 .buttons
   overflow: hidden
@@ -69,24 +68,6 @@ footer .buttons
     box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset rgba(255, 255, 255, .4) 0 1px 0
     @include basic-gradient(#79b4ec, #3d7fbe)
     text-shadow: #3170bd 0 1px 0
-
-.tabs
-  overflow: hidden
-  a
-    display: block
-    padding: 0 9px
-    border: 1px solid #666
-    border-left: 0
-    line-height: 20px
-    &.is-active
-      background: #ccc
-  li
-    float: left
-    &:first-child a
-      border-left: 1px solid #666
-      border-radius: 3px 0 0 3px
-    &:last-child a
-      border-radius: 0 3px 3px 0
 
 #wrapper
   width: 100%
@@ -209,27 +190,66 @@ section
 .popover
   position: absolute
   z-index: 10
+  width: 280px
   margin: 8px 0 0
-  border: 1px solid rgba(0, 0, 0, .2)
+  border: 3px solid #292929
   border-radius: 6px
-  box-shadow: rgba(0, 0, 0, .3) 0 2px 5px
-  background: #eee
+  // box-shadow: rgba(0, 0, 0, .3) 0 2px 5px
+  background: #e5e5e5
   &.br
     margin: 0 0 8px
   .popover-arrow
     position: absolute
-    top: -11px
+    top: -9px
     left: 10px
-    display: none
-    width: 20px
-    height: 10px
-    border: 1px solid rgba(0, 0, 0, 1)
-    border-bottom: 0
-    background: #eee
-  .popover-content
-    margin: 12px
+    z-index: 3
+    width: 0
+    height: 0
+    border-bottom: 6px solid #000
+    border-left: 6px solid transparent
+    border-right: 6px solid transparent
+    &:before
+      position: absolute
+      top: 4px
+      left: -5px
+      z-index: 2
+      content: ""
+      border-bottom: 5px solid #e5e5e5
+      border-left: 5px solid transparent
+      border-right: 5px solid transparent
+  .tabs
+    position: relative
+    bottom: -1px
+    z-index: 2
+    padding: 7px 7px 0
+    li
+      display: inline-block
+    a
+      display: block
+      padding: 0 12px
+      border: 1px solid transparent
+      border-bottom: 0
+      color: #555
+      line-height: 24px
+      &.is-active
+        border-color: #b8b8b8
+        border-bottom: 0
+        border-radius: 3px 3px 0 0
+        background: #fff
+        color: #222
+  .sections
+    position: relative
+    z-index: 1
+    padding: 12px
+    border-top: 1px solid #b8b8b8
+    border-radius: 0 0 6px 6px
+    background: #fff
+    .section
+      display: none
+      &.is-active
+        display: block
 
-#asset_list li
+#asset-list li
   position: relative
   .delete
     position: absolute
@@ -239,7 +259,7 @@ section
     height: 15px
     background: #f00
 
-#extension_list
+#extension-list
   clear: both
   margin: 0 0 0 145px
   label
