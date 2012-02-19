@@ -165,7 +165,12 @@ authors:
 		if (selected && selected.extensions && selected.extensions.length) {
 			Array.each(selected.extensions, function(extension, index) {
 				new Element('li', {children: [
-					new Element('input[type=checkbox]', {id: 'extension-'+index, name: 'extensions[]', value: extension.id}),
+					new Element('input[type=checkbox]', {
+						id: 'extension-'+index,
+						name: 'extensions[]',
+						value: extension.id,
+						checked: init && T.Tinker.extensions.contains(extension.id)
+					}),
 					new Element('label', {'for': 'extension-'+index, text: extension.name})
 				]}).inject(extList);
 			});
@@ -327,7 +332,7 @@ authors:
 	 */
 	function build()
 	{
-		log('settings.info.build();');
+		// log('settings.info.build();');
 
 		var html = '<ul>'
 			+'<li><label for="input-title">Title</label><input id="input-title" name="title" value="'+(T.Tinker.title || '')+'"></li>'

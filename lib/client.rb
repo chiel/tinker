@@ -19,6 +19,7 @@ class Client < Controller
 		tinker['description'] = params[:description]
 		tinker['doctype'] = params[:doctype]
 		tinker['framework'] = params[:framework]
+		tinker['extensions'] = params[:extensions] || []
 		tinker['normalize'] = params[:normalize] ? 1 : 0
 		tinker['assets'] = params[:assets] || []
 		tinker['markup'] = params[:markup]

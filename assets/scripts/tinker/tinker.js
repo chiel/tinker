@@ -18,6 +18,7 @@ authors:
 		revision: data.revision || null,
 		doctype: data.revision || null,
 		framework: data.framework || null,
+		extensions: data.extensions || [],
 		normalize: data.normalize || null,
 		assets: data.assets || [],
 		title: data.title || null,
@@ -36,7 +37,7 @@ authors:
 
 	function build()
 	{
-		log('tinker.build();');
+		// log('tinker.build();');
 
 		var buttons = $$(
 			new Element('a.button.run[href=#run][text=Run]'),
@@ -84,7 +85,7 @@ authors:
 	 */
 	function save()
 	{
-		log('tinker.save();');
+		// log('tinker.save();');
 
 		T.Events.fireEvent('tinker.save');
 		T.Layout.wrapper.submit();

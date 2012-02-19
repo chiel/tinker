@@ -74,7 +74,7 @@ Element.Properties.children = {
 
 	function build()
 	{
-		log('core.build();');
+		// log('core.build();');
 
 		T.Layout.addToRegion(new Element('h1.logo', {html: '<a href="'+T.Core.urls.client+'"></a>'}), 'tm');
 		var aboutButton = new Element('a.about[href=#about][text=About]');

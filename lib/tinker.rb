@@ -34,17 +34,26 @@ class Tinker
 		tinker['style'] = data[:style]
 		tinker['interaction'] = data[:interaction]
 
+		assets = []
 		data = DB[:tinker_revision_asset].select(:url).filter(
 			:x_tinker_hash => hash,
-			:revision => data[:revision]
+			:revision => tinker['revision']
 		).all
-
-		assets = []
 		data.each do |asset|
 			assets << asset[:url]
 		end
-
 		tinker['assets'] = assets
+
+		extensions = []
+		data = DB[:tinker_revision_extension].select(:x_framework_extension_id).filter(
+			:x_tinker_hash => hash,
+			:revision => tinker['revision']
+		).all
+		data.each do |extension|
+			extensions << extension[:x_framework_extension_id]
+		end
+		tinker['extensions'] = extensions
+
 		tinker
 	end
 
@@ -112,6 +121,16 @@ class Tinker
 			:style => @data['style'],
 			:interaction => @data['interaction']
 		)
+
+		if @data['extensions']
+			@data['extensions'].each do |extension|
+				DB[:tinker_revision_extension].insert(
+					:x_tinker_hash => @data['hash'],
+					:revision => @data['revision'],
+					:x_framework_extension_id => extension
+				)
+			end
+		end
 
 		if @data['assets']
 			@data['assets'].each do |asset|
