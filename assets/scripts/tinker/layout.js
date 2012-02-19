@@ -36,10 +36,9 @@ authors:
 	{
 		// log('layout.build(', config, ');');
 
-		var urls = JSON.parse(document.getElement('script[type=urls]').get('html'));
 		T.Layout.wrapper = wrapper = new Element('form#wrapper', {
 			method: 'post',
-			action: urls.sandbox,
+			action: T.Core.urls.sandbox,
 			target: 'sandbox'
 		}).inject(document.body);
 
@@ -49,6 +48,7 @@ authors:
 
 		regions = {
 			tl: new Element('div.region.tl').inject(header),
+			tm: new Element('div.region.tm').inject(header),
 			tr: new Element('div.region.tr').inject(header),
 			bl: new Element('div.region.bl').inject(footer),
 			bm: new Element('div.region.bm').inject(footer),

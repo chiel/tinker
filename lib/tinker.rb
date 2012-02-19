@@ -36,7 +36,7 @@ class Tinker
 
 		data = DB[:tinker_revision_asset].select(:url).filter(
 			:x_tinker_hash => hash,
-			:revision => revision
+			:revision => data[:revision]
 		).all
 
 		assets = []

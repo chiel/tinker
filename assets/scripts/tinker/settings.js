@@ -12,20 +12,21 @@ authors:
 {
 	'use strict';
 
+	// Public interface
 	T.Settings = {
 		addSection: addSection
 	};
 
-	T.Events.addEvent('layout.build', build);
-
 	var wrapper, tabWrapper, sectionWrapper, tabs = [], sections = [], activeTab = null;
+
+	T.Events.addEvent('layout.build', build);
 
 	/**
 	 *
 	 */
 	function build()
 	{
-		log('settings.build();');
+		// log('settings.build();');
 
 		wrapper = new Element('div', {html: '<ul class="tabs"></ul><div class="sections"></div>'});
 		tabWrapper = wrapper.getElement('.tabs');
@@ -41,7 +42,8 @@ authors:
 
 		var ul = new Element('ul.buttons', {html: '<li><a href="#settings" class="settings button">Settings</a></li>'});
 		T.Layout.addToRegion(ul, 'tl');
-		new T.Popover(wrapper, {button: ul.getElement('.settings')});
+		var popover = new T.Popover(wrapper, {button: ul.getElement('.settings')});
+		popover.element.addClass('po-settings');
 	}
 
 	/**
@@ -49,7 +51,7 @@ authors:
 	 */
 	function addSection(name, content)
 	{
-		log('settings.addSection(', name, content, ');');
+		// log('settings.addSection(', name, content, ');');
 
 		var tab = new Element('a', {href: '#', text: name}).store('index', tabs.length);
 		var section = new Element('div.section').adopt(content);
@@ -80,50 +82,7 @@ authors:
 		activeTab = index;
 	}
 
-		// build: function()
-		// {
-		// 	// log('T.Settings.build();');
-
-		// 	var self = this, settingsButton;
-		// 	T.Layout.addToRegion(new Element('ul.buttons', {
-		// 		children: new Element('li', {
-		// 			children: settingsButton = new Element('a.button.settings[href=#settings][text=Settings]')
-		// 		})
-		// 	}), 'tl');
-
-		// 	var contents = new Element('div', {
-		// 		children: [
-		// 			this.tabWrapper = new Element('ul.tabs', {
-		// 				children: [
-		// 					new Element('li', {children: this.tabs.general = new Element('a.is-active[href=#settings-general]', {text: 'General'})}),
-		// 					new Element('li', {children: this.tabs.assets = new Element('a[href=#settings-assets]', {text: 'Assets'})}),
-		// 					new Element('li', {children: this.tabs.info = new Element('a[href=#settings-info]', {text: 'Info'})})
-		// 				]
-		// 			}),
-		// 			this.panes.general = new Element('div.settings-general'),
-		// 			this.panes.assets = new Element('div.settings-assets.is-hidden'),
-		// 			this.panes.info = new Element('div.settings-info.is-hidden')
-		// 		]
-		// 	});
-
-		// 	this.tabWrapper.addEvent('click', function(e) {
-		// 		if (e.target.get('tag') === 'a') {
-		// 			e.preventDefault();
-		// 			var pane = e.target.get('href').replace(/\#settings-/, '');
-		// 			self.tabs[self.activePane].removeClass('is-active');
-		// 			self.panes[self.activePane].addClass('is-hidden');
-		// 			self.tabs[pane].addClass('is-active');
-		// 			self.panes[pane].removeClass('is-hidden');
-		// 			self.activePane = pane;
-		// 		}
-		// 	});
-
-		// 	T.Events.fireEvent('settings.build');
-		// 	new T.Popover(contents, {button: settingsButton});
-		// }
-
 }(typeof Tinker == 'undefined' ? (window.Tinker = {}) : Tinker);
-
 
 /*
 ---
@@ -139,7 +98,7 @@ authors:
 {
 	'use strict';
 
-	var doctypes = [], frameworks = [], versions = {};
+	var doctypes = [], frameworks = [], versions = {}, extList;
 
 	doctypes = JSON.parse(document.getElement('script[type=doctypes]').get('html'));
 	frameworks = JSON.parse(document.getElement('script[type=frameworks]').get('html'));
@@ -157,31 +116,26 @@ authors:
 	 */
 	function build()
 	{
-		log('settings.general.build();');
+		// log('settings.general.build();');
 
 		var html = '<ul>'
 			+'<li><label for="input-doctype">Doctype</label><select id="input-doctype" name="doctype"></select></li>'
-			+'<li><label for="input-js-framework">JS Framework</label><select id="input-js-framework" name="js-framework"><option value="0">None</value></select><ul id="extension-list"></ul></li>'
-			+'<li><label for="input-css-framework">CSS</label><select id="input-css-framework" name="css-framework"><option value="0">None</option></select></li>'
+			+'<li><label for="input-js-framework">Framework</label><select id="input-js-framework" name="framework"><option value="0">None</value></select><ul id="extension-list"></ul></li>'
+			+'<li><label for="input-css-framework">Normalize.css</label><input type="checkbox" id="input-css-framework" name="normalize" checked></li>'
 			+'</ul>';
 		var fieldset = new Element('fieldset.settings-general', {html: html}),
 			inputDoctype = fieldset.getElement('#input-doctype'),
 			inputJS = fieldset.getElement('#input-js-framework'),
-			inputCSS = fieldset.getElement('#input-css-framework'),
-			extList = fieldset.getElement('#extension-list');
+			inputCSS = fieldset.getElement('#input-css-framework');
+		extList = fieldset.getElement('#extension-list');
 
 		inputJS.addEvent('change', function(e) {
-			extList.empty();
-			var selected = versions[inputJS.getSelected()[0].get('value')];
-			if (selected && selected.extensions && selected.extensions.length) {
-				Array.each(selected.extensions, function(extension, index) {
-					new Element('li', {children: [
-						new Element('input[type=checkbox]', {id: 'extension-'+index, name: 'extensions[]', value: extension.id}),
-						new Element('label', {'for': 'extension-'+index, text: extension.name})
-					]}).inject(extList);
-				});
-			}
+			showExtensions(inputJS.getSelected()[0].get('value'));
 		});
+
+		if (T.Tinker.framework) {
+			showExtensions(T.Tinker.framework, true);
+		}
 
 		Array.each(doctypes, function(doctype) {
 			inputDoctype.adopt(new Element('option', {text: doctype.name, value: doctype.id}));
@@ -201,6 +155,23 @@ authors:
 		T.Settings.addSection('General', fieldset);
 	}
 
+	/**
+	 *
+	 */
+	function showExtensions(index, init)
+	{
+		extList.empty();
+		var selected = versions[index];
+		if (selected && selected.extensions && selected.extensions.length) {
+			Array.each(selected.extensions, function(extension, index) {
+				new Element('li', {children: [
+					new Element('input[type=checkbox]', {id: 'extension-'+index, name: 'extensions[]', value: extension.id}),
+					new Element('label', {'for': 'extension-'+index, text: extension.name})
+				]}).inject(extList);
+			});
+		}
+	}
+
 }(typeof Tinker == 'undefined' ? (window.Tinker = {}) : Tinker);
 
 
@@ -218,128 +189,83 @@ authors:
 {
 	'use strict';
 
+	var assets = [], assetList;
+
 	T.Events.addEvent('settings.build', build);
+	T.Events.addEvent('asset.remove', removeAsset);
 
 	/**
 	 *
 	 */
 	function build()
 	{
-		log('settings.assets.build();');
+		// log('settings.assets.build();');
 
-		var fieldset = new Element('fieldset.settings-assets');
+		var html = '<ul id="asset-add">'
+			+'<li><input placeholder="Enter the URL to a file"><a href="#" class="button primary">&#10010;</a></li>'
+			+'</ul><ul id="asset-list"></ul>';
+		var fieldset = new Element('fieldset.settings-assets', {html: html}),
+			input = fieldset.getElement('input'),
+			addButton = fieldset.getElement('a');
+		assetList = fieldset.getElement('#asset-list');
+
+		if (T.Tinker.assets && T.Tinker.assets.length) {
+			Array.each(T.Tinker.assets, function(url) {
+				addAsset(url);
+			});
+		}
+
+		input.addEvent('keyup', function(e) {
+			if (e.key === 'enter') {
+				var url = input.get('value').trim();
+
+				if (addAsset(url)) {
+					input.set('value', '');
+				}
+			}
+		});
+
+		addButton.addEvent('click', function(e) {
+			e.preventDefault();
+			var url = input.get('value').trim();
+
+			if (addAsset(url)) {
+				input.set('value', '');
+			}
+		});
 
 		T.Settings.addSection('Assets', fieldset);
 	}
 
+	/**
+	 *
+	 */
+	function addAsset(url)
+	{
+		// log('settings.assets.addAsset(', url, ');');
 
+		if (url === '') {
+			return false;
+		}
+
+		var asset = new T.Asset(url);
+		assets.push(asset);
+		assetList.adopt(asset.element);
+
+		return true;
+	}
 
 	/**
 	 *
 	 */
-	T.Settings.Assets = {
-		/**
-		 * List of all the assets we've added so far
-		 */
-		assets: [],
-		/**
-		 *
-		 */
-		wrapper: null,
-		input: null,
-		addButton: null,
-		assetList: null,
+	function removeAsset(asset)
+	{
+		// log('settings.assets.removeAsset(', asset, ');');
 
-		/**
-		 *
-		 */
-		prepare: function()
-		{
-			T.Events.addEvent('settings.build', this.build.bind(this));
-			T.Events.addEvent('asset.remove', this.removeAsset.bind(this));
-		},
-
-		/**
-		 *
-		 */
-		build: function()
-		{
-			var self = this;
-
-			T.Settings.panes.assets.adopt(
-				this.wrapper = new Element('fieldset', {
-					children: [
-						new Element('ul', {
-							children: new Element('li', {
-								children: [
-									this.input = new Element('input'),
-									this.addButton = new Element('a[text=Add][href=#]')
-								]
-							})
-						}),
-						this.assetList = new Element('ul#asset_list')
-					]
-				})
-			);
-
-			if (T.Tinker.assets) {
-				Array.each(T.Tinker.assets, function(asset) {
-					self.addAsset(asset);
-				});
-			}
-
-			this.addButton.addEvent('click', function(e) {
-				e.preventDefault();
-				var url = self.input.get('value').trim();
-
-				self.addAsset(url);
-				self.input.set('value', '');
-			});
-		},
-
-		/**
-		 *
-		 */
-		addAsset: function(url)
-		{
-			log('T.Settings.Assets.addAsset(', url, ');');
-
-			if (url === '') {
-				return;
-			}
-
-			var asset = new T.Asset(url);
-			this.assets.push(asset);
-			this.assetList.adopt(asset.element);
-		},
-
-		/**
-		 *
-		 */
-		removeAsset: function(asset)
-		{
-			this.assets.splice(this.assets.indexOf(asset), 1);
-			log(this.assets);
-		}
-	};
-	// T.Settings.Assets.prepare();
-
-}(typeof Tinker == 'undefined' ? (window.Tinker = {}) : Tinker);
+		assets.splice(assets.indexOf(asset), 1);
+	}
 
 
-/*
----
-
-license: MIT-style license
-
-authors:
-  - Chiel Kunkels (@chielkunkels)
-
-...
-*/
-!function(T)
-{
-	'use strict';
 
 	/**
 	 *
@@ -357,8 +283,8 @@ authors:
 			this.type = this.name.replace(/.*\.([a-z]+)/i, '$1');
 			this.element = new Element('li', {
 				children: [
-					new Element('span', {text: this.name}),
-					new Element('a.delete[href=#]').addEvent('click', this.remove.bind(this)),
+					new Element('span.name', {text: this.name}),
+					new Element('a.delete[href=#]', {html: '&times;'}).addEvent('click', this.remove.bind(this)),
 					new Element('input[type=hidden]', {name: 'assets[]', value: this.url})
 				]
 			});
@@ -403,57 +329,14 @@ authors:
 	{
 		log('settings.info.build();');
 
-		var fieldset = new Element('fieldset.settings-info');
+		var html = '<ul>'
+			+'<li><label for="input-title">Title</label><input id="input-title" name="title" value="'+(T.Tinker.title || '')+'"></li>'
+			+'<li><label for="input-description">Description</label><textarea id="input-description" name="description">'+(T.Tinker.description || '')+'</textarea></li>'
+			+'</ul>';
+		var fieldset = new Element('fieldset.settings-info', {html: html});
 
 		T.Settings.addSection('Info', fieldset);
 	}
-
-
-
-	/**
-	 *
-	 */
-	T.Settings.Info = {
-		/**
-		 *
-		 */
-		prepare: function()
-		{
-			T.Events.addEvent('settings.build', this.build.bind(this));
-		},
-
-		/**
-		 *
-		 */
-		build: function()
-		{
-			T.Settings.panes.info.adopt(
-				new Element('fieldset', {
-					children: new Element('ul', {
-						children: [
-							new Element('li', {
-								children: [
-									new Element('label[for=input-title]', {text: 'Title'}),
-									new Element('input[id=input-title][name=title]', {
-										value: T.Tinker.title || ''
-									})
-								]
-							}),
-							new Element('li', {
-								children: [
-									new Element('label[for=input-description]', {text: 'Description'}),
-									new Element('textarea[id=input-description][name=description]', {
-										value: T.Tinker.description || ''
-									})
-								]
-							})
-						]
-					})
-				})
-			);
-		}
-	};
-	// T.Settings.Info.prepare();
 
 }(typeof Tinker == 'undefined' ? (window.Tinker = {}) : Tinker);
 

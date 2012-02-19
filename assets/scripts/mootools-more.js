@@ -1,1 +1,1 @@
-../../public/frameworks/mootools/1.4.4/mootools-more.js
+../../public/frameworks/mootools/1.4.1/mootools-more.js

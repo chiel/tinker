@@ -25,8 +25,21 @@ a
   color: inherit
   text-decoration: none
 
+p
+  margin: 0 0 18px
+
 .is-hidden
   display: none
+
+.logo
+  width: 32px
+  height: 32px
+  margin: 10px 0
+  a
+    display: block
+    width: 100%
+    height: 100%
+    background: url(../img/logo.png)
 
 fieldset
   margin: 0
@@ -34,13 +47,29 @@ fieldset
   border: 0
   li
     overflow: hidden
-    padding: 3px
+    padding: 6px 0
 label
   float: left
   width: 80px
   margin: 0 10px 0 0
-  line-height: 20px
+  line-height: 22px
   text-align: right
+input
+  padding: 4px 6px
+  border: 1px solid #bfbfbf
+  border-radius: 3px
+  background: #f5f5f5
+  box-shadow: inset 0 1px 0 #ebebeb
+  &:focus
+    outline: 0
+textarea
+  padding: 4px 6px
+  border: 1px solid #bfbfbf
+  border-radius: 3px
+  background: #f5f5f5
+  box-shadow: inset 0 1px 0 #ebebeb
+  &:focus
+    outline: 0
 
 .buttons
   overflow: hidden
@@ -60,32 +89,42 @@ footer .buttons
   padding: 0 9px
   border-radius: 3px
   box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset rgba(255, 255, 255, .15) 0 1px 0
-  @include basic-gradient(#5d5d5d, #363636)
+  @include basic-gradient(#626262, #333)
   color: #fff
   font-size: 11px
   line-height: 20px
+  &:hover
+    @include basic-gradient(#6b6b6b, #3d3d3d)
+  &:active, &.active
+    box-shadow: rgba(0, 0, 0, .85) 0 0 0 1px, inset rgba(0, 0, 0, .5) 0 1px 3px
+    @include basic-gradient(#3b3b3b, #1f1f1f)
   &.primary
-    box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset rgba(255, 255, 255, .4) 0 1px 0
-    @include basic-gradient(#79b4ec, #3d7fbe)
-    text-shadow: #3170bd 0 1px 0
+    box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset #8fc4ef 0 1px 0
+    @include basic-gradient(#62a6e6, #2b6fb0)
+    &:hover
+      box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset #a2cdf3 0 1px 0
+      @include basic-gradient(#79b4ec, #3d7fbe)
+    &:active
+      box-shadow: rgba(0, 0, 0, .85) 0 0 0 1px, inset rgba(0, 0, 0, .5) 0 1px 3px
+      @include basic-gradient(#62a6e6, #2b6fb0)
 
 #wrapper
   width: 100%
   height: 100%
   background: #bcbcbc
-  color: #666
+  color: #444
 
 header, footer
   position: relative
   height: 53px
   background: url(../img/bg-header.png)
+  text-align: center
 
 footer
   position: absolute
   bottom: 0
   width: 100%
   background: url(../img/bg-footer.png)
-  text-align: center
 
 .region
   overflow: hidden
@@ -93,17 +132,13 @@ footer
   top: 0
   height: 100%
   text-align: left
-  &.tl
+  &.tl, &.bl
     left: 0
-  &.tr
+  &.tr, &.br
     right: 0
-  &.bl
-    left: 0
-  &.bm
+  &.bm, &.tm
     position: relative
     display: inline-block
-  &.br
-    right: 0
   ul
     float: left
 
@@ -190,7 +225,7 @@ section
 .popover
   position: absolute
   z-index: 10
-  width: 280px
+  width: 300px
   margin: 8px 0 0
   border: 3px solid #292929
   border-radius: 6px
@@ -205,7 +240,7 @@ section
     z-index: 3
     width: 0
     height: 0
-    border-bottom: 6px solid #000
+    border-bottom: 6px solid #292929
     border-left: 6px solid transparent
     border-right: 6px solid transparent
     &:before
@@ -217,6 +252,18 @@ section
       border-bottom: 5px solid #e5e5e5
       border-left: 5px solid transparent
       border-right: 5px solid transparent
+  &.br .popover-arrow, &.bl .popover-arrow
+    top: auto
+    bottom: -9px
+    border-bottom: 0
+    border-top: 6px solid #292929
+    &:before
+      top: -9px
+      border-bottom: 0
+      border-top: 5px solid #e5e5e5
+  &.tr .popover-arrow, &.br .popover-arrow
+    left: auto
+    right: 10px
   .tabs
     position: relative
     bottom: -1px
@@ -240,7 +287,6 @@ section
   .sections
     position: relative
     z-index: 1
-    padding: 12px
     border-top: 1px solid #b8b8b8
     border-radius: 0 0 6px 6px
     background: #fff
@@ -249,19 +295,57 @@ section
       &.is-active
         display: block
 
-#asset-list li
-  position: relative
+.settings-general
+  padding: 12px
+
+.settings-info
+  padding: 12px
+  input, textarea
+    width: 165px
+  textarea
+    height: 100px
+
+#asset-add
+  li
+    padding: 12px 18px
+  input
+    float: left
+    width: 225px
+    border-right: 0
+    border-radius: 3px 0 0 3px
+  .button
+    float: left
+    margin: 1px 0 0
+    padding: 0 6px
+    border-radius: 0 3px 3px 0
+    font-size: 16px
+    box-shadow: #367cbf 0 0 0 1px, inset rgba(255, 255, 255, 0.4) 0 1px 0
+
+
+#asset-list
+  li
+    position: relative
+    padding: 0 12px
+    border-top: 1px solid #d9d9d9
+  span
+    line-height: 36px
   .delete
     position: absolute
-    top: 0
-    right: 0
-    width: 15px
-    height: 15px
-    background: #f00
+    top: 6px
+    right: 12px
+    width: 24px
+    height: 24px
+    font-size: 16px
+    font-weight: bold
+    line-height: 22px
+    text-align: center
+
 
 #extension-list
   clear: both
-  margin: 0 0 0 145px
+  margin: 0 0 0 86px
+  li
+    padding: 0
   label
     float: none
   input
@@ -288,19 +372,50 @@ section
   height: 33px
   &.ls-0
     background: url(../img/icon-layout0.png) 0 0
-    &.active
-      background-position: 0 -33px
   &.ls-1
     background: url(../img/icon-layout1.png) 0 0
-    &.active
-      background-position: 0 -33px
+  &:hover
+    background-position: 0 -33px
+  &.active
+    background-position: 0 -99px
+  &:active
+    background-position: 0 -66px
 
-#about
-  max-width: 200px
+a.about
+  display: inline-block
+  width: 35px
+  height: 28px
+  margin: 13px 10px 0
+  background: url(../img/icon-info.png) no-repeat center 0
+  text-indent: -999em
+  &:hover
+    background-position: center -28px
+  &.active
+    background-position: center -84px
+  &:active
+    background-position: center -56px
+
+.po-about
+  max-width: 275px
+  .popover-arrow:before
+    border-top-color: #fff !important
+  .popover-content
+    padding: 18px
+    border-radius: 6px
+    background: #fff
   a
     color: #3d7fbe
     &:hover
       text-decoration: underline
+
+.twitter-buttons
+  overflow: hidden
+  li
+    float: left
+    &.tweet
+      width: 100px
+    &.follow
+      width: 125px
 
 /**
  * Codemirror overrides
