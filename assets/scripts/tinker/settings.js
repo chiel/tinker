@@ -120,15 +120,16 @@ authors:
 
 		var html = '<ul>'
 			+'<li><label for="input-doctype">Doctype</label><select id="input-doctype" name="doctype"></select></li>'
-			+'<li><label for="input-js-framework">Framework</label><select id="input-js-framework" name="framework"><option value="0">None</value></select><ul id="extension-list"></ul></li>'
+			+'<li><label for="input-js-framework">Framework</label><select id="input-js-framework" name="framework"><option value="0">None</option></select><ul id="extension-list"></ul></li>'
 			+'<li><label for="input-css-framework">Normalize.css</label><input type="checkbox" id="input-css-framework" name="normalize" checked></li>'
 			+'</ul>';
 		var fieldset = new Element('fieldset.settings-general', {html: html}),
 			inputDoctype = fieldset.getElement('#input-doctype'),
-			inputJS = fieldset.getElement('#input-js-framework'),
+			inputJS = fieldset.getElement('[id=input-js-framework]'),
 			inputCSS = fieldset.getElement('#input-css-framework');
 		extList = fieldset.getElement('#extension-list');
 
+		log(fieldset, inputJS, inputCSS);
 		inputJS.addEvent('change', function(e) {
 			showExtensions(inputJS.getSelected()[0].get('value'));
 		});
