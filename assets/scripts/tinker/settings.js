@@ -129,7 +129,6 @@ authors:
 			inputCSS = fieldset.getElement('#input-css-framework');
 		extList = fieldset.getElement('#extension-list');
 
-		log(fieldset, inputJS, inputCSS);
 		inputJS.addEvent('change', function(e) {
 			showExtensions(inputJS.getSelected()[0].get('value'));
 		});
