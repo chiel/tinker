@@ -16,7 +16,7 @@ authors:
 	T.Tinker = {
 		hash: data.hash || null,
 		revision: data.revision || null,
-		doctype: data.revision || null,
+		doctype: data.doctype || null,
 		framework: data.framework || null,
 		extensions: data.extensions || [],
 		normalize: data.normalize || null,

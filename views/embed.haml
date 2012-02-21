@@ -1,0 +1,14 @@
+!!!
+%html{:lang=>'en'}
+  %head
+    %meta{:charset=>'utf-8'}
+    %title Tinker &mdash; Social Code Collaboration
+    %link{:rel=>'stylesheet', :href=>'/css/normalize.css'}
+    %link{:rel=>'stylesheet', :href=>'/css/embed.css'}
+    %link{:rel=>'stylesheet', :href=>'/css/codemirror.css'}
+  %body
+    %script{:type=>'tinker'}= tinker.to_json
+    %script{:type=>'urls'}= urls.to_json
+    %script{:src=>'/assets/embed.js'}
+    %script Tinker.init({theme: 'light'});
+

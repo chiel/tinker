@@ -33,6 +33,8 @@ authors:
 			theme: 'tinker-light'
 		},
 
+		panel: null,
+
 		/**
 		 *
 		 */
@@ -121,6 +123,14 @@ authors:
 			if (this.codemirror) {
 				this.textarea.set('value', this.codemirror.getValue().toBase64());
 			}
+		},
+
+		/**
+		 *
+		 */
+		getPanel: function()
+		{
+			return this.panel;
 		}
 	};
 
@@ -137,15 +147,15 @@ authors:
 		{
 			// log('MarkupEditor.build();');
 
-			var panel = T.Layout.getPanel(0);
-			if (panel) {
+			this.panel = T.Layout.getPanel(0);
+			if (this.panel) {
 				this.frame = new Element('div.frame');
 				this.textarea = new Element('textarea', {
 					name: 'markup',
 					html: T.Tinker.markup
 				});
 				this.settings = new Element('div.settings', {text: 'HTML'});
-				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
+				this.frame.adopt(this.textarea, this.settings).inject(this.panel.getInner());
 				var options = Object.append({mode: 'text/html', value: this.textarea.get('value')}, this.mirrorOptions);
 				this.codemirror = CodeMirror(this.frame, options);
 				this.textarea.addClass('is-hidden');
@@ -168,15 +178,15 @@ authors:
 		{
 			// log('T.MarkupEditor.build();');
 
-			var panel = T.Layout.getPanel(1);
-			if (panel) {
+			this.panel = T.Layout.getPanel(1);
+			if (this.panel) {
 				this.frame = new Element('div.frame');
 				this.textarea = new Element('textarea', {
 					name: 'style',
 					html: T.Tinker.style
 				});
 				this.settings = new Element('div.settings', {text: 'CSS'});
-				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
+				this.frame.adopt(this.textarea, this.settings).inject(this.panel.getInner());
 				var options = Object.append({mode: 'text/css', value: this.textarea.get('value')}, this.mirrorOptions);
 				this.codemirror = CodeMirror(this.frame, options);
 				this.textarea.addClass('is-hidden');
@@ -199,15 +209,15 @@ authors:
 		{
 			// log('T.MarkupEditor.build();');
 
-			var panel = T.Layout.getPanel(2);
-			if (panel) {
+			this.panel = T.Layout.getPanel(2);
+			if (this.panel) {
 				this.frame = new Element('div.frame');
 				this.textarea = new Element('textarea', {
 					name: 'interaction',
 					html: T.Tinker.interaction
 				});
 				this.settings = new Element('div.settings', {text: 'JS'});
-				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
+				this.frame.adopt(this.textarea, this.settings).inject(this.panel.getInner());
 				var options = Object.append({mode: 'text/javascript', value: this.textarea.get('value')}, this.mirrorOptions);
 				this.codemirror = CodeMirror(this.frame, options);
 				this.textarea.addClass('is-hidden');
@@ -251,9 +261,9 @@ authors:
 		{
 			// log('T.Result.build();');
 
-			var panel = T.Layout.getPanel(3);
-			if (panel) {
-				this.wrapper = panel.getInner();
+			this.panel = T.Layout.getPanel(3);
+			if (this.panel) {
+				this.wrapper = this.panel.getInner();
 				this.frame = new Element('div.frame');
 				this.iframe = new Element('iframe', {name: 'sandbox'});
 				this.frame.adopt(this.iframe).inject(this.wrapper);
@@ -298,6 +308,14 @@ authors:
 			// log('T.Result.hideOverlay();');
 
 			this.overlay.dispose();
+		},
+
+		/**
+		 *
+		 */
+		getPanel: function()
+		{
+			return this.panel;
 		}
 	};
 	T.Result.prepare();

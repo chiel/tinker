@@ -1,7 +1,7 @@
 # Handles client calls
 class Client < Controller
 	# new or existing tinker
-	get %r{^/(?:([A-Za-z0-9]{5})(?:\/([0-9]+))?\/?)?$} do |hash, revision|
+	get %r{^/(?:([A-Za-z0-9]{5})(?:/([0-9]+))?/?)?$} do |hash, revision|
 		locals = {
 			:tinker => Tinker.find(hash, revision),
 			:doctypes => Doctype.list,
@@ -43,7 +43,21 @@ class Client < Controller
 		end
 	end
 
+	get %r{^/([A-Za-z0-9]{5})(?:/([0-9]+))?/embed/?$} do |hash, revision|
+		locals = {
+			:tinker => Tinker.find(hash, revision),
+			:urls => APP_CONFIG['urls']
+		}
+
+		headers 'X-Frame-Options' => ''
+		body haml :embed, :locals => locals
+	end
+
 	get '/css/base.css' do
 		sass :base
+	end
+
+	get '/css/embed.css' do
+		sass :embed
 	end
 end
