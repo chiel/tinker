@@ -6,18 +6,12 @@
     %link{:rel=>'stylesheet', :href=>'/css/normalize.css'}
     %link{:rel=>'stylesheet', :href=>'/css/base.css'}
     %link{:rel=>'stylesheet', :href=>'/css/codemirror.css'}
+    %link{:rel=>'icon', :type=>'image/png', :href=>'/favicon.png'}
   %body
     %script{:type=>'tinker'}= tinker.to_json
     %script{:type=>'urls'}= urls.to_json
     %script{:type=>'doctypes'}= doctypes.to_json
     %script{:type=>'frameworks'}= frameworks.to_json
-    -# %script{:src=>'/js/mootools.js'}
-    -# %script{:src=>'/js/mootools-more.js'}
-    -# %script{:src=>'/js/codemirror.js'}
-    -# %script{:src=>'/js/syntax/xml.js'}
-    -# %script{:src=>'/js/syntax/css.js'}
-    -# %script{:src=>'/js/syntax/javascript.js'}
-    -# %script{:src=>'/js/tinker.core.js'}
     %script{:src=>'/assets/main.js'}
     %script Tinker.init({theme: 'light'});
 
