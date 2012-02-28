@@ -88,11 +88,9 @@ authors:
 		{
 			// log('editor.highlightLine();');
 
-			if (this.codemirror) {
-				this.codemirror.setLineClass(this.curLine, null);
-				this.curLine = this.codemirror.getCursor().line;
-				this.codemirror.setLineClass(this.curLine, 'active_line');
-			}
+			this.codemirror.setLineClass(this.curLine, null);
+			this.curLine = this.codemirror.getCursor().line;
+			this.codemirror.setLineClass(this.curLine, 'active_line');
 		},
 
 		/**
@@ -119,7 +117,7 @@ authors:
 		save: function()
 		{
 			if (this.codemirror) {
-				this.textarea.set('value', this.codemirror.getValue().toBase64());
+				this.codemirror.save();
 			}
 		}
 	};
@@ -142,13 +140,12 @@ authors:
 				this.frame = new Element('div.frame');
 				this.textarea = new Element('textarea', {
 					name: 'markup',
-					html: T.Tinker.markup,
-					styles: {display: 'none'}
+					html: T.Tinker.markup
 				});
 				this.settings = new Element('div.settings', {text: 'HTML'});
 				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
 				var options = Object.append({mode: 'text/html'}, this.mirrorOptions);
-				this.codemirror = CodeMirror(this.frame, options);
+				this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
 				this.highlightLine();
 			}
 		}
@@ -178,7 +175,7 @@ authors:
 				this.settings = new Element('div.settings', {text: 'CSS'});
 				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
 				var options = Object.append({mode: 'text/css'}, this.mirrorOptions);
-				this.codemirror = CodeMirror(this.frame, options);
+				this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
 				this.highlightLine();
 			}
 		}
@@ -208,7 +205,7 @@ authors:
 				this.settings = new Element('div.settings', {text: 'JS'});
 				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
 				var options = Object.append({mode: 'text/javascript'}, this.mirrorOptions);
-				this.codemirror = CodeMirror(this.frame, options);
+				this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
 				this.highlightLine();
 			}
 		}

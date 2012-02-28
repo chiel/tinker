@@ -5,9 +5,9 @@ class Sandbox < Controller
 		locals = {
 			:title => params[:title] || 'Tinker &mdash; Sandbox',
 			:doctype => Doctype.code(params[:doctype]),
-			:html => Base64.decode64(params[:markup]),
-			:css => Base64.decode64(params[:style]),
-			:js => Base64.decode64(params[:interaction]),
+			:html => params[:markup],
+			:css => params[:style],
+			:js => params[:interaction],
 			:metas => [],
 			:scripts => [],
 			:stylesheets => []
