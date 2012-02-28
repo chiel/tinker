@@ -1,5 +1,5 @@
 $:.unshift File.expand_path('.') + '/lib'
-%w[yaml json sinatra/base mysql2 sequel sprockets haml sass digest/sha2 controller client sandbox tinker doctype framework].each do |f|
+%w[yaml json sinatra/base mysql2 sequel sprockets haml sass digest/sha2 base64 controller client sandbox tinker doctype framework].each do |f|
 	require f
 end
 

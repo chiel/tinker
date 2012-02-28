@@ -88,9 +88,11 @@ authors:
 		{
 			// log('editor.highlightLine();');
 
-			this.codemirror.setLineClass(this.curLine, null);
-			this.curLine = this.codemirror.getCursor().line;
-			this.codemirror.setLineClass(this.curLine, 'active_line');
+			if (this.codemirror) {
+				this.codemirror.setLineClass(this.curLine, null);
+				this.curLine = this.codemirror.getCursor().line;
+				this.codemirror.setLineClass(this.curLine, 'active_line');
+			}
 		},
 
 		/**
@@ -117,7 +119,7 @@ authors:
 		save: function()
 		{
 			if (this.codemirror) {
-				this.codemirror.save();
+				this.textarea.set('value', this.codemirror.getValue().toBase64());
 			}
 		}
 	};
@@ -140,12 +142,13 @@ authors:
 				this.frame = new Element('div.frame');
 				this.textarea = new Element('textarea', {
 					name: 'markup',
-					html: T.Tinker.markup
+					html: T.Tinker.markup,
+					styles: {display: 'none'}
 				});
 				this.settings = new Element('div.settings', {text: 'HTML'});
 				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
 				var options = Object.append({mode: 'text/html'}, this.mirrorOptions);
-				this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
+				this.codemirror = CodeMirror(this.frame, options);
 				this.highlightLine();
 			}
 		}
@@ -175,7 +178,7 @@ authors:
 				this.settings = new Element('div.settings', {text: 'CSS'});
 				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
 				var options = Object.append({mode: 'text/css'}, this.mirrorOptions);
-				this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
+				this.codemirror = CodeMirror(this.frame, options);
 				this.highlightLine();
 			}
 		}
@@ -205,7 +208,7 @@ authors:
 				this.settings = new Element('div.settings', {text: 'JS'});
 				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
 				var options = Object.append({mode: 'text/javascript'}, this.mirrorOptions);
-				this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
+				this.codemirror = CodeMirror(this.frame, options);
 				this.highlightLine();
 			}
 		}
