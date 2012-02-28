@@ -4,3 +4,6 @@
 [submodule "vendor/normalize.css"]
 	path = vendor/normalize.css
 	url = https://github.com/necolas/normalize.css.git
+[submodule "vendor/mootools-base64"]
+	path = vendor/mootools-base64
+	url = https://github.com/rpflorence/mootools-base64.git

@@ -148,9 +148,9 @@ class Tinker
 	# Return a json object representing the tinker's state
 	def to_json
 		data = @data.dup
-		data['markup'] = CGI::escapeHTML data['markup']
-		data['style'] = CGI::escapeHTML data['style']
-		data['interaction'] = CGI::escapeHTML data['interaction']
+		data['markup'] = CGI::escapeHTML data['markup'] || ''
+		data['style'] = CGI::escapeHTML data['style'] || ''
+		data['interaction'] = CGI::escapeHTML data['interaction'] || ''
 		data.to_json
 	end
 end
