@@ -88,9 +88,11 @@ authors:
 		{
 			// log('editor.highlightLine();');
 
-			this.codemirror.setLineClass(this.curLine, null);
-			this.curLine = this.codemirror.getCursor().line;
-			this.codemirror.setLineClass(this.curLine, 'active_line');
+			if (this.codemirror) {
+				this.codemirror.setLineClass(this.curLine, null);
+				this.curLine = this.codemirror.getCursor().line;
+				this.codemirror.setLineClass(this.curLine, 'active_line');
+			}
 		},
 
 		/**
@@ -117,7 +119,7 @@ authors:
 		save: function()
 		{
 			if (this.codemirror) {
-				this.codemirror.save();
+				this.textarea.set('value', this.codemirror.getValue().toBase64());
 			}
 		}
 	};
@@ -144,8 +146,9 @@ authors:
 				});
 				this.settings = new Element('div.settings', {text: 'HTML'});
 				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
-				var options = Object.append({mode: 'text/html'}, this.mirrorOptions);
-				this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
+				var options = Object.append({mode: 'text/html', value: this.textarea.get('value')}, this.mirrorOptions);
+				this.codemirror = CodeMirror(this.frame, options);
+				this.textarea.addClass('is-hidden');
 				this.highlightLine();
 			}
 		}
@@ -174,8 +177,9 @@ authors:
 				});
 				this.settings = new Element('div.settings', {text: 'CSS'});
 				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
-				var options = Object.append({mode: 'text/css'}, this.mirrorOptions);
-				this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
+				var options = Object.append({mode: 'text/css', value: this.textarea.get('value')}, this.mirrorOptions);
+				this.codemirror = CodeMirror(this.frame, options);
+				this.textarea.addClass('is-hidden');
 				this.highlightLine();
 			}
 		}
@@ -204,8 +208,9 @@ authors:
 				});
 				this.settings = new Element('div.settings', {text: 'JS'});
 				this.frame.adopt(this.textarea, this.settings).inject(panel.getInner());
-				var options = Object.append({mode: 'text/javascript'}, this.mirrorOptions);
-				this.codemirror = CodeMirror.fromTextArea(this.textarea, options);
+				var options = Object.append({mode: 'text/javascript', value: this.textarea.get('value')}, this.mirrorOptions);
+				this.codemirror = CodeMirror(this.frame, options);
+				this.textarea.addClass('is-hidden');
 				this.highlightLine();
 			}
 		}

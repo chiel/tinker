@@ -177,13 +177,15 @@ section
     .settings
       opacity: 0
   textarea
-    resize: none
     margin: 0
     padding: 4px
     border: 0
+    background: transparent
     box-sizing: border-box
     font: inherit
-    background: transparent
+    resize: none
+    &.is-hidden
+      display: none
     &:focus
       outline: none
   iframe

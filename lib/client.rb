@@ -22,9 +22,9 @@ class Client < Controller
 		tinker['extensions'] = params[:extensions] || []
 		tinker['normalize'] = params[:normalize] ? 1 : 0
 		tinker['assets'] = params[:assets] || []
-		tinker['markup'] = params[:markup]
-		tinker['style'] = params[:style]
-		tinker['interaction'] = params[:interaction]
+		tinker['markup'] = Base64.decode64(params[:markup])
+		tinker['style'] = Base64.decode64(params[:style])
+		tinker['interaction'] = Base64.decode64(params[:interaction])
 
 		if tinker.save && !tinker['hash'].nil? && !tinker['revision'].nil?
 			{
