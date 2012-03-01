@@ -1,5 +1,6 @@
 //= require mootools
 //= require mootools-more
+//= require mootools-base64
 //= require codemirror
 //= require_tree ./syntax
 //= require slab
