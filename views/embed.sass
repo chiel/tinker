@@ -80,6 +80,26 @@ textarea
     &:first-child
       margin-left: 0
 
+.tabs
+  overflow: hidden
+  z-index: 2
+  float: left
+  margin: 10px 0 0 24px
+  li
+    display: inline-block
+  a
+    display: block
+    padding: 0 12px
+    border: 1px solid transparent
+    border-bottom: 0
+    color: #555
+    line-height: 24px
+    &.is-active
+      border-color: #b1b1b1
+      border-radius: 3px 3px 0 0
+      background: #fff
+      color: #222
+
 footer .buttons
   padding: 15px 10px
 
@@ -114,17 +134,12 @@ footer .buttons
   background: #bcbcbc
   color: #444
 
-header, footer
+header
   position: relative
-  height: 53px
-  background: url(../img/bg-header.png)
+  height: 34px
+  @include basic-gradient(#f7f7f7, #dcdcdc)
+  border-bottom: 1px solid #b1b1b1
   text-align: center
-
-footer
-  position: absolute
-  bottom: 0
-  width: 100%
-  background: url(../img/bg-footer.png)
 
 .region
   overflow: hidden
@@ -145,7 +160,7 @@ footer
 #body
   overflow: hidden
   position: absolute
-  top: 53px
+  top: 35px
   right: 0
   bottom: 0
   left: 0
@@ -157,19 +172,17 @@ section
   z-index: 1
 .inner
   position: absolute
-  top: 5px
-  right: 5px
-  bottom: 5px
-  left: 5px
+  top: 0
+  right: 0
+  bottom: 0
+  left: 0
 .frame
   position: absolute
   top: 0
   right: 0
   bottom: 0
   left: 0
-  border: 1px solid #9b9b9b
   background: #fff
-  box-shadow: inset 0px 1px 0 #dedede
   font: 12px 'bitstream vera sans mono', monospace
   &.focused
     border-color: #666
