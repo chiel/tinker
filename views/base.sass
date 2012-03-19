@@ -232,7 +232,7 @@ section
   border-radius: 6px
   // box-shadow: rgba(0, 0, 0, .3) 0 2px 5px
   background: #e5e5e5
-  &.br
+  &.br, &.bl
     margin: 0 0 8px
   .popover-arrow
     position: absolute
@@ -381,6 +381,20 @@ section
     background-position: 0 -99px
   &:active
     background-position: 0 -66px
+
+a.account
+  display: inline-block
+  width: 35px
+  height: 28px
+  margin: 13px 10px 0
+  background: url(../img/icon-info.png) no-repeat center 0
+  text-indent: -999em
+  &:hover
+    background-position: center -28px
+  &.active
+    background-position: center -84px
+  &:active
+    background-position: center -56px
 
 a.about
   display: inline-block
