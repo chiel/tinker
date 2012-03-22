@@ -11,6 +11,17 @@ class Client < Controller
 		haml :index, :locals => locals
 	end
 
+	# embed mode
+	get %r{^/([A-Za-z0-9]{5})(?:/([0-9]+))?/embed/?$} do |hash, revision|
+		locals = {
+			:tinker => Tinker.find(hash, revision),
+			:urls => APP_CONFIG['urls']
+		}
+
+		headers 'X-Frame-Options' => ''
+		body haml :embed, :locals => locals
+	end
+
 	# save new or existing tinker
 	post '/save' do
 		tinker = Tinker.find(params[:hash])
@@ -43,21 +54,51 @@ class Client < Controller
 		end
 	end
 
-	get %r{^/([A-Za-z0-9]{5})(?:/([0-9]+))?/embed/?$} do |hash, revision|
-		locals = {
-			:tinker => Tinker.find(hash, revision),
-			:urls => APP_CONFIG['urls']
-		}
+	# user registration
+	post '/register' do
+		user = User.new
 
-		headers 'X-Frame-Options' => ''
-		body haml :embed, :locals => locals
+		user['username'] = params[:username]
+		user['password'] = params[:password]
+		user['email'] = params['email']
+		if user.register
+			{
+				:status => 'ok',
+				:data => params
+			}.to_json
+		else
+			{
+				:status => 'error',
+				:error => {
+					:code => 200,
+					:message => 'Something went wrong while trying to create the user'
+				}
+			}.to_json
+		end
 	end
 
+	# user login
+	post '/login' do
+		{
+			:status => 'ok',
+			:data => params
+		}.to_json
+	end
+
+	# user login
+	post '/verify' do
+		{
+			:status => 'ok',
+			:data => params
+		}.to_json
+	end
+
+	# stylesheets
 	get '/css/base.css' do
 		sass :base
 	end
-
 	get '/css/embed.css' do
 		sass :embed
 	end
+
 end
