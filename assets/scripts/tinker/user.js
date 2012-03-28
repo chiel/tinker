@@ -23,8 +23,9 @@ authors:
 		T.Layout.addToRegion(userButton, 'bl');
 		var html = '<fieldset><ul><li><label>Username</label><input name="username"></li>'
 			+'<li><label>Password</label><input name="password" type="password"></li>'
-			+'<li id="accountButtons"><input id="btn-login" type="submit" class="button primary" value="Login">'
-			+'<a id="btn-register" class="button">Register</a></li></ul></fieldset>';
+			+'<li id="accountButtons"><ul class="buttons">'
+			+'<li><input id="btn-login" type="submit" class="button primary" value="Login"></li>'
+			+'<li><a id="btn-register" class="button">Register</a></li></ul></li></ul></fieldset>';
 		form = new Element('form', {action: '#login', html: html});
 		var popover = new T.Popover(form, {button: userButton, anchor: 'bl'});
 
@@ -88,6 +89,7 @@ authors:
 	 */
 	function register(){
 		log('register');
+		// TODO: check if passwords match; if needed, show error and skip sending
 		new Request.JSON({
 			url: '/register',
 			data: form,

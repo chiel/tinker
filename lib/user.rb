@@ -12,11 +12,12 @@ class User
 		return nil if exists > 0
 
 		hash = Digest::SHA1.hexdigest(Time.new.to_i.to_s)[0..4]
+		password_hash = Digest::SHA1.hexdigest(@data['password'])
 
 		# insert the user with status 1; awaiting verification
 		DB[:user].insert(
 			:username => @data['username'],
-			:password => @data['password'],
+			:password => password_hash,
 			:email => @data['email'],
 			:hash => hash,
 			:status => 1
