@@ -100,6 +100,9 @@ authors:
 		T.Events.fireEvent('layout.build');
 
 		curTab = T.URL.get('active', 'result');
+		if (tabs.indexOf(curTab) === -1) {
+			curTab = tabs[0];
+		}
 		var nextPanel = panelContaining(curTab);
 		nextPanel.getOuter().setStyle('z-index', 2);
 		curPanel = nextPanel.index;
