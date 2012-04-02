@@ -1,7 +1,8 @@
+require 'pp'
 # Handles client calls
 class Client < Controller
 	# new or existing tinker
-	get %r{^/(?:([A-Za-z0-9]{5})(?:/([0-9]+))?/?)?$} do |hash, revision|
+	get %r{^(?:/([A-Za-z0-9_]+))?/(?:([A-Za-z0-9]{5})(?:/([0-9]+))?/?)?$} do |username, hash, revision|
 		locals = {
 			:tinker => Tinker.find(hash, revision),
 			:doctypes => Doctype.list,
@@ -26,11 +27,25 @@ class Client < Controller
 		tinker['style'] = Base64.decode64(params[:style])
 		tinker['interaction'] = Base64.decode64(params[:interaction])
 
+		p tinker['x_user_id']
+		p params['x_user_id'].to_i
+
+		if tinker['x_user_id'] != 0
+			tinker['x_fork_id'] = params[:revision_id] || 0;
+			tinker['x_user_id'] = 0
+			tinker['hash'] = nil
+			tinker['revision_id'] = nil
+			tinker['username'] = nil
+		end
+
+		pp tinker
+
 		if tinker.save && !tinker['hash'].nil? && !tinker['revision'].nil?
 			{
 				:status => 'ok',
 				:hash => tinker['hash'],
-				:revision => tinker['revision']
+				:revision => tinker['revision'],
+				:revision_id => tinker['revision_id']
 			}.to_json
 		else
 			{

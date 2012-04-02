@@ -14,3 +14,4 @@
 //= require tinker/settings
 //= require tinker/popover
 //= require tinker/frame
+//= require tinker/user

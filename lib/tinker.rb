@@ -12,8 +12,8 @@ class Tinker
 		tinker = Tinker.new
 		return tinker unless hash
 
-		data = DB[:tinker].join(:tinker_revision, :tinker_revision__x_tinker_hash => :hash)
-		data = data.filter(:hash => hash)
+		data = DB[:tinker].join(:tinker_revision, :tinker_revision__x_tinker_hash => :tinker__hash)
+		data = data.filter(:tinker__hash => hash)
 		if revision == nil
 			data = data.order(:tinker_revision__revision.desc)
 		else
@@ -21,9 +21,18 @@ class Tinker
 		end
 		data = data.first
 
+		user = {}
+		if data[:x_user_id] != 0
+			user = DB[:user].filter(:id => data[:x_user_id]).first
+		end
+
 		return tinker unless data
 
+		tinker['revision_id'] = data[:id]
 		tinker['hash'] = hash
+		tinker['x_fork_id'] = data[:x_fork_id]
+		tinker['x_user_id'] = data[:x_user_id]
+		tinker['username'] = user[:username]
 		tinker['revision'] = data[:revision]
 		tinker['doctype'] = data[:x_doctype_id]
 		tinker['framework'] = data[:x_framework_version_id]
@@ -54,7 +63,13 @@ class Tinker
 		end
 		tinker['extensions'] = extensions
 
+		tinker.not_dirty
+
 		tinker
+	end
+
+	def not_dirty
+		@dirty = false
 	end
 
 	# Check if anything has changed in the tinker
@@ -105,13 +120,22 @@ class Tinker
 		if new?
 			@data['hash'] = new_hash
 			@data['revision'] = 0
-			DB[:tinker].insert(:hash => @data['hash'], :title => @data['title'], :description => @data['description'])
+			DB[:tinker].insert(
+				:hash => @data['hash'],
+				:x_fork_id => @data['x_fork_id'],
+				:x_user_id => @data['x_user_id'],
+				:title => @data['title'],
+				:description => @data['description']
+			)
 		else
 			@data['revision'] = new_revision
-			DB[:tinker].filter(:hash => @data['hash']).update(:title => @data['title'], :description => @data['description'])
+			DB[:tinker].filter(:hash => @data['hash']).update(
+				:title => @data['title'],
+				:description => @data['description']
+			)
 		end
 
-		DB[:tinker_revision].insert(
+		@data['revision_id'] = DB[:tinker_revision].insert(
 			:x_tinker_hash => @data['hash'],
 			:revision => @data['revision'],
 			:x_doctype_id => @data['doctype'],
@@ -143,6 +167,11 @@ class Tinker
 		end
 
 		return true
+	end
+
+	# fork a tinker
+	def fork
+		#
 	end
 
 	# Return a json object representing the tinker's state

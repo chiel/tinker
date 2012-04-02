@@ -16,6 +16,9 @@ authors:
 	T.Tinker = {
 		hash: data.hash || null,
 		revision: data.revision || null,
+		revision_id: data.revision_id || 0,
+		x_user_id: data.x_user_id || null,
+		username: data.username || null,
 		doctype: data.doctype || null,
 		framework: data.framework || null,
 		extensions: data.extensions || [],
@@ -28,27 +31,35 @@ authors:
 		interaction: data.interaction || null
 	};
 
+	if (T.Tinker.username) {
+		var url = '/'+T.Tinker.username+'/'+T.Tinker.hash;
+		if (T.Tinker.revision) {
+			url += '/'+T.Tinker.revision;
+		}
+		if (!!(window.history && history.pushState)) {
+			history.pushState(null, null, url);
+		} else {
+			window.location = url;
+		}
+	}
+
 	T.Events.addEvent('layout.build', build);
 	if (T.Tinker.hash) {
 		T.Events.addEvent('result.build', run);
 	}
 
-	var inputHash, inputRevision;
+	var inputHash, inputRevision, inputRevisionId, saveButton;
 
 	function build()
 	{
 		// log('tinker.build();');
 
-		var buttons = $$(
-			new Element('a.button.run[href=#run][text=Run]'),
-			new Element('a.button.primary.save[href=#save][text=Save]')
-		).map(function(el) {
-			return new Element('li').adopt(el);
-		});
+		var saveLabel = T.Tinker.username ? 'Fork' : 'Save',
+			buttons;
 
 		var html = '<li><a href="#run" class="button run">Run</a></li>'
-			+'<li><a href="#save" class="button primary save">Save</a></li>';
-		T.Layout.addToRegion(new Element('ul.buttons', {
+			+'<li><a href="#save" class="button primary save">'+saveLabel+'</a></li>';
+		T.Layout.addToRegion(buttons = new Element('ul.buttons', {
 			html: html,
 			events: {
 				click: function(e) {
@@ -63,9 +74,12 @@ authors:
 			}
 		}), 'tr');
 
+		saveButton = buttons.getElement('.save');
+
 		T.Layout.wrapper.adopt(
 			inputHash = new Element('input[type=hidden]', {name: 'hash', value: T.Tinker.hash}),
-			inputRevision = new Element('input[type=hidden]', {name: 'revision', value: T.Tinker.revision})
+			inputRevision = new Element('input[type=hidden]', {name: 'revision', value: T.Tinker.revision}),
+			inputRevisionId = new Element('input[type=hidden]', {name: 'revision_id', value: T.Tinker.revision_id})
 		);
 	}
 
@@ -98,9 +112,12 @@ authors:
 				if (response.status === 'ok') {
 					T.Tinker.hash = response.hash;
 					T.Tinker.revision = response.revision;
+					T.Tinker.revision_id = response.revision_id;
 
 					inputHash.set('value', T.Tinker.hash);
 					inputRevision.set('value', T.Tinker.revision);
+					inputRevisionId.set('value', T.Tinker.revision_id);
+					saveButton.set('text', 'Save');
 
 					var url = '/'+T.Tinker.hash;
 					url += T.Tinker.revision > 0 ? '/'+T.Tinker.revision : '';

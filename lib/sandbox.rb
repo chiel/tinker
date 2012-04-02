@@ -2,7 +2,6 @@
 class Sandbox < Controller
 	# View a tinker
 	post '/' do
-		p params
 		locals = {
 			:title => params[:title] || 'Tinker &mdash; Sandbox',
 			:doctype => Doctype.code(params[:doctype]),
