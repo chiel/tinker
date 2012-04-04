@@ -21,18 +21,18 @@ class Tinker
 		end
 		data = data.first
 
+		return tinker unless data
+
 		user = {}
 		if data[:x_user_id] != 0
 			user = DB[:user].filter(:id => data[:x_user_id]).first
 		end
 
-		return tinker unless data
-
 		tinker['revision_id'] = data[:id]
 		tinker['hash'] = hash
 		tinker['x_fork_id'] = data[:x_fork_id]
 		tinker['x_user_id'] = data[:x_user_id]
-		tinker['username'] = user[:username]
+		tinker['username'] = user ? user[:username] : nil
 		tinker['revision'] = data[:revision]
 		tinker['doctype'] = data[:x_doctype_id]
 		tinker['framework'] = data[:x_framework_version_id]
