@@ -1,6 +1,16 @@
-require 'pp'
 # Handles client calls
 class Client < Controller
+	# embed mode
+	get %r{^/([A-Za-z0-9]{5})(?:/([0-9]+))?/embed/?$} do |hash, revision|
+		locals = {
+			:tinker => Tinker.find(hash, revision),
+			:urls => APP_CONFIG['urls']
+		}
+
+		headers 'X-Frame-Options' => ''
+		body haml :embed, :locals => locals
+	end
+
 	# new or existing tinker
 	get %r{^(?:/([A-Za-z0-9_]+))?/(?:([A-Za-z0-9]{5})(?:/([0-9]+))?/?)?$} do |username, hash, revision|
 		locals = {
@@ -38,8 +48,6 @@ class Client < Controller
 			tinker['username'] = nil
 		end
 
-		pp tinker
-
 		if tinker.save && !tinker['hash'].nil? && !tinker['revision'].nil?
 			{
 				:status => 'ok',
@@ -56,16 +64,6 @@ class Client < Controller
 				}
 			}.to_json
 		end
-	end
-
-	get %r{^/([A-Za-z0-9]{5})(?:/([0-9]+))?/embed/?$} do |hash, revision|
-		locals = {
-			:tinker => Tinker.find(hash, revision),
-			:urls => APP_CONFIG['urls']
-		}
-
-		headers 'X-Frame-Options' => ''
-		body haml :embed, :locals => locals
 	end
 
 	get '/css/base.css' do
