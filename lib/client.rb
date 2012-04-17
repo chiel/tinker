@@ -17,7 +17,8 @@ class Client < Controller
 			:tinker => Tinker.find(hash, revision),
 			:doctypes => Doctype.list,
 			:frameworks => Framework.list,
-			:urls => APP_CONFIG['urls']
+			:urls => APP_CONFIG['urls'],
+			:ga_code => APP_CONFIG['ga_code']
 		}
 		haml :index, :locals => locals
 	end

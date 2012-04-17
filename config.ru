@@ -4,7 +4,7 @@ $:.unshift File.expand_path('.') + '/lib'
 end
 
 APP_CONFIG = YAML.load_file 'config.yml'
-DB = Sequel.connect(APP_CONFIG['db']['url'])
+DB = Sequel.connect(APP_CONFIG['db'])
 
 
 map APP_CONFIG['urls']['client']+'assets' do
