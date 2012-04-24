@@ -5,9 +5,6 @@ author: @chielkunkels
 */'use strict';
 log('tinker.js');
 
-var events = require('./events');
-var layout = require('./layout/client');
-
 var data = JSON.parse(document.getElement('script[type=tinker]').get('html'));
 var tinker = {
 	hash: data.hash || null,
@@ -26,6 +23,9 @@ var tinker = {
 	style: data.style || null,
 	interaction: data.interaction || null
 };
+
+var events = require('./events');
+var layout = require('./layout/client');
 
 // rewrite the url if needed
 if (tinker.username) {
@@ -119,6 +119,8 @@ var save = function(){
 		}
 	}).send();
 };
+
+module.exports = tinker;
 
 events.subscribe('layout.build', build);
 if (tinker.hash) {

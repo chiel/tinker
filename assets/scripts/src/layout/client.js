@@ -11,14 +11,6 @@ var Panel = require('./panel');
 var urls = require('../urls');
 var storage = require('../storage');
 
-// these should probably loaded in some cleaner way, to avoid circular dependancies
-require('../editor/markup');
-require('../editor/style');
-require('../editor/behaviour');
-require('../result/default');
-require('./layouts/1');
-require('./layouts/2');
-
 // setup
 var layout = {}, layouts = [], layoutCount = 0, curLayout,
 	wrapper, header, body, footer, regions, panels,
@@ -156,4 +148,13 @@ layout.getPanel = function(index){
 events.subscribe('init', build);
 
 module.exports = layout;
+
+// these should probably loaded in some cleaner way, to avoid circular dependancies
+require('../settings/main');
+require('./layouts/1');
+require('./layouts/2');
+require('../editor/markup');
+require('../editor/style');
+require('../editor/behaviour');
+require('../result/default');
 

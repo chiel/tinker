@@ -7,8 +7,8 @@ author: @chielkunkels
 
 var events = require('../../events'),
 	storage = require('../../storage'),
-	layout, spec = {},
-	handles = new Elements(), dragOptions = {};
+	layout = require('../client'),
+	spec = {}, handles = new Elements(), dragOptions = {};
 
 var relativeSizes = [
 	{x: 33, y: 50},
@@ -21,7 +21,7 @@ var relativeSizes = [
 spec.activate = function(init){
 	// log('layout.layouts.1.activate(', init, ');');
 
-	// window.addEvent('resize', resize);
+	window.addEvent('resize', resize);
 
 	relativeSizes = storage.get('layout0Sizes', relativeSizes);
 
@@ -43,6 +43,9 @@ spec.activate = function(init){
 // deactivate this layout;
 spec.deactivate = function(){
 	log('layout.layouts.1.deactivate();');
+
+	handles.dispose();
+	window.removeEvent('resize', resize);
 };
 
 // calculate dimensions for each panel
@@ -271,7 +274,6 @@ var storeSizes = function(){
 };
 
 events.subscribe('layout.build', function(){
-	layout = require('../client');
 	layout.addLayout(spec);
 });
 
