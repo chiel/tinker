@@ -7,7 +7,8 @@ log('editor/style.js');
 
 var events = require('../events');
 var base = require('./base');
-var layout;
+var layout = require('../layout/client');
+var tinker;
 
 var editor = Object.merge({}, base, {
 
@@ -17,10 +18,11 @@ var editor = Object.merge({}, base, {
 		if (!this.panel) {
 			return false;
 		}
+		tinker = require('../tinker');
 		this.frame = new Element('div.frame');
 		this.textarea = new Element('textarea', {
-			name: 'style'/*,
-			html: T.Tinker.style*/
+			name: 'style',
+			html: tinker.style
 		});
 		this.settings = new Element('div.settings', {text: 'CSS'});
 		this.frame.adopt(this.textarea, this.settings).inject(this.panel.getInner());
@@ -30,10 +32,6 @@ var editor = Object.merge({}, base, {
 		this.highlightLine();
 	}
 
-});
-
-events.subscribe('layout.build', function(){
-	layout = require('../layout/client');
 });
 
 events.subscribe('layout.build', editor.init.bind(editor));

@@ -6,7 +6,7 @@ author: @chielkunkels
 log('result/default.js');
 
 var events = require('../events');
-var layout;
+var layout = require('../layout/client');
 
 var result = {
 
@@ -71,10 +71,6 @@ var result = {
 		return this.panel;
 	}
 };
-
-events.subscribe('layout.build', function(){
-	layout = require('../layout/client');
-});
 
 events.subscribe('layout.build', result.init.bind(result));
 events.subscribe('layout.dragStart', result.showOverlay.bind(result));

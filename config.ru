@@ -1,4 +1,7 @@
 $:.unshift File.expand_path('.') + '/lib'
+
+require 'sinatra/reloader'
+
 %w[yaml json sinatra/base mysql2 sequel sprockets haml sass digest/sha2 base64 controller client sandbox tinker doctype framework].each do |f|
 	require f
 end
