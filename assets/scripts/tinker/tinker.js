@@ -31,6 +31,7 @@ authors:
 		interaction: data.interaction || null
 	};
 
+	// rewrite the url if needed
 	if (T.Tinker.username) {
 		var url = '/'+T.Tinker.username+'/'+T.Tinker.hash;
 		if (T.Tinker.revision) {

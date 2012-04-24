@@ -12,7 +12,14 @@
     %script{:type=>'urls'}= urls.to_json
     %script{:type=>'doctypes'}= doctypes.to_json
     %script{:type=>'frameworks'}= frameworks.to_json
-    %script{:src=>'/assets/main.js'}
+    %script{:src=>'/assets/mootools.js'}
+    %script{:src=>'/assets/mootools-more.js'}
+    %script{:src=>'/assets/codemirror.js'}
+    %script{:src=>'/assets/syntax/xml.js'}
+    %script{:src=>'/assets/syntax/css.js'}
+    %script{:src=>'/assets/syntax/javascript.js'}
+    %script{:src=>'/assets/extras.js'}
+    %script{:src=>'/assets/tinker.client.js'}
     %script Tinker.init({theme: 'light'});
     - if ga_code != ''
       :javascript

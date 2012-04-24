@@ -1,7 +1,7 @@
 # Handles client calls
 class Client < Controller
 	# embed mode
-	get %r{^/([A-Za-z0-9]{5})(?:/([0-9]+))?/embed/?$} do |hash, revision|
+	get %r{^(?:/([A-Za-z0-9_]+))?/([A-Za-z0-9]{5})(?:/([0-9]+))?/embed/?$} do |username, hash, revision|
 		locals = {
 			:tinker => Tinker.find(hash, revision),
 			:urls => APP_CONFIG['urls']
