@@ -3,7 +3,7 @@ result/default.js
 
 author: @chielkunkels
 */'use strict';
-log('result/default.js');
+// log('result/default.js');
 
 var events = require('../events');
 var layout = require('../layout/client');
@@ -22,10 +22,9 @@ var result = {
 
 	//
 	build: function(){
-		log('result.default.build();');
+		// log('result.default.build();');
 
 		this.panel = layout.getPanel(3);
-		log('result build', this.panel);
 		if (!this.panel) {
 			return;
 		}
@@ -39,7 +38,7 @@ var result = {
 
 	//
 	buildOverlay: function(){
-		log('result.default.buildOverlay();');
+		// log('result.default.buildOverlay();');
 
 		if (!this.overlay) {
 			this.overlay = new Element('div', {
@@ -53,7 +52,7 @@ var result = {
 
 	// show the drag overlay to prevent the iframe fucking with the mouse
 	showOverlay: function(){
-		log('result.default.showOverlay();');
+		// log('result.default.showOverlay();');
 
 		this.buildOverlay();
 		this.overlay.inject(this.wrapper);
@@ -61,7 +60,7 @@ var result = {
 
 	// hide the drag overlay
 	hideOverlay: function(){
-		log('result.default.hideOverlay();');
+		// log('result.default.hideOverlay();');
 
 		this.overlay.dispose();
 	},

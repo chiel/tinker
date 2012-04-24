@@ -3,7 +3,7 @@ client.js
 
 author: @chielkunkels
 */'use strict';
-log('client.js');
+// log('client.js');
 
 require('./tinker');
 var urls = require('./urls');
@@ -18,8 +18,6 @@ window.Tinker = {
 };
 
 var build = function(){
-	log('core.build();');
-
 	layout.addToRegion(new Element('h1.logo', {html: '<a href="'+urls.client+'"></a>'}), 'tm');
 	var aboutButton = new Element('a.about[href=#about][text=About]');
 	layout.addToRegion(aboutButton, 'br');

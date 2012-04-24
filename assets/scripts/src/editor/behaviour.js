@@ -3,7 +3,7 @@ editor/behaviour.js
 
 author: @chielkunkels
 */'use strict';
-log('editor/behaviour.js');
+// log('editor/behaviour.js');
 
 var events = require('../events');
 var base = require('./base');

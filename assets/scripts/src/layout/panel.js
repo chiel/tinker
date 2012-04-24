@@ -1,9 +1,9 @@
 /*
-panel.js
+layout/panel.js
 
 author: @chielkunkels
 */'use strict';
-log('panel.js');
+// log('layoout/panel.js');
 
 var panel = new Class({
 
