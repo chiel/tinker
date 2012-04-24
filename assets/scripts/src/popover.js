@@ -3,7 +3,7 @@ popover.js
 
 author: @chielkunkels
 */'use strict';
-log('popover.js');
+// log('popover.js');
 
 var events = require('./events');
 var layout;

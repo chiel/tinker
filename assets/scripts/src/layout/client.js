@@ -3,7 +3,7 @@ layout/client.js
 
 author: @chielkunkels
 */'use strict';
-log('layout/client.js');
+// log('layout/client.js');
 
 // required modules
 var events = require('../events');
@@ -24,7 +24,7 @@ layout.min = {
 
 // build up the main ui
 var build = function(config){
-	log('layout.client.build(', config, ');');
+	// log('layout.client.build(', config, ');');
 
 	layout.wrapper = wrapper = new Element('form#wrapper', {
 		method: 'post',
@@ -75,7 +75,7 @@ var build = function(config){
 
 // add an element to a region
 layout.addToRegion = function(el, region){
-	log('layout.client.addToRegion(', el, region, ');');
+	// log('layout.client.addToRegion(', el, region, ');');
 
 	if (!regions[region]) {
 		return;
@@ -89,7 +89,7 @@ layout.addToRegion = function(el, region){
 
 // add a layout spec to the layout-picker
 layout.addLayout = function(spec){
-	log('layout.client.addLayout(', spec, ');');
+	// log('layout.client.addLayout(', spec, ');');
 
 	// Check if at least activate and deactivate are defined
 	if (!(spec.hasOwnProperty('activate') && typeOf(spec.activate) === 'function') ||
@@ -97,16 +97,20 @@ layout.addLayout = function(spec){
 		return;
 	}
 
-	var li = '<li><a href="#layout{index}" class="button-layout ls-{index}" data-index="{index}"></a></li>'.substitute({index: layoutCount});
-	pickerList.innerHTML += li;
-	pickerButtons.push(pickerList.getElement('.ls-'+layoutCount));
+	var li = new Element('li', {
+		html: '<a href="#layout{index}" class="button-layout ls-{index}" data-index="{index}"></a>'.substitute({index: layoutCount})
+	});
+	pickerList.adopt(li);
+	pickerButtons.push(li.getElement('.ls-'+layoutCount));
 	layouts.push(spec);
 	layoutCount++;
 };
 
 // activate a layout by index
 layout.activate = function(index){
-	log('layout.client.activate(', index, ');');
+	// log('layout.client.activate(', index, ');');
+
+	index = parseInt(index, 0);
 
 	if (index !== curLayout) {
 		var init = curLayout === undefined;
@@ -127,7 +131,7 @@ layout.activate = function(index){
 			pickerArrow.morph({left: (pos.x + (size.x/2) - 5)});
 			pickerButtons[index].addClass('active');
 			document.html.addClass('layout-'+index);
-			localStorage.activeLayout = index;
+			storage.set('activeLayout', index);
 			layouts[index].activate(init);
 			curLayout = index;
 		}
@@ -136,7 +140,7 @@ layout.activate = function(index){
 
 // retrieve a panel by index
 layout.getPanel = function(index){
-	log('layout.client.getPanel(', index, ');');
+	// log('layout.client.getPanel(', index, ');');
 
 	if (!panels[index]) {
 		return false;

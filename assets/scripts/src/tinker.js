@@ -3,7 +3,7 @@ tinker.js
 
 author: @chielkunkels
 */'use strict';
-log('tinker.js');
+// log('tinker.js');
 
 var data = JSON.parse(document.getElement('script[type=tinker]').get('html'));
 var tinker = {
@@ -44,7 +44,7 @@ var inputHash, inputRevision, inputRevisionId, saveButton;
 
 //
 var build = function(){
-	log('tinker.build();');
+	// log('tinker.build();');
 
 	var saveLabel = tinker.username ? 'Fork' : 'Save',
 		buttons;

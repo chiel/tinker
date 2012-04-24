@@ -3,7 +3,7 @@ editor/base.js
 
 author: @chielkunkels
 */'use strict';
-log('editor/base.js');
+// log('editor/base.js');
 
 var base = {
 	// Keep track of the active line
@@ -22,14 +22,6 @@ var base = {
 
 	// current panel
 	panel: null,
-
-	//
-	prepare: function(){
-		// T.Events.addEvent('layout.build', this.init.bind(this));
-		// T.Events.addEvent('tinker.save', this.save.bind(this));
-		// T.Events.addEvent('layout.activate', this.refresh.bind(this));
-		// T.Events.addEvent('layout.dragEnd', this.refresh.bind(this));
-	},
 
 	//
 	init: function(){

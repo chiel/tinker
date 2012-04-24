@@ -19,7 +19,7 @@ var relativeSizes = [
 
 // activate this layout
 spec.activate = function(init){
-	// log('layout.layouts.1.activate(', init, ');');
+	// log('layout/layouts/1.activate(', init, ');');
 
 	window.addEvent('resize', resize);
 
@@ -42,7 +42,7 @@ spec.activate = function(init){
 
 // deactivate this layout;
 spec.deactivate = function(){
-	log('layout.layouts.1.deactivate();');
+	// log('layout/layouts/1.deactivate();');
 
 	handles.dispose();
 	window.removeEvent('resize', resize);
@@ -238,9 +238,7 @@ var dragEnd = function(e){
 	storeSizes();
 };
 
-/**
- * Handle window resizing
- */
+// handle window resizing
 var resize = function(){
 	// log('layout.layous.1.resize();');
 
@@ -249,9 +247,7 @@ var resize = function(){
 	recalibrate();
 };
 
-/**
- * Store relative sizes of elements
- */
+// store relative sizes of elements
 var storeSizes = function(){
 	// log('layout.layous.1.storeSizes();');
 

@@ -3,7 +3,7 @@ editor/style.js
 
 author: @chielkunkels
 */'use strict';
-log('editor/style.js');
+// log('editor/style.js');
 
 var events = require('../events');
 var base = require('./base');

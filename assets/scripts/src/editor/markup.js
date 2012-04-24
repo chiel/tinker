@@ -3,7 +3,7 @@ editor/markup.js
 
 author: @chielkunkels
 */'use strict';
-log('editor/markup.js');
+// log('editor/markup.js');
 
 var events = require('../events');
 var base = require('./base');

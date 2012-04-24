@@ -3,11 +3,11 @@ settings/general.js
 
 author: @chielkunkels
 */'use strict';
-log('settings/general.js');
+// log('settings/general.js');
 
 var events = require('../events');
-var tinker = require('../tinker');
 var settings = require('./main');
+var tinker;
 
 var doctypes = [], frameworks = [], versions = {}, extList;
 
@@ -21,8 +21,9 @@ Array.each(frameworks, function(framework) {
 });
 
 var build = function(){
-	log('settings.general.build();');
+	// log('settings.general.build();');
 
+	tinker = require('../tinker');
 	var html = '<ul>'+
 		'<li><label for="input-doctype">Doctype</label><select id="input-doctype" name="doctype"></select></li>'+
 		'<li><label for="input-js-framework">Framework</label><select id="input-js-framework" name="framework"><option value="0">None</option></select><ul id="extension-list"></ul></li>'+

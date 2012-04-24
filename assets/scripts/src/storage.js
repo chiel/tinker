@@ -1,23 +1,23 @@
 /*
-layout/layouts/1.js
+storage.js
 
 author: @chielkunkels
 */'use strict';
-log('layout/layouts/1.js');
+// log('storage.js');
 
 var storage = {},
 	cache = {};
 
 //
 storage.set = function(key, value){
-	log('storage.set(', key, value, ');');
+	// log('storage.set(', key, value, ');');
 
 	cache[key] = value;
 };
 
 //
 storage.get = function(key, defaultValue){
-	log('storage.get(', key, defaultValue, ');');
+	// log('storage.get(', key, defaultValue, ');');
 
 	return cache[key] || defaultValue;
 };
