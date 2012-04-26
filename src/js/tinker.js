@@ -113,7 +113,6 @@ var save = function(){
 
 module.exports = tinker;
 
-log(window.Tinker.mode);
 if (window.Tinker.mode !== 'embed') {
 	events.subscribe('layout.build', build);
 }
