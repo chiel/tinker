@@ -3,3 +3,4 @@ tmp/
 .sass-cache/
 sinatra.log
 config.yml
+public/tinker.client.js
