@@ -5,17 +5,17 @@ author: @chielkunkels
 */'use strict';
 // log('client.js');
 
-require('./tinker');
-var urls = require('./urls');
-var events = require('./events');
-var layout = require('./layout/client');
-var Popover = require('./popover');
-
 window.Tinker = {
 	init: function() {
 		events.publish('init');
 	}
 };
+
+require('./data');
+var urls = require('./urls');
+var events = require('./events');
+var layout = require('./layout/client');
+var Popover = require('./popover');
 
 var build = function(){
 	layout.addToRegion(new Element('h1.logo', {html: '<a href="'+urls.client+'"></a>'}), 'tm');

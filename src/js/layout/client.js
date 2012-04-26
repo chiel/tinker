@@ -154,6 +154,7 @@ events.subscribe('init', build);
 module.exports = layout;
 
 // these should probably loaded in some cleaner way, to avoid circular dependancies
+require('../tinker');
 require('../settings/main');
 require('./layouts/1');
 require('./layouts/2');

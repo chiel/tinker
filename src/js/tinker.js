@@ -6,32 +6,17 @@ author: @chielkunkels
 // log('tinker.js');
 
 var data = JSON.parse(document.getElement('script[type=tinker]').get('html'));
-var tinker = {
-	hash: data.hash || null,
-	revision: data.revision || null,
-	revision_id: data.revision_id || 0,
-	x_user_id: data.x_user_id || null,
-	username: data.username || null,
-	doctype: data.doctype || null,
-	framework: data.framework || null,
-	extensions: data.extensions || [],
-	normalize: data.normalize || null,
-	assets: data.assets || [],
-	title: data.title || null,
-	description: data.description || null,
-	markup: data.markup || null,
-	style: data.style || null,
-	interaction: data.interaction || null
-};
+var tinker = {};
 
+var data = require('./data');
 var events = require('./events');
 var layout = require('./layout/client');
 
 // rewrite the url if needed
-if (tinker.username) {
-	var url = '/'+tinker.username+'/'+tinker.hash;
-	if (tinker.revision) {
-		url += '/'+tinker.revision;
+if (data.username) {
+	var url = '/'+data.username+'/'+data.hash;
+	if (data.revision) {
+		url += '/'+data.revision;
 	}
 	if (!!(window.history && history.pushState)) {
 		history.pushState(null, null, url);
@@ -46,7 +31,7 @@ var inputHash, inputRevision, inputRevisionId, saveButton;
 var build = function(){
 	// log('tinker.build();');
 
-	var saveLabel = tinker.username ? 'Fork' : 'Save',
+	var saveLabel = data.username ? 'Fork' : 'Save',
 		buttons;
 
 	var html = '<li><a href="#run" class="button run">Run</a></li>'+
@@ -69,9 +54,9 @@ var build = function(){
 	saveButton = buttons.getElement('.save');
 
 	layout.wrapper.adopt(
-		inputHash = new Element('input[type=hidden]', {name: 'hash', value: tinker.hash}),
-		inputRevision = new Element('input[type=hidden]', {name: 'revision', value: tinker.revision}),
-		inputRevisionId = new Element('input[type=hidden]', {name: 'revision_id', value: tinker.revision_id})
+		inputHash = new Element('input[type=hidden]', {name: 'hash', value: data.hash}),
+		inputRevision = new Element('input[type=hidden]', {name: 'revision', value: data.revision}),
+		inputRevisionId = new Element('input[type=hidden]', {name: 'revision_id', value: data.revision_id})
 	);
 };
 
@@ -96,17 +81,17 @@ var save = function(){
 		method: 'post',
 		onSuccess: function(response) {
 			if (response.status === 'ok') {
-				tinker.hash = response.hash;
-				tinker.revision = response.revision;
-				tinker.revision_id = response.revision_id;
+				data.hash = response.hash;
+				data.revision = response.revision;
+				data.revision_id = response.revision_id;
 
-				inputHash.set('value', tinker.hash);
-				inputRevision.set('value', tinker.revision);
-				inputRevisionId.set('value', tinker.revision_id);
+				inputHash.set('value', data.hash);
+				inputRevision.set('value', data.revision);
+				inputRevisionId.set('value', data.revision_id);
 				saveButton.set('text', 'Save');
 
-				var url = '/'+tinker.hash;
-				url += tinker.revision > 0 ? '/'+tinker.revision : '';
+				var url = '/'+data.hash;
+				url += data.revision > 0 ? '/'+data.revision : '';
 
 				if (!!(window.history && history.pushState)) {
 					history.pushState(null, null, url);
@@ -123,7 +108,7 @@ var save = function(){
 module.exports = tinker;
 
 events.subscribe('layout.build', build);
-if (tinker.hash) {
+if (data.hash) {
 	events.subscribe('result.build', run);
 }
 

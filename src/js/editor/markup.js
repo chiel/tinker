@@ -5,10 +5,16 @@ author: @chielkunkels
 */'use strict';
 // log('editor/markup.js');
 
+var data = require('../data');
 var events = require('../events');
 var base = require('./base');
-var layout = require('../layout/client');
-var tinker;
+var layout;
+
+if (window.Tinker.mode === 'embed') {
+	layout = require('../layout/embed');
+} else {
+	layout = require('../layout/client');
+}
 
 var editor = Object.merge({}, base, {
 
@@ -18,11 +24,10 @@ var editor = Object.merge({}, base, {
 		if (!this.panel) {
 			return false;
 		}
-		tinker = require('../tinker');
 		this.frame = new Element('div.frame');
 		this.textarea = new Element('textarea', {
 			name: 'markup',
-			html: tinker.markup
+			html: data.markup
 		});
 		this.settings = new Element('div.settings', {text: 'HTML'});
 		this.frame.adopt(this.textarea, this.settings).inject(this.panel.getInner());
