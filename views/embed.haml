@@ -9,6 +9,14 @@
   %body
     %script{:type=>'tinker'}= tinker.to_json
     %script{:type=>'urls'}= urls.to_json
-    %script{:src=>'/assets/embed.js'}
+    %script{:src=>'/assets/mootools.js'}
+    %script{:src=>'/assets/mootools-more.js'}
+    %script{:src=>'/assets/mootools-base64.js'}
+    %script{:src=>'/assets/codemirror.js'}
+    %script{:src=>'/assets/syntax/xml.js'}
+    %script{:src=>'/assets/syntax/css.js'}
+    %script{:src=>'/assets/syntax/javascript.js'}
+    %script{:src=>'/assets/extras.js'}
+    %script{:src=>'/tinker.embed.js'}
     %script Tinker.init({theme: 'light'});
 

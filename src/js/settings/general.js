@@ -5,9 +5,9 @@ author: @chielkunkels
 */'use strict';
 // log('settings/general.js');
 
+var data = require('../data');
 var events = require('../events');
 var settings = require('./main');
-var tinker;
 
 var doctypes = [], frameworks = [], versions = {}, extList;
 
@@ -23,7 +23,6 @@ Array.each(frameworks, function(framework) {
 var build = function(){
 	// log('settings.general.build();');
 
-	tinker = require('../tinker');
 	var html = '<ul>'+
 		'<li><label for="input-doctype">Doctype</label><select id="input-doctype" name="doctype"></select></li>'+
 		'<li><label for="input-js-framework">Framework</label><select id="input-js-framework" name="framework"><option value="0">None</option></select><ul id="extension-list"></ul></li>'+
@@ -39,8 +38,8 @@ var build = function(){
 		showExtensions(inputJS.getSelected()[0].get('value'));
 	});
 
-	if (tinker.framework) {
-		showExtensions(tinker.framework, true);
+	if (data.framework) {
+		showExtensions(data.framework, true);
 	}
 
 	Array.each(doctypes, function(doctype) {
@@ -51,11 +50,15 @@ var build = function(){
 		var optgroup = new Element('optgroup', {label: framework.name, value: framework.id}).inject(inputJS);
 		Array.each(framework.versions, function(version) {
 			var option = new Element('option', {text: framework.name+' '+version.name, value: version.id}).inject(optgroup);
-			if (tinker.framework === version.id) {
+			if (data.framework === version.id) {
 				option.set('selected', true);
 			}
 		});
 	});
+
+	if (data.hash && !data.normalize) {
+		inputCSS.set('checked', false);
+	}
 
 	events.publish('settings.general.build');
 	settings.addSection('General', fieldset);
@@ -72,7 +75,7 @@ var showExtensions = function(index, init){
 					id: 'extension-'+index,
 					name: 'extensions[]',
 					value: extension.id,
-					checked: init && tinker.extensions.contains(extension.id)
+					checked: init && data.extensions.contains(extension.id)
 				}),
 				new Element('label', {'for': 'extension-'+index, text: extension.name})
 			]}).inject(extList);

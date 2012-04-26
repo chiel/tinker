@@ -6,7 +6,13 @@ author: @chielkunkels
 // log('result/default.js');
 
 var events = require('../events');
-var layout = require('../layout/client');
+var layout;
+
+if (window.Tinker.mode === 'embed') {
+	layout = require('../layout/embed');
+} else {
+	layout = require('../layout/client');
+}
 
 var result = {
 

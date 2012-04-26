@@ -5,9 +5,9 @@ author: @chielkunkels
 */'use strict';
 // log('settings/assets.js');
 
+var data = require('../data');
 var events = require('../events');
 var settings = require('./main');
-var tinker;
 
 var assets = [], assetList;
 
@@ -15,7 +15,6 @@ var assets = [], assetList;
 var build = function(){
 	// log('settings.assets.build();');
 
-	tinker = require('../tinker');
 	var html = '<ul id="asset-add">'+
 		'<li><input placeholder="Enter the URL to a file"><a href="#" class="button primary">&#10010;</a></li>'+
 		'</ul><ul id="asset-list"></ul>';
@@ -24,8 +23,8 @@ var build = function(){
 		addButton = fieldset.getElement('a');
 	assetList = fieldset.getElement('#asset-list');
 
-	if (tinker.assets && tinker.assets.length) {
-		Array.each(tinker.assets, function(url) {
+	if (data.assets && data.assets.length) {
+		Array.each(data.assets, function(url) {
 			addAsset(url);
 		});
 	}
