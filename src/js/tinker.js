@@ -10,7 +10,13 @@ var tinker = {};
 
 var data = require('./data');
 var events = require('./events');
-var layout = require('./layout/client');
+var layout;
+
+if (window.Tinker.mode === 'embed') {
+	layout = require('./layout/embed');
+} else {
+	layout = require('./layout/client');
+}
 
 // rewrite the url if needed
 if (data.username) {
@@ -107,7 +113,10 @@ var save = function(){
 
 module.exports = tinker;
 
-events.subscribe('layout.build', build);
+log(window.Tinker.mode);
+if (window.Tinker.mode !== 'embed') {
+	events.subscribe('layout.build', build);
+}
 if (data.hash) {
 	events.subscribe('result.build', run);
 }
