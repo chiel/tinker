@@ -4,7 +4,9 @@ class Client < Controller
 	get %r{^(?:/([A-Za-z0-9_]+))?/([A-Za-z0-9]{5})(?:/([0-9]+))?/embed/?$} do |username, hash, revision|
 		locals = {
 			:tinker => Tinker.find(hash, revision),
-			:urls => APP_CONFIG['urls']
+			:urls => APP_CONFIG['urls'],
+			:ga_code => APP_CONFIG['ga_code'],
+			:environment => ENV['RACK_ENV']
 		}
 
 		headers 'X-Frame-Options' => ''
@@ -18,7 +20,8 @@ class Client < Controller
 			:doctypes => Doctype.list,
 			:frameworks => Framework.list,
 			:urls => APP_CONFIG['urls'],
-			:ga_code => APP_CONFIG['ga_code']
+			:ga_code => APP_CONFIG['ga_code'],
+			:environment => ENV['RACK_ENV']
 		}
 		haml :index, :locals => locals
 	end
