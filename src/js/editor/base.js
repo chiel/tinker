@@ -16,8 +16,7 @@ var base = {
 		indentWithTabs: true,
 		lineNumbers: true,
 		matchBrackets: true,
-		fixedGutter: true,
-		theme: 'tinker-light'
+		fixedGutter: true
 	},
 
 	// current panel
@@ -49,6 +48,7 @@ var base = {
 		// log('editor.onBlur();');
 
 		this.frame.removeClass('focused');
+		this.codemirror.setLineClass(this.curLine, null);
 	},
 
 	// highlight current line
@@ -56,9 +56,9 @@ var base = {
 		// log('editor.highlightLine();');
 
 		if (this.codemirror) {
-			this.codemirror.setLineClass(this.curLine, null);
+			this.codemirror.setLineClass(this.curLine, null, null);
 			this.curLine = this.codemirror.getCursor().line;
-			this.codemirror.setLineClass(this.curLine, 'active_line');
+			this.codemirror.setLineClass(this.curLine, null, 'active_line');
 		}
 	},
 

@@ -34,7 +34,6 @@ var editor = Object.merge({}, base, {
 		var options = Object.append({mode: 'text/javascript', value: this.textarea.get('value')}, this.mirrorOptions);
 		this.codemirror = CodeMirror(this.frame, options);
 		this.textarea.addClass('is-hidden');
-		this.highlightLine();
 	}
 
 });
