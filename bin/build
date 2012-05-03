@@ -1,0 +1,47 @@
+#!/bin/bash
+path=`dirname $0`
+root="$path/.."
+temp="$root/tmp/js"
+dests=(
+	"/public/tinker.client.min.js"
+	"/public/tinker.embed.min.js"
+)
+
+files=(
+	"/assets/scripts/mootools.js"
+	"/assets/scripts/mootools-more.js"
+	"/assets/scripts/mootools-base64.js"
+	"/assets/scripts/codemirror.js"
+	"/assets/scripts/syntax/xml.js"
+	"/assets/scripts/syntax/css.js"
+	"/assets/scripts/syntax/javascript.js"
+	"/assets/scripts/extras.js"
+)
+
+for dest in ${dests[*]}; do
+	echo "> Building $dest:"
+	if [ -f "$temp" ]; then
+		rm "$temp"
+	fi
+
+	for file in ${files[*]}; do
+		echo "  - Adding $file."
+		cat "$root/$file" >> "$temp"
+	done
+
+	if [[ $dest =~ 'client' ]]; then
+		echo "  - Wrapping up /src/js/client.js"
+		wrupped=`wrup -r $root/src/js/client.js 2> /dev/null`
+	elif [[ $dest =~ 'embed' ]]; then
+		echo "  - Wrapping up /src/js/embed.js"
+		wrupped=`wrup -r $root/src/js/embed.js 2> /dev/null`
+	fi
+	echo "$wrupped" >> "$temp"
+
+	echo "  - Uglifying to $root$dest"
+	cat "$temp" | uglifyjs -nc > "$root$dest"
+	rm "$temp"
+	echo "  > $dest written!"
+	echo ""
+done
+

@@ -4,23 +4,26 @@
     %meta{:charset=>'utf-8'}
     %title Tinker &mdash; Social Code Collaboration
     %link{:rel=>'stylesheet', :href=>'/css/normalize.css'}
-    %link{:rel=>'stylesheet', :href=>'/css/base.css'}
     %link{:rel=>'stylesheet', :href=>'/css/codemirror.css'}
+    %link{:rel=>'stylesheet', :href=>'/css/base.css'}
     %link{:rel=>'icon', :type=>'image/png', :href=>'/favicon.png'}
   %body
     %script{:type=>'tinker'}= tinker.to_json
     %script{:type=>'urls'}= urls.to_json
     %script{:type=>'doctypes'}= doctypes.to_json
     %script{:type=>'frameworks'}= frameworks.to_json
-    %script{:src=>'/assets/mootools.js'}
-    %script{:src=>'/assets/mootools-more.js'}
-    %script{:src=>'/assets/mootools-base64.js'}
-    %script{:src=>'/assets/codemirror.js'}
-    %script{:src=>'/assets/syntax/xml.js'}
-    %script{:src=>'/assets/syntax/css.js'}
-    %script{:src=>'/assets/syntax/javascript.js'}
-    %script{:src=>'/assets/extras.js'}
-    %script{:src=>'/tinker.client.js'}
+    - if environment == 'development'
+      %script{:src=>'/assets/mootools.js'}
+      %script{:src=>'/assets/mootools-more.js'}
+      %script{:src=>'/assets/mootools-base64.js'}
+      %script{:src=>'/assets/codemirror.js'}
+      %script{:src=>'/assets/syntax/xml.js'}
+      %script{:src=>'/assets/syntax/css.js'}
+      %script{:src=>'/assets/syntax/javascript.js'}
+      %script{:src=>'/assets/extras.js'}
+      %script{:src=>'/tinker.client.js'}
+    - else
+      %script{:src=>'/tinker.client.min.js'}
     %script Tinker.init({theme: 'light'});
     - if ga_code != ''
       :javascript
