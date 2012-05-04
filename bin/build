@@ -8,14 +8,22 @@ dests=(
 )
 
 files=(
-	"/assets/scripts/mootools.js"
-	"/assets/scripts/mootools-more.js"
-	"/assets/scripts/mootools-base64.js"
-	"/assets/scripts/codemirror.js"
-	"/assets/scripts/syntax/xml.js"
-	"/assets/scripts/syntax/css.js"
-	"/assets/scripts/syntax/javascript.js"
-	"/assets/scripts/extras.js"
+	"/public/frameworks/mootools/1.4.1/mootools.js"
+	"/public/frameworks/mootools/1.4.1/mootools-more.js"
+	"/vendor/mootools-base64/Source/Base64.js"
+	"/vendor/CodeMirror2/lib/codemirror.js"
+	"/vendor/CodeMirror2/mode/css/css.js"
+	"/vendor/CodeMirror2/mode/javascript/javascript.js"
+	"/vendor/CodeMirror2/mode/xml/xml.js"
+
+	# "/assets/scripts/mootools.js"
+	# "/assets/scripts/mootools-more.js"
+	# "/assets/scripts/mootools-base64.js"
+	# "/assets/scripts/codemirror.js"
+	# "/assets/scripts/syntax/xml.js"
+	# "/assets/scripts/syntax/css.js"
+	# "/assets/scripts/syntax/javascript.js"
+	# "/assets/scripts/extras.js"
 )
 
 for dest in ${dests[*]}; do

@@ -1,0 +1,12 @@
+#!/bin/bash
+path=`dirname $0`
+root="$path/.."
+
+ln -s "frameworks/mootools/1.4.1/mootools.js" "$root/public/mootools.js"
+ln -s "frameworks/mootools/1.4.1/mootools-more.js" "$root/public/mootools-more.js"
+ln -s "../vendor/mootools-base64/Source/Base64.js" "$root/public/mootools-base64.js"
+ln -s "../vendor/CodeMirror2/lib/codemirror.js" "$root/public/codemirror.js"
+ln -s "../vendor/CodeMirror2/mode/css/css.js" "$root/public/mode-css.js"
+ln -s "../vendor/CodeMirror2/mode/javascript/javascript.js" "$root/public/mode-javascript.js"
+ln -s "../vendor/CodeMirror2/mode/xml/xml.js" "$root/public/mode-xml.js"
+

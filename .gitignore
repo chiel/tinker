@@ -1,5 +1,17 @@
 log/
 tmp/
 .sass-cache/
+capfile
 sinatra.log
 config.yml
+public/codemirror.js
+public/mode-css.js
+public/mode-javascript.js
+public/mode-xml.js
+public/mootools-base64.js
+public/mootools-more.js
+public/mootools.js
+public/tinker.client.js
+public/tinker.client.min.js
+public/tinker.embed.js
+public/tinker.embed.min.js

@@ -13,14 +13,14 @@
     %script{:type=>'doctypes'}= doctypes.to_json
     %script{:type=>'frameworks'}= frameworks.to_json
     - if environment == 'development'
-      %script{:src=>'/assets/mootools.js'}
-      %script{:src=>'/assets/mootools-more.js'}
-      %script{:src=>'/assets/mootools-base64.js'}
-      %script{:src=>'/assets/codemirror.js'}
-      %script{:src=>'/assets/syntax/xml.js'}
-      %script{:src=>'/assets/syntax/css.js'}
-      %script{:src=>'/assets/syntax/javascript.js'}
-      %script{:src=>'/assets/extras.js'}
+      %script{:src=>'/mootools.js'}
+      %script{:src=>'/mootools-more.js'}
+      %script{:src=>'/mootools-base64.js'}
+      %script{:src=>'/codemirror.js'}
+      %script{:src=>'/mode-xml.js'}
+      %script{:src=>'/mode-css.js'}
+      %script{:src=>'/mode-javascript.js'}
+      %script{:src=>'/extras.js'}
       %script{:src=>'/tinker.client.js'}
     - else
       %script{:src=>'/tinker.client.min.js'}
