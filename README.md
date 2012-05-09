@@ -8,7 +8,7 @@ Tinker is an open-source tool to help people collaborate on code. It can also be
 Tinker requires:
 
 - Ruby 1.9+ && gem
-- Node.js && npm
+- Node.js && [npm](http://npmjs.org/)
 
 
 ```
@@ -47,9 +47,16 @@ $ thin -p 9394 -e development -P tmp/pids/tinker-sandbox.pid -d -D start
 The client interface can now be found at `http://localhost:9393/` and the sandbox at `http://localhost:9394/`
 
 
-### Compiling the javascript
+### Compiling the css
 
-Start off by installing [npm](http://npmjs.org/), then do this:
+```
+$ npm install -g less
+$ cd ~/projects/tinker/
+$ lessc ./src/less/client.less > ./public/tinker.client.css
+$ lessc ./src/less/embed.css > ./public/tinker.embed.css
+```
+
+### Compiling the javascript
 
 ```
 $ npm install -g wrapup
