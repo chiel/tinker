@@ -4,21 +4,21 @@
     %meta{:charset=>'utf-8'}
     %title Tinker &mdash; Social Code Collaboration
     %link{:rel=>'stylesheet', :href=>'/css/normalize.css'}
-    %link{:rel=>'stylesheet', :href=>'/css/embed.css'}
     %link{:rel=>'stylesheet', :href=>'/css/codemirror.css'}
+    %link{:rel=>'stylesheet', :href=>'/tinker.embed.css'}
     %link{:rel=>'icon', :type=>'image/png', :href=>'/favicon.png'}
   %body
     %script{:type=>'tinker'}= tinker.to_json
     %script{:type=>'urls'}= urls.to_json
     - if environment == 'development'
-      %script{:src=>'/assets/mootools.js'}
-      %script{:src=>'/assets/mootools-more.js'}
-      %script{:src=>'/assets/mootools-base64.js'}
-      %script{:src=>'/assets/codemirror.js'}
-      %script{:src=>'/assets/syntax/xml.js'}
-      %script{:src=>'/assets/syntax/css.js'}
-      %script{:src=>'/assets/syntax/javascript.js'}
-      %script{:src=>'/assets/extras.js'}
+      %script{:src=>'/mootools.js'}
+      %script{:src=>'/mootools-more.js'}
+      %script{:src=>'/mootools-base64.js'}
+      %script{:src=>'/codemirror.js'}
+      %script{:src=>'/mode-xml.js'}
+      %script{:src=>'/mode-css.js'}
+      %script{:src=>'/mode-javascript.js'}
+      %script{:src=>'/extras.js'}
       %script{:src=>'/tinker.embed.js'}
     - else
       %script{:src=>'/tinker.embed.min.js'}

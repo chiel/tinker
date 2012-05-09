@@ -15,3 +15,7 @@ public/tinker.client.js
 public/tinker.client.min.js
 public/tinker.embed.js
 public/tinker.embed.min.js
+public/tinker.client.css
+public/tinker.client.min.css
+public/tinker.embed.css
+public/tinker.embed.min.css

@@ -69,12 +69,4 @@ class Client < Controller
 			}.to_json
 		end
 	end
-
-	get '/css/base.css' do
-		sass :base
-	end
-
-	get '/css/embed.css' do
-		sass :embed
-	end
 end

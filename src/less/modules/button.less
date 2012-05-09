@@ -1,0 +1,33 @@
+.button {
+	display: block;
+	height: 22px;
+	padding: 0 9px;
+	border-radius: 3px;
+	box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset rgba(255, 255, 255, .15) 0 1px 0;
+	.linear-gradient(#626262, #333);
+	color: #fff;
+	font-size: 11px;
+	line-height: 20px;
+
+	&:hover {
+		.linear-gradient(#6b6b6b, #3d3d3d);
+	}
+	&:active, &.active {
+		box-shadow: rgba(0, 0, 0, .85) 0 0 0 1px, inset rgba(0, 0, 0, .5) 0 1px 3px;
+		.linear-gradient(#3b3b3b, #1f1f1f);
+	}
+	&.primary {
+		box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset #8fc4ef 0 1px 0;
+		.linear-gradient(#62a6e6, #2b6fb0);
+
+		&:hover {
+			box-shadow: rgba(0, 0, 0, .4) 0 0 0 1px, inset #a2cdf3 0 1px 0;
+			.linear-gradient(#79b4ec, #3d7fbe);
+		}
+		&:active {
+			box-shadow: rgba(0, 0, 0, .85) 0 0 0 1px, inset rgba(0, 0, 0, .5) 0 1px 3px;
+			.linear-gradient(#62a6e6, #2b6fb0);
+		}
+	}
+}
+
