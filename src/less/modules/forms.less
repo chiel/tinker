@@ -1,0 +1,57 @@
+.frm {
+	padding: 4px 14px 14px;
+
+	> fieldset {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	li {
+		margin: 11px 0 0;
+	}
+	.frm-actions {
+		margin-top: 16px;
+	}
+}
+.fld {
+	overflow: hidden;
+	display: block;
+	padding: 0 0 0 70px;
+	background: #fff;
+	line-height: 38px;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	box-shadow: inset #cfcfcf 1px 1px 3px;
+
+	input {
+		float: right;
+		width: 100%;
+		padding: 12px 0;
+		background: transparent;
+		border: 0;
+	}
+
+	label {
+		float: left;
+		width: 70px;
+		margin-left: -70px;
+		color: #aaa;
+	}
+
+	input:focus + label {
+		color: #000;
+	}
+}
+
+.l-icon {
+	.fld {
+		padding-left: 30px;
+
+		label {
+			width: 30px;
+			margin-left: -30px;
+			text-indent: -999em;
+		}
+	}
+}
+

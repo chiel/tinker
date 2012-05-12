@@ -162,4 +162,5 @@ require('../editor/markup');
 require('../editor/style');
 require('../editor/behaviour');
 require('../result/default');
+require('../user');
 
