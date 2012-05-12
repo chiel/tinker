@@ -1,3 +1,9 @@
+require 'controller'
+require 'tinker'
+require 'doctype'
+require 'framework'
+require 'base64'
+
 # Handles client calls
 class Client < Controller
 	# embed mode

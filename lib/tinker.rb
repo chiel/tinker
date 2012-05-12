@@ -1,3 +1,5 @@
+require 'digest/sha2'
+
 # A class to manage everything concerning tinkers
 class Tinker
 

@@ -1,3 +1,8 @@
+require 'sinatra/base'
+require 'sinatra/reloader'
+require 'haml'
+require 'sass'
+
 class Controller < Sinatra::Base
 	log = File.new('sinatra.log', 'a')
 	STDOUT.reopen(log)
