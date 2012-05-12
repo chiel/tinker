@@ -1,5 +1,13 @@
 body {
-	font: 12px 'lucida grande', arial, helvetica, sans-serif;
+	color: #222;
+	font: 12px 'lucida sans unicode', 'lucida grande', arial, helvetica, sans-serif;
+}
+h2 {
+	margin: 0;
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 24px;
+	text-transform: uppercase;
 }
 ol, ul {
 	margin: 0;
@@ -7,48 +15,16 @@ ol, ul {
 	list-style: none;
 }
 a {
-	color: inherit;
+	color: @teal;
 	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
 }
 p {
 	margin: 0 0 18px;
 }
-fieldset {
-	margin: 0;
-	padding: 0;
-	border: 0;
 
-	li {
-		overflow: hidden;
-		padding: 6px 0;
-	}
-}
-label {
-	float: left;
-	width: 80px;
-	margin: 0 10px 0 0;
-	line-height: 22px;
-	text-align: right;
-}
-input {
-	padding: 4px 6px;
-	border: 1px solid #bfbfbf;
-	border-radius: 3px;
-	background: #f5f5f5;
-	box-shadow: inset 0 1px 0 #ebebeb;
-
-	&:focus {
-		outline: 0;
-	}
-}
-textarea {
-	padding: 4px 6px;
-	border: 1px solid #bfbfbf;
-	border-radius: 3px;
-	background: #f5f5f5;
-	box-shadow: inset 0 1px 0 #ebebeb;
-	&:focus {
-		outline: 0;
-	}
-}
+@import "base/forms";
 

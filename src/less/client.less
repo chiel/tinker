@@ -1,21 +1,46 @@
-.linear-gradient(@start, @finish) {
-	background: -moz-linear-gradient(top, @start 0%, @finish 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, @start), color-stop(100%, @finish));
-	background: -webkit-linear-gradient(top, @start 0%, @finish 100%);
-	background: -o-linear-gradient(top, @start 0%, @finish 100%);
-	background: -ms-linear-gradient(top, @start 0%, @finish 100%);
-	background: linear-gradient(top, @start 0%, @finish 100%);
-}
-
-.transition(@property) {
-	-moz-transition: @property;
-	-webkit-transition: @property;
-}
-
+@import "variables";
+@import "mixins";
 @import "base";
 @import "state";
 @import "layout";
 @import "modules";
+
+.po-settings {
+	fieldset {
+		li {
+			overflow: hidden;
+			padding: 6px 0;
+		}
+	}
+	label {
+		float: left;
+		width: 80px;
+		margin: 0 10px 0 0;
+		line-height: 22px;
+		text-align: right;
+	}
+	input {
+		padding: 4px 6px;
+		border: 1px solid #bfbfbf;
+		border-radius: 3px;
+		background: #f5f5f5;
+		box-shadow: inset 0 1px 0 #ebebeb;
+
+		&:focus {
+			outline: 0;
+		}
+	}
+	textarea {
+		padding: 4px 6px;
+		border: 1px solid #bfbfbf;
+		border-radius: 3px;
+		background: #f5f5f5;
+		box-shadow: inset 0 1px 0 #ebebeb;
+		&:focus {
+			outline: 0;
+		}
+	}
+}
 
 .settings-general {
 	padding: 12px;

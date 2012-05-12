@@ -1,0 +1,31 @@
+form {
+	margin: 0;
+	padding: 0;
+}
+fieldset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+input {
+	border: 0;
+	background: transparent;
+	color: #888;
+
+	&:focus {
+		outline: 0;
+	}
+
+	&[type=submit][disabled] {
+		opacity: .6;
+		pointer-events: none;
+	}
+}
+
+::-webkit-input-placeholder {
+	color: #ddd;
+}
+
+:-moz-placeholder {
+	color: #ddd;
+}
