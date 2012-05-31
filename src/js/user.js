@@ -5,10 +5,12 @@ author: @chielkunkels
 */'use strict';
 // log('user.js');
 
-var events = require('./events');
-var layout = require('./layout/client');
-var Slides = require('./slides');
-var Modal = require('./modal');
+var user = require('./modules/user/model.js'),
+	events = require('./events'),
+	layout = require('./layout/client'),
+	Slides = require('./slides'),
+	Modal = require('./modal'),
+	notifications = require('./notifications/ui.js');
 
 var loginSlides, loginModal;
 
@@ -81,35 +83,50 @@ var slidesEl = new Element('div.slides', {html: slidesHtml});
 var loginForm, signupForm, loginButton, signupButton;
 
 function build(){
-	log('user.build()');
+	// log('user.build()');
 
-	var loginButton = new Element('a.icn.icn-login[href=#login][text=Login]');
-	layout.addToRegion(loginButton, 'bl');
-	loginModal = new Modal('signup', slidesEl);
-	loginSlides = new Slides(slidesEl);
-	loginForm = slidesEl.getElement('.frm-login');
-	signupForm = slidesEl.getElement('.frm-signup');
+	// logged in user
+	if (user.isLoggedIn()) {
+		var logoutButton = new Element('a.icn.icn-login[href=#logout][text=Log out]');
+		layout.addToRegion(logoutButton, 'bl');
+		logoutButton.addEvent('click', function(e){
+			e.preventDefault();
+			events.subscribe('user.logout', function() {
+				log('user logged out');
+			});
+			user.logout();
+		});
 
-	loginForm.addEvent('submit', function(e){
-		e.preventDefault();
+	// logged out user
+	} else {
+		var loginButton = new Element('a.icn.icn-login[href=#login][text=Log in]');
+		layout.addToRegion(loginButton, 'bl');
+		loginModal = new Modal('signup', slidesEl);
+		loginSlides = new Slides(slidesEl);
+		loginForm = slidesEl.getElement('.frm-login');
+		signupForm = slidesEl.getElement('.frm-signup');
 
-		login();
-	});
+		loginForm.addEvent('submit', function(e){
+			e.preventDefault();
 
-	signupForm.addEvent('submit', function(e){
-		e.preventDefault();
+			login();
+		});
 
-		signup();
-	});
+		signupForm.addEvent('submit', function(e){
+			e.preventDefault();
 
-	loginButton.addEvent('click', function(e){
-		e.preventDefault();
-		loginModal.show();
-	});
+			signup();
+		});
+
+		loginButton.addEvent('click', function(e){
+			e.preventDefault();
+			loginModal.show();
+		});
+	}
 }
 
 function login(){
-	log('user.login();');
+	// log('user.login();');
 
 	if (!loginButton) {
 		loginButton = loginForm.getElement('input[type=submit]');
@@ -123,13 +140,16 @@ function login(){
 		return;
 	}
 
-	new Request.JSON({
-		url: '/login',
-		data: {
-			email: email,
-			password: password
+	events.subscribe('user.login', function(success){
+		if (success) {
+			log('user successfully logged in');
+			loginModal.hide();
+			notification.send('info', 'You are now logged in!');
+		} else {
+			log('TODO: handle failed login');
 		}
-	}).send();
+	});
+	user.login(email, password);
 
 	// loginButton.set('disabled', true);
 }

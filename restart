@@ -1,0 +1,14 @@
+#!/bin/bash
+path=`dirname $0`
+root="$path/.."
+
+if [ -f "$root/tmp/pids/tinker-client.pid" ]; then
+	thin -P tmp/pids/tinker-client.pid stop
+fi
+
+if [ -f "$root/tmp/pids/tinker-sandbox.pid" ]; then
+	thin -P tmp/pids/tinker-sandbox.pid stop
+fi
+
+thin -p 9393 -D -e development -d -P tmp/pids/tinker-client.pid --log tmp/log/thin.log start
+thin -p 9394 -D -e development -d -P tmp/pids/tinker-sandbox.pid --log tmp/log/thin.log start

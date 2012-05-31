@@ -28,7 +28,7 @@ var build = function(){
 
 	events.publish('settings.build');
 
-	var ul = new Element('ul.buttons', {html: '<li><a href="#settings" class="settings button">Settings</a></li>'});
+	var ul = new Element('ul.buttons', {html: '<li><a href="#settings" class="settings btn">Settings</a></li>'});
 	layout.addToRegion(ul, 'tl');
 	var popover = new Popover(wrapper, {button: ul.getElement('.settings')});
 	popover.element.addClass('po-settings');

@@ -25,6 +25,7 @@ class Client < Controller
 			:tinker => Tinker.find(hash, revision),
 			:doctypes => Doctype.list,
 			:frameworks => Framework.list,
+			:user => session[:user],
 			:urls => APP_CONFIG['urls'],
 			:ga_code => APP_CONFIG['ga_code'],
 			:environment => ENV['RACK_ENV']
@@ -75,4 +76,104 @@ class Client < Controller
 			}.to_json
 		end
 	end
+
+	# user login
+	post '/login' do
+		if session[:user].logged_in?
+			return {
+				:status => :error,
+				:error => {
+					:code => 21,
+					:message => 'You are already logged in'
+				}
+			}.to_json
+		end
+
+		begin
+			session[:user].login(params[:email], params[:password])
+			{
+				:status => :ok
+			}.to_json
+		rescue UserError => e
+			{
+				:status => :error,
+				:error => {
+					:code => 20,
+					:message => e.message
+				}
+			}.to_json
+		rescue Sequel::DatabaseError => e
+			{
+				:status => :error,
+				:error => {
+					:code => 90,
+					:message => 'Uh-oh! It seems our system crapped all over itsself!'
+				}
+			}.to_json
+		rescue Exception => e
+			{
+				:status => :error,
+				:error => {
+					:code => 90,
+					:message => 'some other exception: '+e.message
+				}
+			}.to_json
+		end
+	end
+
+	# user logout
+	get '/logout' do
+		session[:user].logout
+		{
+			:status => :ok
+		}.to_json
+	end
+
+	# user signup
+	post '/signup' do
+		if session[:user].logged_in?
+			return {
+				:status => :error,
+				:error => {
+					:code => 21,
+					:message => 'You are already logged in'
+				}
+			}.to_json
+		end
+
+		{
+			:status => :unknown
+		}.to_json
+		begin
+			user_id = session[:user].signup(params[:email], params[:password])
+			{
+				:status => :ok
+			}.to_json
+		rescue UserError => e
+			{
+				:status => :error,
+				:error => {
+					:code => 20,
+					:message => e.message
+				}
+			}.to_json
+		rescue Sequel::DatabaseError => e
+			{
+				:status => :error,
+				:error => {
+					:code => 90,
+					:message => 'Uh-oh! It seems our system crapped all over itsself!'
+				}
+			}.to_json
+		rescue Exception => e
+			{
+				:status => :error,
+				:error => {
+					:code => 90,
+					:message => 'some other exception: '+e.message
+				}
+			}.to_json
+		end
+	end
 end
+

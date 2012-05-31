@@ -12,6 +12,7 @@
     %script{:type=>'urls'}= urls.to_json
     %script{:type=>'doctypes'}= doctypes.to_json
     %script{:type=>'frameworks'}= frameworks.to_json
+    %script{:type=>'user'}= user.to_json
     - if environment == 'development'
       %script{:src=>'/mootools.js'}
       %script{:src=>'/mootools-more.js'}

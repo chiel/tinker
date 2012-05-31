@@ -40,8 +40,8 @@ var build = function(){
 	var saveLabel = data.username ? 'Fork' : 'Save',
 		buttons;
 
-	var html = '<li><a href="#run" class="button run">Run</a></li>'+
-		'<li><a href="#save" class="button primary save">'+saveLabel+'</a></li>';
+	var html = '<li><a href="#run" class="btn run">Run</a></li>'+
+		'<li><a href="#save" class="btn btn-default save">'+saveLabel+'</a></li>';
 	layout.addToRegion(buttons = new Element('ul.buttons', {
 		html: html,
 		events: {

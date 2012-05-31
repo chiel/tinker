@@ -16,7 +16,6 @@ var modal = new Class({
 		if (body) {
 			this.wrapper.adopt(body);
 		}
-		this.show();
 	},
 
 	show: function(){
@@ -24,6 +23,13 @@ var modal = new Class({
 
 		modalBg.removeClass('is-hidden');
 		this.wrapper.removeClass('is-hidden');
+	},
+
+	hide: function(){
+		// log('modal.hide();');
+
+		modalBg.addClass('is-hidden');
+		this.wrapper.addClass('is-hidden');
 	}
 
 });

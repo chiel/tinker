@@ -1,6 +1,5 @@
 /*
-client.js
-
+file:   client.js
 author: @chielkunkels
 */'use strict';
 // log('client.js');
@@ -12,6 +11,7 @@ window.Tinker = {
 };
 
 require('./data');
+require('./modules/user/model');
 var urls = require('./urls');
 var events = require('./events');
 var layout = require('./layout/client');

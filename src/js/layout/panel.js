@@ -25,7 +25,7 @@ var panel = new Class({
 
 		this.wrapper = wrapper;
 		this.index = index;
-		this.outer = new Element('section#panel'+index).inject(this.wrapper);
+		this.outer = new Element('section.panel#panel'+index).inject(this.wrapper);
 		this.inner = new Element('div.inner').inject(this.outer);
 	},
 
