@@ -18,7 +18,7 @@ var layout = require('./layout/client');
 var Popover = require('./popover');
 
 var build = function(){
-	layout.addToRegion(new Element('h1.logo', {html: '<a href="'+urls.client+'"></a>'}), 'tm');
+	layout.addToRegion(new Element('h1.logo'), 'tm');
 	var aboutButton = new Element('a.about[href=#about][text=About]');
 	layout.addToRegion(aboutButton, 'br');
 
