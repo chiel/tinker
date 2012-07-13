@@ -24,6 +24,13 @@ var build = function(){
 
 	var html = '<p><strong>Tinker</strong> is a quick and easy tool for writing and sharing code, '+
 		'created by <a href="https://twitter.com/#!/chielkunkels">@chielkunkels</a> and friends.</p>'+
+		'<ul class="hotkeys_help">Hotkeys: ' +
+			'<li>F1: activate HTML editor </li>' +
+			'<li>F2: activate CSS editor </li>' +
+			'<li>F3: activate JS editor </li>' +
+			'<li>Ctrl+R: run </li>' +
+			'<li>Ctrl+S: save </li>' +
+		'</ul>' +
 		'<p>Tinker is open source, so <a href="http://git.io/tinker">check it out on Github</a>.</p>'+
 		'<ul class="twitter-buttons">'+
 		'<li class="tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-url="https://tinker.io">Tweet</a></li>'+
