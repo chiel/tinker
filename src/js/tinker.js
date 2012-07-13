@@ -64,6 +64,23 @@ var build = function(){
 		inputRevision = new Element('input[type=hidden]', {name: 'revision', value: data.revision}),
 		inputRevisionId = new Element('input[type=hidden]', {name: 'revision_id', value: data.revision_id})
 	);
+	
+	var keyboard = new Keyboard({
+		active: true,
+		events: {
+			"f1": function() {
+				events.publish('move_focus.markup');
+			},
+			"f2": function() {
+				events.publish('move_focus.style');
+			},
+			"f3": function() {
+				events.publish('move_focus.behaviour');
+			},
+			"ctrl+alt+r": run,
+			"ctrl+alt+s": save
+		}
+	});
 };
 
 //
@@ -119,4 +136,3 @@ if (window.Tinker.mode !== 'embed') {
 if (data.hash) {
 	events.subscribe('result.build', run);
 }
-
