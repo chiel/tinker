@@ -8,15 +8,14 @@ Tinker is an open-source tool to help people collaborate on code. It can also be
 Tinker requires:
 
 - Ruby 1.9+ && gem
-- Node.js && [npm](http://npmjs.org/)
-
+- Node.js 0.8.0+ && [npm](http://npmjs.org/)
 
 ```
 $ git clone https://github.com/chielkunkels/tinker.git ~/projects/tinker
 $ cd ~/projects/tinker
 $ git submodule update --init --recursive
 $ gem install bundler
-$ bundler install
+$ bundle install
 $ mysql -u user -p tinker < schema.sql
 $ cp config-sample.yml config.yml
 ```
@@ -63,10 +62,13 @@ $ npm install -g wrapup
 $ cd ~/projects/tinker/
 $ wrup -r ./src/js/client.js --output ./public/tinker.client.js
 $ wrup -r ./src/js/embed.js --output ./public/tinker.embed.js
+$ ./bin/devsetup
 ```
 
 ## Copyright
 
 Copyright (c) 2011 Chiel Kunkels
+
+Copyright (c) 2012, Pavel Strakhov (minor changes)
 
 Tinker is licensed under the MIT license.
