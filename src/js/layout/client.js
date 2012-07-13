@@ -158,6 +158,7 @@ require('../tinker');
 require('../settings/main');
 require('./layouts/1');
 require('./layouts/2');
+require('./layouts/tabbed');
 require('../editor/markup');
 require('../editor/style');
 require('../editor/behaviour');

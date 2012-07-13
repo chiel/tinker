@@ -1,9 +1,8 @@
 /*
-layout/layouts/2.js
+layout/layouts/tabbed.js
 
-author: @chielkunkels
+author: Pavel Strakhov
 */'use strict';
-// log('layout/layouts/2.js');
 
 var events = require('../../events'),
 	storage = require('../../storage'),
@@ -19,8 +18,8 @@ var relativeSizes = [
 
 // Activate this layout
 spec.activate = function(init){
-	// log('layout/layouts/2.activate();');
-
+	$$("#editor_tabs").show();
+	
 	window.addEvent('resize', resize);
 
 	relativeSizes = storage.get('layout1Sizes', relativeSizes);
@@ -43,15 +42,14 @@ spec.activate = function(init){
 // deactivate this layout
 spec.deactivate = function(init){
 	// log('layout/layouts/2.deactivate();');
+	$$("#editor_tabs").hide();
 
 	handles.dispose();
 	window.removeEvent('resize', resize);
 };
 
 // calculate dimensions for each panel
-var getDimensions = function(){
-	// log('layout/layouts/2.getDimensions();');
-
+var getDimensions = function() {
 	var rs = relativeSizes,
 		p = layout.panels,
 		bSize = layout.body.getSize(),
@@ -59,57 +57,31 @@ var getDimensions = function(){
 		opw = bSize.x / 100,
 		oph = bSize.y / 100,
 		d = {};
-
+		
 	d[0] = {
 		top: 0,
 		left: 0,
 		width: Math.ceil(opw * rs[0].x),
-		height: Math.ceil(oph * rs[0].y)
+		height: bSize.y
 	};
-	d[0].width = d[0].width < min.ox ? min.ox : d[0].width;
-	d[0].height = d[0].height < min.oy ? min.oy : d[0].height;
-	d[1] = {
-		top: d[0].height,
-		left: 0,
-		width: Math.ceil(opw * rs[1].x),
-		height: Math.ceil(oph * rs[1].y)
-	};
-	d[1].width = d[1].width < min.ox ? min.ox : d[1].width;
-	d[1].height = d[1].height < min.oy ? min.oy : d[1].height;
-	d[2] = {
-		top: d[0].height + d[1].height,
-		left: 0,
-		width: Math.ceil(opw * rs[2].x),
-		height: bSize.y - d[1].height - d[0].height
-	};
-	d[2].width = d[2].width < min.ox ? min.ox : d[2].width;
+	d[1] = d[0];
+	d[2] = d[0];
 	d[3] = {
 		top: 0,
 		left: d[0].width,
 		width: bSize.x - d[0].width,
 		height: bSize.y
 	};
-	if (d[2].height < 0) {
-		//heights are too big, auto resize them
-		d[0].height = bSize.y / 3;
-		d[1].top = d[0].height;
-		d[1].height = bSize.y / 3;
-		d[2].top = d[1].top + d[1].height;
-		d[2].height = bSize.y / 3;
-	}
 
 	return d;
 };
 
 // build up layout-specific elements
 var build = function(){
-	// log('layout/layouts/2.build();');
 
 	if (handles.length === 0) {
 		handles.push(
-			new Element('div.handle.horz.h1').store('handleId', 0),
-			new Element('div.handle.horz.h2').store('handleId', 1),
-			new Element('div.handle.vert.h3').store('handleId', 2)
+			new Element('div.handle.vert.h3').store('handleId', 0)
 		);
 		handles.addEvent('mousedown', function(e) {
 			dragStart(e, e.target);
@@ -121,7 +93,6 @@ var build = function(){
 
 // recalibrate, making sure handles are displayed correctly
 var recalibrate = function(){
-	// log('layout/layouts/2.recalibrate()');
 
 	var p = layout.panels,
 		p0 = p[0].getCoords(),
@@ -129,16 +100,6 @@ var recalibrate = function(){
 		p3 = p[3].getCoords();
 
 	handles[0].setStyles({
-		top: p0.y2,
-		left: p0.x1,
-		width: p0.x2 - p0.x1
-	});
-	handles[1].setStyles({
-		top: p1.y2,
-		left: p1.x1,
-		width: p1.x2 - p1.x1
-	});
-	handles[2].setStyles({
 		top: p0.y1,
 		left: p0.x2,
 		height: p3.y2 - p3.y1
@@ -147,7 +108,6 @@ var recalibrate = function(){
 
 // drag start event
 var dragStart = function(e, handle){
-	// log('layout/layouts/2.dragStart(', e, handle, ');');
 
 	e.stop();
 	var p = layout.panels, d = dragOptions, p1, p2;
@@ -161,9 +121,7 @@ var dragStart = function(e, handle){
 	events.publish('layout.dragStart');
 
 	switch (d.handleId) {
-		case 0: p1 = p[0].getCoords(); p2 = p[1].getCoords(); break;
-		case 1: p1 = p[1].getCoords(); p2 = p[2].getCoords(); break;
-		case 2: p1 = p[0].getCoords(); p2 = p[3].getCoords(); break;
+		case 0: p1 = p[0].getCoords(); p2 = p[3].getCoords(); break;
 		default: log('Unhandled handleId: ', d.handleId); break;
 	}
 
@@ -174,21 +132,12 @@ var dragStart = function(e, handle){
 		y2: p2.y2
 	};
 
-	if (d.handle.hasClass('horz')) {
-		d.limits = {
-			x1: d.box.x1,
-			x2: d.box.x1,
-			y1: d.box.y1 + 100,
-			y2: d.box.y2 - 100 - d.handleSize.y
-		};
-	} else {
-		d.limits = {
-			x1: d.box.x1 + 200,
-			x2: d.box.x2 - 200 - d.handleSize.x,
-			y1: d.box.y1,
-			y2: d.box.y1
-		};
-	}
+	d.limits = {
+		x1: d.box.x1 + 200,
+		x2: d.box.x2 - 200 - d.handleSize.x,
+		y1: d.box.y1,
+		y2: d.box.y1
+	};
 
 	document.addEvents({
 		mousemove: drag,
@@ -198,7 +147,6 @@ var dragStart = function(e, handle){
 
 // the actual drag
 var drag = function(e){
-	// log('layout/layouts/2.drag(', e, ');');
 
 	var p = layout.panels,
 		d = dragOptions,
@@ -213,23 +161,9 @@ var drag = function(e){
 	d.handle.setStyles({top: y, left: x});
 
 	if (d.handleId === 0) {
-		p[0].getOuter().setStyle('height', y + 5);
-		p[1].getOuter().setStyles({
-			top: y + 5,
-			height: d.box.y2 - y
-		});
-	} else if (d.handleId === 1) {
-		p[1].getOuter().setStyle('height', (y - d.box.y1) + 10);
-		p[2].getOuter().setStyles({
-			top: y + 5,
-			height: d.box.y2 - y
-		});
-	} else if (d.handleId === 2) {
 		p[0].getOuter().setStyle('width', x + 5);
 		p[1].getOuter().setStyle('width', x + 5);
 		p[2].getOuter().setStyle('width', x + 5);
-		handles[0].setStyle('width', x - 5);
-		handles[1].setStyle('width', x - 5);
 		p[3].getOuter().setStyles({
 			left: x + 5,
 			width: d.box.x2 - x
@@ -239,7 +173,6 @@ var drag = function(e){
 
 // end drag
 var dragEnd = function(e){
-	// log('layout/layouts/2.dragEnd(', e, ');');
 
 	events.publish('layout.dragEnd');
 	document.removeEvents({
@@ -251,7 +184,6 @@ var dragEnd = function(e){
 
 // handle window resizing
 var resize = function(){
-	// log('layout/layouts/2.resize();');
 
 	var dimensions = getDimensions();
 	layout.fx.set(dimensions);
@@ -260,7 +192,6 @@ var resize = function(){
 
 // store relative sizes of elements
 var storeSizes = function(){
-	// log('layout/layouts/2.storeSizes();');
 
 	var p = layout.panels,
 		bSize = layout.body.getSize(),

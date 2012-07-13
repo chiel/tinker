@@ -64,6 +64,62 @@ var build = function(){
 		inputRevision = new Element('input[type=hidden]', {name: 'revision', value: data.revision}),
 		inputRevisionId = new Element('input[type=hidden]', {name: 'revision_id', value: data.revision_id})
 	);
+
+	var switch_current_editor = function(name) {
+		layout.panels.each(function(panel) {
+			panel.outer.removeClass("current");
+		});
+		$$("#editor_tabs a").removeClass("active");
+		var i = { "markup": 0, "style": 1, "behaviour": 2 }[name];
+		layout.panels[i].outer.addClass('current');
+		events.publish("move_focus." + name);
+		$$("#go_" + name).addClass('active');
+	};
+
+	var editor_tabs = new Element('ul.btn-group.is-hidden#editor_tabs', {
+		html: 	'<li><a id="go_markup" href="#markup" class="button">HTML</a></li>'+
+				'<li><a id="go_style" href="#style" class="button">CSS</a></li>'+
+				'<li><a id="go_behaviour" href="#behaviour" class="button">JS</a></li>',
+		events: {
+			click: function(e) {
+				e.preventDefault();
+				var href = e.target.get('href');
+				$$("#editor_tabs a").removeClass("active");
+				if (href) {
+					switch_current_editor(href.substr(1));
+				}
+			}
+		}
+	});
+	layout.addToRegion(editor_tabs, 'tl');
+	switch_current_editor('markup');
+
+
+	var keyboard = new Keyboard({
+		active: true,
+		events: {
+			"f1": function(e) {
+				switch_current_editor('markup');
+				e.stop();
+			},
+			"f2": function(e) {
+				switch_current_editor('style');
+				e.stop();
+			},
+			"f3": function(e) {
+				switch_current_editor('behaviour');
+				e.stop();
+			},
+			"ctrl+r": function(e) {
+				run(),
+				e.stop();
+			},
+			"ctrl+s": function(e) {
+				save(),
+				e.stop();
+			}
+		}
+	});
 };
 
 //
@@ -119,4 +175,3 @@ if (window.Tinker.mode !== 'embed') {
 if (data.hash) {
 	events.subscribe('result.build', run);
 }
-
